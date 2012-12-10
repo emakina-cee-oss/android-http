@@ -33,6 +33,10 @@ import android.net.Uri;
 import at.diamonddogs.data.adapter.database.DataBaseAdapterCacheInformation;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 
+/**
+ * The {@link CacheContentProvider} provides a standardized interface to cache
+ * information
+ */
 public class CacheContentProvider extends ContentProvider {
 
 	@SuppressWarnings("unused")
@@ -57,11 +61,17 @@ public class CacheContentProvider extends ContentProvider {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			createTable(db);
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			if (oldVersion == 1 && newVersion == 2) {
@@ -113,6 +123,9 @@ public class CacheContentProvider extends ContentProvider {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void attachInfo(Context context, ProviderInfo info) {
 		CACHECONTENTPROVIDER_AUTHORITY = info.authority;
@@ -120,12 +133,18 @@ public class CacheContentProvider extends ContentProvider {
 		super.attachInfo(context, info);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onCreate() {
 		databaseHelper = new CacheContentProviderDatabaseHelper(getContext());
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		String hash = uri.getLastPathSegment();
@@ -141,11 +160,17 @@ public class CacheContentProvider extends ContentProvider {
 		return c;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getType(Uri uri) {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		SQLiteDatabase db = databaseHelper.getWritableDatabase();
@@ -159,6 +184,9 @@ public class CacheContentProvider extends ContentProvider {
 		throw new SQLException("Failed to insert row into " + uri);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		String hash = uri.getLastPathSegment();
@@ -175,6 +203,9 @@ public class CacheContentProvider extends ContentProvider {
 		return count;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 		String hash = uri.getLastPathSegment();

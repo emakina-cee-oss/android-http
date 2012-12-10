@@ -24,48 +24,90 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
+/**
+ * Base class for Database Adapter.
+ * 
+ * @param <T>
+ *            The type of the entity this adapter provides access to
+ */
 public abstract class DatabaseAdapter<T> implements IDataBaseAdapater<T> {
 	protected T dataObject;
 
 	protected List<T> bulkList;
 
+	/**
+	 * Allows passing a Dataobject of type {@link T}
+	 * 
+	 * @param dataObject
+	 *            a data object instance
+	 */
 	public DatabaseAdapter(T dataObject) {
 		this.dataObject = dataObject;
 	}
 
+	/**
+	 * Default constructor
+	 */
 	public DatabaseAdapter() {
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public abstract ContentValues serialize();
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public abstract T deserialize(Cursor c);
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public abstract int insert(Context c);
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public abstract int update(Context c);
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public abstract int delete(Context c);
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public T[] query(Context c, Object i) {
 		throw new UnsupportedOperationException("Query not implemented");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int commitBulkInsert(Context c) {
 		throw new UnsupportedOperationException("If you want to use bulkinsert, implement it.");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void startBulkInsert(int itemsToInsert) {
 		bulkList = new ArrayList<T>(itemsToInsert);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void startBulkInsert() {
 		if (bulkList != null) {
@@ -74,6 +116,9 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapater<T> {
 		bulkList = new ArrayList<T>();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addToBulkInsert(T dataObject) {
 		if (bulkList == null) {
@@ -82,6 +127,9 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapater<T> {
 		bulkList.add(dataObject);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addToBulkInsert(Cursor c) {
 		if (bulkList == null) {
@@ -91,7 +139,7 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapater<T> {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void addToBulkInsert(List<T> dataObjects) {
@@ -102,7 +150,7 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapater<T> {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void addToBulkInsert(T[] dataObjects) {
@@ -126,16 +174,25 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapater<T> {
 		return row;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public T getDataObject() {
 		return dataObject;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setDataObject(T dataObject) {
 		this.dataObject = dataObject;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setDataObject(Cursor c) {
 		this.dataObject = deserialize(c);

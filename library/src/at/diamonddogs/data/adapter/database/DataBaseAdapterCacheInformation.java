@@ -26,24 +26,54 @@ import at.diamonddogs.contentprovider.CacheContentProvider;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.exception.DatabaseAdapterException;
 
+/**
+ * Database Adapter for {@link CacheInformation}
+ */
 public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInformation> {
 
+	/** name of the table */
 	public static final String TABLE = "cache";
 
+	/** _id colum */
 	public static final String _ID = "_id";
+
+	/** creationtimestamp colum */
 	public static final String CREATIONTIMESTAMP = "creationtimestamp";
+
+	/** cachetime colum */
 	public static final String CACHETIME = "cachetime";
+
+	/** filename colum */
 	public static final String FILENAME = "filename";
+
+	/** filepath colum */
 	public static final String FILEPATH = "filepath";
 
+	/**
+	 * Sets dataObject to the {@link CacheInformation} item currently selected
+	 * in c
+	 * 
+	 * @param c
+	 *            the cursor used the create the dataObject. Make sure the
+	 *            cursor points to the correct item.
+	 */
 	public DataBaseAdapterCacheInformation(Cursor c) {
 		dataObject = deserialize(c);
 	}
 
+	/**
+	 * Allows passing a {@link CacheInformation} dataObject
+	 * 
+	 * @param dataObject
+	 *            a {@link CacheInformation} instance
+	 */
 	public DataBaseAdapterCacheInformation(CacheInformation dataObject) {
 		super(dataObject);
 	}
 
+	/**
+	 * Creates a new {@link CacheInformation} instance to act as dataObject
+	 */
 	public DataBaseAdapterCacheInformation() {
 		super(new CacheInformation());
 	}
@@ -79,6 +109,9 @@ public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInform
 		return dataObject;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public CacheInformation[] query(Context c, Object hash) {
 		Cursor cursor;
