@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.diamonddogs.net;
+package at.diamonddogs.exception;
 
 public class WebClientException extends RuntimeException {
 
 	private static final long serialVersionUID = 1602076872190690882L;
 
+	/**
+ * 
+ */
 	public WebClientException() {
 		super();
 	}

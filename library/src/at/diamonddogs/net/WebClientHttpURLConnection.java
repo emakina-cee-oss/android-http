@@ -36,6 +36,7 @@ import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
+import at.diamonddogs.exception.WebClientException;
 
 public class WebClientHttpURLConnection extends WebClient {
 
