@@ -18,7 +18,10 @@ package at.diamonddogs.data.parser;
 import org.json.JSONArray;
 
 /**
+ * Abstract proxy for parsing JSON arrays
  * 
+ * @param <OUTPUT>
+ *            the output object's type
  */
 public abstract class JSONArrayProxy<OUTPUT> extends ParserProxy<JSONArray, OUTPUT> {
 }

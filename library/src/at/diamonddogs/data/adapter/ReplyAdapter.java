@@ -18,53 +18,77 @@ package at.diamonddogs.data.adapter;
 import at.diamonddogs.data.dataobjects.Reply;
 import at.diamonddogs.data.dataobjects.Request;
 
+/**
+ * The {@link ReplyAdapter} holds the status, request, reply and a throwable
+ * object if applicable.
+ */
 public class ReplyAdapter {
+	/**
+	 * The status of the reply
+	 */
 	public enum Status {
-		OK, FAILED,
+		/** indicates that the request was successfully executed */
+		OK,
+		/** indicates that the request failed */
+		FAILED,
 	}
 
 	/**
 	 * Status of the request
 	 */
 	private Status status;
+
 	/**
 	 * Abitrary exception
 	 */
 	private Throwable throwable;
+
 	/**
 	 * The actual reply
 	 */
 	private Reply reply;
+
+	/**
+	 * The request that caused this reply
+	 */
 	private Request request;
 
+	@SuppressWarnings("javadoc")
 	public Status getStatus() {
 		return status;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setStatus(Status status) {
 		this.status = status;
 	}
 
+	@SuppressWarnings("javadoc")
 	public Throwable getThrowable() {
 		return throwable;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setThrowable(Throwable throwable) {
 		this.throwable = throwable;
 	}
 
+	@SuppressWarnings("javadoc")
 	public Reply getReply() {
 		return reply;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setReply(Reply reply) {
 		this.reply = reply;
 	}
 
+	@SuppressWarnings("javadoc")
 	public Request getRequest() {
 		return request;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setRequest(Request request) {
 		this.request = request;
 	}

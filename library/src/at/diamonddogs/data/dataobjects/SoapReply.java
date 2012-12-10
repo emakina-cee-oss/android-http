@@ -18,21 +18,38 @@ package at.diamonddogs.data.dataobjects;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 
 /**
- * 
+ * A SOAP reply
  */
 public class SoapReply extends WebReply {
 	private SoapSerializationEnvelope envelope;
 
+	/**
+	 * Uses a {@link WebReply}s data for this {@link SoapReply}
+	 * 
+	 * @param reply
+	 *            the reply whose data will be used for this {@link SoapReply}
+	 */
 	public SoapReply(WebReply reply) {
 		this.data = reply.data;
 		this.httpStatusCode = reply.httpStatusCode;
 		this.replyHeader = reply.replyHeader;
 	}
 
+	/**
+	 * Returns the SOAP envelope related to this reply
+	 * 
+	 * @return a {@link SoapSerializationEnvelope}
+	 */
 	public SoapSerializationEnvelope getEnvelope() {
 		return envelope;
 	}
 
+	/**
+	 * Sets the SOAP envelope related to this reply
+	 * 
+	 * @param envelope
+	 *            a {@link SoapSerializationEnvelope}
+	 */
 	public void setEnvelope(SoapSerializationEnvelope envelope) {
 		this.envelope = envelope;
 	}

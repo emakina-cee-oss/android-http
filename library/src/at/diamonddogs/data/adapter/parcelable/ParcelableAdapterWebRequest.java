@@ -21,11 +21,20 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Pair;
 import at.diamonddogs.data.dataobjects.TempFile;
+import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 
+/**
+ * Use this {@link ParcelableAdapterWebRequest} to parcel {@link WebReply}s
+ */
 public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
-
+	/**
+	 * Required by Parcelable mechanism
+	 * 
+	 * @param in
+	 *            the input parcel
+	 */
 	public ParcelableAdapterWebRequest(Parcel in) {
 		super(in);
 		dataObject.setProcessorId(in.readInt());
@@ -45,6 +54,13 @@ public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
 		dataObject.setRetryInterval(in.readInt());
 	}
 
+	/**
+	 * Constructs a {@link ParcelableAdapterWebRequest} from a given input
+	 * object
+	 * 
+	 * @param dataObject
+	 *            the object that should be made parcelable
+	 */
 	public ParcelableAdapterWebRequest(WebRequest dataObject) {
 		super(dataObject);
 	}
@@ -74,6 +90,9 @@ public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
 		dest.writeInt(dataObject.getRetryInterval());
 	}
 
+	/**
+	 * Required by Parcelable mechanism
+	 */
 	public static final Parcelable.Creator<ParcelableAdapterWebRequest> CREATOR = new Parcelable.Creator<ParcelableAdapterWebRequest>() {
 		public ParcelableAdapterWebRequest createFromParcel(Parcel in) {
 			return new ParcelableAdapterWebRequest(in);

@@ -17,8 +17,22 @@ package at.diamonddogs.data.dataobjects;
 
 import java.net.URL;
 
+/**
+ * Generalized interface for requests
+ */
 public interface Request {
+	/**
+	 * Returns the request's URL
+	 * 
+	 * @return a URL instance
+	 */
 	public URL getUrl();
 
+	/**
+	 * Gets the cache time of this request. Indicates how long the data of this
+	 * request will be cached before issuing the request again.
+	 * 
+	 * @return the cache time
+	 */
 	public long getCacheTime();
 }

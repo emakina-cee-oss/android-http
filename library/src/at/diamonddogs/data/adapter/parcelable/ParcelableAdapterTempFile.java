@@ -19,8 +19,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import at.diamonddogs.data.dataobjects.TempFile;
 
+/**
+ * Use this {@link ParcelableAdapter} to parcel {@link TempFile}s
+ */
 public class ParcelableAdapterTempFile extends ParcelableAdapter<TempFile> {
 
+	/**
+	 * Required by Parcelable mechanism
+	 * 
+	 * @param in
+	 *            the input parcel
+	 */
 	public ParcelableAdapterTempFile(Parcel in) {
 		super(in);
 		dataObject.setUrl(in.readString());
@@ -31,6 +40,12 @@ public class ParcelableAdapterTempFile extends ParcelableAdapter<TempFile> {
 		dataObject.setUseChecksum(in.readInt() == 0 ? false : true);
 	}
 
+	/**
+	 * Constructs a {@link ParcelableAdapterTempFile} from a given input object
+	 * 
+	 * @param dataObject
+	 *            the object that should be made parcelable
+	 */
 	public ParcelableAdapterTempFile(TempFile dataObject) {
 		super(dataObject);
 	}
@@ -50,6 +65,9 @@ public class ParcelableAdapterTempFile extends ParcelableAdapter<TempFile> {
 		return 0;
 	}
 
+	/**
+	 * Required by Parcelable mechanism
+	 */
 	public static final Parcelable.Creator<ParcelableAdapterTempFile> CREATOR = new Parcelable.Creator<ParcelableAdapterTempFile>() {
 		public ParcelableAdapterTempFile createFromParcel(Parcel in) {
 			return new ParcelableAdapterTempFile(in);

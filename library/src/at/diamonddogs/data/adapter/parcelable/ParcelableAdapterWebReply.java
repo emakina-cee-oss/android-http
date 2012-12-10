@@ -19,8 +19,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import at.diamonddogs.data.dataobjects.WebReply;
 
+/**
+ * Use this {@link ParcelableAdapter} to parcel {@link WebReply}s
+ */
 public class ParcelableAdapterWebReply extends ParcelableAdapter<WebReply> {
-
+	/**
+	 * Required by Parcelable mechanism
+	 * 
+	 * @param in
+	 *            the input parcel
+	 */
 	public ParcelableAdapterWebReply(Parcel in) {
 		super(in);
 		dataObject.setHttpStatusCode(in.readInt());
@@ -30,6 +38,12 @@ public class ParcelableAdapterWebReply extends ParcelableAdapter<WebReply> {
 		dataObject.setReplyHeader(readHeaderMap(in, dataObject.getReplyHeader()));
 	}
 
+	/**
+	 * Constructs a {@link ParcelableAdapterWebReply} from a given input object
+	 * 
+	 * @param dataObject
+	 *            the object that should be made parcelable
+	 */
 	public ParcelableAdapterWebReply(WebReply dataObject) {
 		super(dataObject);
 	}
@@ -48,6 +62,9 @@ public class ParcelableAdapterWebReply extends ParcelableAdapter<WebReply> {
 		writeHeaderMap(dest, dataObject.getReplyHeader());
 	}
 
+	/**
+	 * Required by Parcelable mechanism
+	 */
 	public static final Parcelable.Creator<ParcelableAdapterWebReply> CREATOR = new Parcelable.Creator<ParcelableAdapterWebReply>() {
 		public ParcelableAdapterWebReply createFromParcel(Parcel in) {
 			return new ParcelableAdapterWebReply(in);

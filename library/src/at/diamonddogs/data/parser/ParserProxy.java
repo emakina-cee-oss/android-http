@@ -16,20 +16,56 @@
 package at.diamonddogs.data.parser;
 
 /**
+ * General parser proxy, clean interface that can be used to (de)serialize data
  * 
+ * @param <INPUT>
+ *            the input type
+ * @param <OUTPUT>
+ *            the output type
  */
 public abstract class ParserProxy<INPUT, OUTPUT> {
+
+	/**
+	 * The dataObject to be converted to INPUT
+	 */
 	protected OUTPUT dataObject;
+
+	/**
+	 * The source
+	 */
 	protected INPUT dataSource;
 
+	/**
+	 * Serializes the dataObject into an INPUT object
+	 * 
+	 * @return the INPUT object
+	 */
 	public abstract INPUT serialize();
 
+	/**
+	 * Deserializes an input object into an output object
+	 * 
+	 * @param input
+	 *            the input object
+	 * @return the output object
+	 */
 	public abstract OUTPUT deserialize(INPUT input);
 
+	/**
+	 * Gets the dataObject
+	 * 
+	 * @return the dataObject
+	 */
 	public OUTPUT getDataObject() {
 		return dataObject;
 	}
 
+	/**
+	 * Sets the dataObject
+	 * 
+	 * @param dataObject
+	 *            the dataObject
+	 */
 	public void setDataObject(OUTPUT dataObject) {
 		this.dataObject = dataObject;
 	}

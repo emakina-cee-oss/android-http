@@ -17,32 +17,42 @@ package at.diamonddogs.data.dataobjects;
 
 import java.io.File;
 
+/**
+ * Represents a file to be uploaded
+ */
 public class UploadFile {
 
 	private String parameterName;
 	private String name;
+	/** the file to be uploaded */
 	private File file;
 
+	@SuppressWarnings("javadoc")
 	public String getParameterName() {
 		return parameterName;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setParameterName(String parameterName) {
 		this.parameterName = parameterName;
 	}
 
+	@SuppressWarnings("javadoc")
 	public String getName() {
 		return name;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	@SuppressWarnings("javadoc")
 	public File getFile() {
 		return file;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setFile(File file) {
 		this.file = file;
 	}

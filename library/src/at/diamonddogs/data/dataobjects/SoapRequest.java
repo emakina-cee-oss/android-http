@@ -18,18 +18,33 @@ package at.diamonddogs.data.dataobjects;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 
 /**
- * 
+ * {@link SoapRequest} represents a normal SOAP {@link WebRequest}
  */
 public class SoapRequest extends WebRequest {
+	/** the SOAP action */
 	private String soapAction;
+
+	/** the SOAP method */
 	private String methodName;
+
+	/** the SOAP namespace */
 	private String namespace;
+
+	/** the envelope related to this request */
 	private SoapSerializationEnvelope envelope;
 
+	/**
+	 * Default constructor
+	 */
 	public SoapRequest() {
 
 	}
 
+	/**
+	 * Creates a {@link SoapRequest} from a {@link WebRequest}
+	 * 
+	 * @param request
+	 */
 	public SoapRequest(WebRequest request) {
 		this.processorId = request.processorId;
 		this.url = request.url;
@@ -44,34 +59,42 @@ public class SoapRequest extends WebRequest {
 		this.postData = request.postData;
 	}
 
+	@SuppressWarnings("javadoc")
 	public String getSoapAction() {
 		return soapAction;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setSoapAction(String soapAction) {
 		this.soapAction = soapAction;
 	}
 
+	@SuppressWarnings("javadoc")
 	public String getMethodName() {
 		return methodName;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
 	}
 
+	@SuppressWarnings("javadoc")
 	public String getNamespace() {
 		return namespace;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setNamespace(String namespace) {
 		this.namespace = namespace;
 	}
 
+	@SuppressWarnings("javadoc")
 	public SoapSerializationEnvelope getEnvelope() {
 		return envelope;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setEnvelope(SoapSerializationEnvelope envelope) {
 		this.envelope = envelope;
 	}

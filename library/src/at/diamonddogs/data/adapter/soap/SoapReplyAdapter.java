@@ -30,7 +30,7 @@ import at.diamonddogs.data.dataobjects.SoapReply;
 import at.diamonddogs.data.dataobjects.WebReply;
 
 /**
- * 
+ * Packs an instace of {@link WebReply} into a soap envelope
  */
 public class SoapReplyAdapter {
 
@@ -71,6 +71,11 @@ public class SoapReplyAdapter {
 		envelope.parse(xp);
 	}
 
+	/**
+	 * Returns the {@link SoapReply} contained in this adapter
+	 * 
+	 * @return a {@link SoapReply}
+	 */
 	public SoapReply getReply() {
 		return reply;
 	}

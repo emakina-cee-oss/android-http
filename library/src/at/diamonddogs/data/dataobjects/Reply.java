@@ -15,6 +15,9 @@
  */
 package at.diamonddogs.data.dataobjects;
 
+/**
+ * Generalized interface for replies
+ */
 public interface Reply {
 
 }

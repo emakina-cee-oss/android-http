@@ -18,31 +18,43 @@ package at.diamonddogs.data.dataobjects;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Web reply representation
+ */
 public class WebReply implements Reply {
+	/** the http status code of this reply */
 	protected int httpStatusCode;
+	/** the data returned by the request */
 	protected byte[] data;
+	/** the header of the reply */
 	protected Map<String, List<String>> replyHeader;
 
+	@SuppressWarnings("javadoc")
 	public int getHttpStatusCode() {
 		return httpStatusCode;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setHttpStatusCode(int httpStatusCode) {
 		this.httpStatusCode = httpStatusCode;
 	}
 
+	@SuppressWarnings("javadoc")
 	public byte[] getData() {
 		return data;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setData(byte[] data) {
 		this.data = data;
 	}
 
+	@SuppressWarnings("javadoc")
 	public Map<String, List<String>> getReplyHeader() {
 		return replyHeader;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setReplyHeader(Map<String, List<String>> replyHeader) {
 		this.replyHeader = replyHeader;
 	}

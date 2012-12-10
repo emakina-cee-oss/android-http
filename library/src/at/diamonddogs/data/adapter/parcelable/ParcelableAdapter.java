@@ -30,12 +30,22 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Base class for any parcelable adapter. Allows seperation of data objects and
+ * parcelation code.
+ * 
+ * @param <T>
+ *            the type of object to be parceled
+ */
 public abstract class ParcelableAdapter<T> implements Parcelable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParcelableAdapter.class);
 
 	protected T dataObject;
 
+	/**
+	 * Default constructor
+	 */
 	public ParcelableAdapter() {
 	}
 
@@ -59,14 +69,44 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 		this.dataObject = dataObject;
 	}
 
+	/**
+	 * Returns the current data object
+	 * 
+	 * @return a data object
+	 */
 	public T getDataObject() {
 		return dataObject;
 	}
 
+	/**
+	 * Sets the current data object
+	 * 
+	 * @param dataObject
+	 *            a data object
+	 */
 	public void setDataObject(T dataObject) {
 		this.dataObject = dataObject;
 	}
 
+	/**
+	 * Creates an array of {@link ParcelableAdapter}s containing the data
+	 * objects provided by the input array. Each item of the input array will be
+	 * wrapped in an instance of {@link ParcelableAdapter}
+	 * 
+	 * @param <V>
+	 *            the type of the {@link ParcelableAdapter} to be used to wrap
+	 *            the data objects
+	 * @param parcelableAdapterClass
+	 *            the class object of the {@link ParcelableAdapter} specified by
+	 *            <V>
+	 * @param input
+	 *            an input array
+	 * @param output
+	 *            the output array. Should be empty, all objects will be
+	 *            overwritten by this method.
+	 * @return an array of {@link ParcelableAdapter} objects containing the data
+	 *         objects of input
+	 */
 	@SuppressWarnings("unchecked")
 	public <V extends ParcelableAdapter<T>> V[] getParcelableAdapterArray(Class<?> parcelableAdapterClass, T[] input, V[] output) {
 		if (input == null) {
@@ -92,6 +132,24 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 		return output;
 	}
 
+	/**
+	 * Same as
+	 * {@link ParcelableAdapter#getParcelableAdapterArray(Class, Object[], ParcelableAdapter[])}
+	 * , but the output will not be filled automatically.
+	 * 
+	 * @param <V>
+	 *            the type of the {@link ParcelableAdapter} to be used to wrap
+	 *            the data objects
+	 * @param parcelableAdapterClass
+	 *            the class object of the {@link ParcelableAdapter} specified by
+	 *            <V>
+	 * @param input
+	 *            an input array
+	 * @param output
+	 *            the output array. MUST NOT be empty
+	 * @return an array of {@link ParcelableAdapter} objects containing the data
+	 *         objects of input
+	 */
 	@SuppressWarnings("unchecked")
 	public <V extends ParcelableAdapter<T>> T[] getArrayFromParcelableArray(Parcelable[] input, T[] output) {
 		if (input == null) {
@@ -112,9 +170,6 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 		return output;
 	}
 
-	/**
-	 * @see writeStringMap
-	 */
 	protected void writeHeaderMap(Parcel dest, Map<String, List<String>> map) {
 		Set<String> k = map.keySet();
 		String[] keys = k.toArray(new String[k.size()]);

@@ -87,6 +87,13 @@ public interface IDataBaseAdapater<T> {
 	 */
 	public T[] query(Context c, Object input);
 
+	/**
+	 * Commits the current bulk insert
+	 * 
+	 * @param c
+	 *            a contect object
+	 * @return the number of items that were inserted into the database
+	 */
 	public int commitBulkInsert(Context c);
 
 	/**

@@ -15,15 +15,34 @@
  */
 package at.diamonddogs.data.dataobjects;
 
+/**
+ * Represents a temorary file
+ */
 public class TempFile {
+	/** the url of the file represented by this object */
 	private String url;
+
+	/** the file's checksum */
 	private String checksum;
+
+	/** the file's path */
 	private String path;
+
+	/** the date */
 	private long date;
+
+	/** the size of the file */
 	private int size;
+
+	/** controls wether the checksum will be used for validation */
 	private boolean useChecksum;
+
+	/** append data to an existing temp file */
 	private boolean append;
 
+	/**
+	 * Default constructor
+	 */
 	public TempFile() {
 		url = new String();
 		checksum = new String();
@@ -34,58 +53,72 @@ public class TempFile {
 		append = false;
 	}
 
+	@SuppressWarnings("javadoc")
 	public boolean isAppend() {
 		return append;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setAppend(boolean append) {
 		this.append = append;
 	}
 
+	@SuppressWarnings("javadoc")
 	public boolean isUseChecksum() {
 		return useChecksum;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setUseChecksum(boolean useChecksum) {
 		this.useChecksum = useChecksum;
 	}
 
+	@SuppressWarnings("javadoc")
 	public int getSize() {
 		return size;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setSize(int size) {
 		this.size = size;
 	}
 
+	@SuppressWarnings("javadoc")
 	public String getPath() {
 		return path;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setPath(String path) {
 		this.path = path;
 	}
 
+	@SuppressWarnings("javadoc")
 	public String getUrl() {
 		return url;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
+	@SuppressWarnings("javadoc")
 	public String getChecksum() {
 		return checksum;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setChecksum(String checksum) {
 		this.checksum = checksum;
 	}
 
+	@SuppressWarnings("javadoc")
 	public long getDate() {
 		return date;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setDate(long date) {
 		this.date = date;
 	}
