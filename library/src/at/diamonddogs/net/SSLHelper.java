@@ -41,7 +41,9 @@ import org.slf4j.LoggerFactory;
 import android.content.Context;
 
 /**
+ * Enables SSL sockets on all included {@link WebClient}
  * 
+ * TODO: save 2 SSL states, one for each {@link WebClient}
  */
 public class SSLHelper {
 
@@ -49,13 +51,26 @@ public class SSLHelper {
 	private static SSLHelper INSTANCE;
 	private SSLState sslState;
 
+	/**
+	 * Stores the SSL factory for the apache {@link WebClient} ->
+	 * {@link WebClientDefaultHttpClient}
+	 */
 	public SSLSocketFactory SSL_FACTORY_APACHE = null;
 
+	/**
+	 * Stores the SSL factory for the Java {@link WebClient} ->
+	 * {@link WebClientHttpURLConnection}
+	 */
 	public javax.net.ssl.SSLSocketFactory SSL_FACTORY_JAVA = null;
 
 	private SSLHelper() {
 	}
 
+	/**
+	 * Singleton SSLHelper
+	 * 
+	 * @return the singleton {@link SSLHelper} instance
+	 */
 	public static SSLHelper getInstance() {
 
 		synchronized (SSLHelper.class) {
@@ -69,6 +84,17 @@ public class SSLHelper {
 		}
 	}
 
+	/**
+	 * Register a keystore with SSL (APACHE)
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param resourceId
+	 *            the resource id of the keystore
+	 * @param password
+	 *            the password of the keystore
+	 * @return true on success, false otherwise
+	 */
 	public boolean initSSLFactoryApache(Context c, int resourceId, String password) {
 		try {
 			if (c == null || resourceId == -1 || password == null) {
@@ -107,6 +133,17 @@ public class SSLHelper {
 		SSL_FACTORY_APACHE = new AllTrustingApacheSSLFactory(null);
 	}
 
+	/**
+	 * Register a keystore with SSL (JAVA)
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param resourceId
+	 *            the resource id of the keystore
+	 * @param password
+	 *            the password of the keystore
+	 * @return true on success, false otherwise
+	 */
 	public boolean initSSLFactoryJava(Context c, int resourceId, String password) {
 		try {
 			if (c == null || resourceId == -1 || password == null) {
@@ -166,13 +203,31 @@ public class SSLHelper {
 		return localTrustStore;
 	}
 
+	/**
+	 * Gets the SSL state
+	 * 
+	 * @return
+	 */
 	public SSLState getSslState() {
 		return sslState;
 	}
 
+	/**
+	 * All trusting SSL factory for APACHE
+	 */
 	public final class AllTrustingApacheSSLFactory extends SSLSocketFactory {
 		SSLContext sslContext = SSLContext.getInstance("TLS");
 
+		/**
+		 * Constructor
+		 * 
+		 * @param truststore
+		 *            the truststore
+		 * @throws NoSuchAlgorithmException
+		 * @throws KeyManagementException
+		 * @throws KeyStoreException
+		 * @throws UnrecoverableKeyException
+		 */
 		public AllTrustingApacheSSLFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException,
 				UnrecoverableKeyException {
 			super(truststore);
@@ -190,10 +245,17 @@ public class SSLHelper {
 		}
 	}
 
+	/**
+	 * SSL State representation
+	 */
 	public static final class SSLState {
+		/** exception that made SSL impossible to initialized */
 		public Throwable tr;
+		/** exception that made SSL impossible to initialized */
 		public Throwable tr1;
+		/** indicates if we trust all SSL connections */
 		public boolean trustAll = true;
+		/** has SSL been initialized correctly? */
 		public boolean sslOk = true;
 
 		@Override

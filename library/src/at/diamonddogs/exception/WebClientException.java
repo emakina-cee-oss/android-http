@@ -15,25 +15,42 @@
  */
 package at.diamonddogs.exception;
 
+import at.diamonddogs.net.WebClient;
+
+/**
+ * An {@link Exception} thrown by {@link WebClient}s
+ */
 public class WebClientException extends RuntimeException {
 
 	private static final long serialVersionUID = 1602076872190690882L;
 
 	/**
- * 
- */
+	 * Default Constructor
+	 */
 	public WebClientException() {
 		super();
 	}
 
+	/**
+	 * @param detailMessage
+	 * @param throwable
+	 */
 	public WebClientException(String detailMessage, Throwable throwable) {
 		super(detailMessage, throwable);
 	}
 
+	/**
+	 * 
+	 * @param detailMessage
+	 */
 	public WebClientException(String detailMessage) {
 		super(detailMessage);
 	}
 
+	/**
+	 * 
+	 * @param throwable
+	 */
 	public WebClientException(Throwable throwable) {
 		super(throwable);
 	}
