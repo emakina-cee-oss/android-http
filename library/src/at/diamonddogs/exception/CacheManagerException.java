@@ -16,12 +16,15 @@
 package at.diamonddogs.exception;
 
 /**
- * 
+ * Exception that is thrown by methods in the {@link CacheManager}
  */
 public class CacheManagerException extends RuntimeException {
 
 	private static final long serialVersionUID = 7998201261483081071L;
 
+	/**
+	 * Default constructor
+	 */
 	public CacheManagerException() {
 	}
 
@@ -40,6 +43,7 @@ public class CacheManagerException extends RuntimeException {
 	}
 
 	/**
+	 * 
 	 * @param detailMessage
 	 * @param throwable
 	 */

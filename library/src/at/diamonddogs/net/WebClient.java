@@ -38,22 +38,48 @@ import at.diamonddogs.data.dataobjects.TempFile;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 
+/**
+ * An abstract {@link WebClient} to be used when implementing new
+ * {@link WebClient} flavours
+ */
 public abstract class WebClient implements Runnable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebClient.class);
 
+	/**
+	 * The read buffer size
+	 */
+	private static final int READ_BUFFER_SIZE = 4096;
+
+	/**
+	 * The {@link WebRequest} executed by this {@link WebClient}
+	 */
 	protected WebRequest webRequest = null;
 
+	/**
+	 * The listener that will be informed once a {@link WebReply} has been
+	 * received
+	 */
 	protected WebClientReplyListener webClientReplyListener;
 
+	/**
+	 * A {@link DownloadProgressListener} that will receive progress updated
+	 */
 	private DownloadProgressListener downloadProgressListener;
 
-	private static final int READ_BUFFER_SIZE = 4096;
+	/**
+	 * Allow protocol redirects (http -> https / http -> https / etc)
+	 */
+	protected boolean followProtocolRedirect;
 
 	protected abstract void buildHeader();
 
-	protected boolean followProtocolRedirect;
-
+	/**
+	 * Constructs a {@link WebClient}
+	 * 
+	 * @param context
+	 *            a context
+	 */
 	public WebClient(Context context) {
 
 		try {
@@ -76,6 +102,11 @@ public abstract class WebClient implements Runnable {
 		return getData(i, reply);
 	}
 
+	/**
+	 * Returns the {@link WebRequest} related to this {@link WebClient}
+	 * 
+	 * @return a {@link WebRequest}
+	 */
 	public WebRequest getWebRequest() {
 		return webRequest;
 	}
@@ -205,25 +236,57 @@ public abstract class WebClient implements Runnable {
 		return listenerReply;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setDownloadProgressListener(DownloadProgressListener downloadProgressListener) {
 		this.downloadProgressListener = downloadProgressListener;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setListener(WebClientReplyListener listener) {
 		this.webClientReplyListener = listener;
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setWebRequest(WebRequest webRequest) {
 		this.webRequest = webRequest;
 	}
 
+	/**
+	 * Interface that needs to be implemented by every class that wished to
+	 * receive {@link WebReply} notifications
+	 */
 	public interface WebClientReplyListener {
+		/**
+		 * Called by {@link WebClient} once a {@link WebReply} has been received
+		 * 
+		 * @param webClient
+		 *            the client that called
+		 *            {@link WebClientReplyListener#onWebReply(WebClient, ReplyAdapter)}
+		 * @param reply
+		 *            the {@link ReplyAdapter} created by the {@link WebClient}
+		 */
 		public void onWebReply(WebClient webClient, ReplyAdapter reply);
 	}
 
+	/**
+	 * Interface that needs to be implemented by every class that wishes to
+	 * receive download progress updates
+	 */
 	public interface DownloadProgressListener {
+		/**
+		 * Informs listeners about the content length (if available)
+		 * 
+		 * @param size
+		 *            the size in byte
+		 */
 		public void downloadSize(long size);
 
+		/**
+		 * Informs listeners about the bytes read
+		 * 
+		 * @param progress
+		 *            bytes read
+		 */
 		public void downloadProgress(long progress);
 	}
 
@@ -232,40 +295,75 @@ public abstract class WebClient implements Runnable {
 	 * implementations and we want to have a common class with constants.
 	 */
 	public static final class HTTPStatus {
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_OK = 200;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_CREATED = 201;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_ACCEPTED = 202;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_NOT_AUTHORITATIVE = 203;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_NO_CONTENT = 204;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_RESET = 205;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_PARTIAL = 206;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_MULT_CHOICE = 300;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_MOVED_PERM = 301;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_MOVED_TEMP = 302;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_SEE_OTHER = 303;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_NOT_MODIFIED = 304;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_USE_PROXY = 305;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_BAD_REQUEST = 400;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_UNAUTHORIZED = 401;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_PAYMENT_REQUIRED = 402;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_FORBIDDEN = 403;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_NOT_FOUND = 404;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_BAD_METHOD = 405;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_NOT_ACCEPTABLE = 406;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_PROXY_AUTH = 407;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_CLIENT_TIMEOUT = 408;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_CONFLICT = 409;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_GONE = 410;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_LENGTH_REQUIRED = 411;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_PRECON_FAILED = 412;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_ENTITY_TOO_LARGE = 413;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_REQ_TOO_LONG = 414;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_UNSUPPORTED_TYPE = 415;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_INTERNAL_ERROR = 500;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_NOT_IMPLEMENTED = 501;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_BAD_GATEWAY = 502;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_UNAVAILABLE = 503;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_GATEWAY_TIMEOUT = 504;
+		@SuppressWarnings("javadoc")
 		public static final int HTTP_VERSION = 505;
 	}
 }

@@ -15,25 +15,40 @@
  */
 package at.diamonddogs.exception;
 
+import at.diamonddogs.data.adapter.database.DatabaseAdapter;
+
 /**
- * 
+ * An exception related to {@link DatabaseAdapter}s
  */
 public class DatabaseAdapterException extends RuntimeException {
 
 	private static final long serialVersionUID = 2963839858522944516L;
 
+	/**
+	 * Default constructor
+	 */
 	public DatabaseAdapterException() {
 		super();
 	}
 
+	/**
+	 * @param detailMessage
+	 * @param throwable
+	 */
 	public DatabaseAdapterException(String detailMessage, Throwable throwable) {
 		super(detailMessage, throwable);
 	}
 
+	/**
+	 * @param detailMessage
+	 */
 	public DatabaseAdapterException(String detailMessage) {
 		super(detailMessage);
 	}
 
+	/**
+	 * @param throwable
+	 */
 	public DatabaseAdapterException(Throwable throwable) {
 		super(throwable);
 	}

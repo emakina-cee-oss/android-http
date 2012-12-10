@@ -332,7 +332,11 @@ public class WebRequest implements Request {
 	}
 
 	/**
+	 * 
 	 * Will only be used if uploadfile is set.
+	 * 
+	 * @param postValues
+	 *            post values
 	 */
 	public void setPostValues(List<Pair<String, String>> postValues) {
 		this.postValues = postValues;

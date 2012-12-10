@@ -23,12 +23,21 @@ import android.os.Build;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 
+/**
+ * The {@link WebClientFactory} returns the appropriate {@link WebClient} for a
+ * {@link WebRequest}, judgeing by parameters and Android Version
+ */
 public class WebClientFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebClientFactory.class);
 
 	private static WebClientFactory INSTANCE = null;
 
+	/**
+	 * Singleton getInstance() method
+	 * 
+	 * @return a singleton instance of {@link WebClientFactory}
+	 */
 	public synchronized static WebClientFactory getInstance() {
 		if (INSTANCE == null) {
 			INSTANCE = new WebClientFactory();
@@ -37,10 +46,16 @@ public class WebClientFactory {
 	}
 
 	/**
+	 * 
 	 * Returns the most stable network client most suitable for the current
 	 * android platform
 	 * 
-	 * @return an NetworkClient
+	 * @param webRequest
+	 *            the {@link WebRequest} to obtain a {@link WebClient} for
+	 * @param context
+	 *            a {@link Context}
+	 * @return a {@link WebClient}
+	 * 
 	 */
 	public WebClient getNetworkClient(WebRequest webRequest, Context context) {
 		WebClient client = null;
@@ -59,6 +74,13 @@ public class WebClientFactory {
 		return client;
 	}
 
+	/**
+	 * Checks if the {@link WebRequest} has post data
+	 * 
+	 * @param wr
+	 *            the {@link WebRequest} to check
+	 * @return true or false, depending on the presence of post data
+	 */
 	public boolean isPostWithData(WebRequest wr) {
 		return wr.getRequestType() == Type.POST && (wr.getPostData() != null || wr.getPostValues() != null);
 	}
