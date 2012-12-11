@@ -20,3 +20,5 @@ The framework is designed to send, receive, process and publish webrequests and 
 ## License
 Apache License, Version 2.0. Please refer to LICENSE and NOTICE for additional information.
 
+## Example
+Example code illustrating a simple web request can be found in the example/ directory.
