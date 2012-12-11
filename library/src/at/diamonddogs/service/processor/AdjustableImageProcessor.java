@@ -26,21 +26,29 @@ import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+/**
+ * A processor that handles image post processing
+ */
 public class AdjustableImageProcessor extends ImageProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdjustableImageProcessor.class.getSimpleName());
 
 	private int ID = -1;
-	// private BitmapFactory.Options options;
 
 	private Context context;
 
-	// private boolean forceDownsampling;
 	private Bitmap.Config config;
 
+	/**
+	 * Default constructor
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 * @param config
+	 *            the bitm
+	 */
 	public AdjustableImageProcessor(Context context, Bitmap.Config config) {
 		useMemCache = false;
-		// forceDownsampling = false;
 		this.context = context;
 		this.config = config;
 	}
@@ -70,7 +78,7 @@ public class AdjustableImageProcessor extends ImageProcessor {
 
 	// thanks to android training lessons for the code
 	// http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
-	public Bitmap decodeSampledBitmapFromResource(byte[] data, int reqWidth, int reqHeight) {
+	private Bitmap decodeSampledBitmapFromResource(byte[] data, int reqWidth, int reqHeight) {
 
 		// First decode with inJustDecodeBounds=true to check dimensions
 		final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -83,8 +91,6 @@ public class AdjustableImageProcessor extends ImageProcessor {
 		// Decode bitmap with inSampleSize set
 		options.inJustDecodeBounds = false;
 		try {
-			// if (forceDownsampling) {
-			// LOGGER.error("forcing downsampling");
 			if (options != null) {
 				options.inPreferredConfig = config;
 				options.inDither = true;
@@ -92,14 +98,13 @@ public class AdjustableImageProcessor extends ImageProcessor {
 			return BitmapFactory.decodeByteArray(data, 0, data.length, options);
 		} catch (OutOfMemoryError e) {
 			System.gc();
-			// forceDownsampling = true;
 			LOGGER.error("OutOfMemoryError", e);
 			return null;
 		}
 
 	}
 
-	public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+	private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
 		// Raw height and width of image
 		final int height = options.outHeight;
 		final int width = options.outWidth;

@@ -19,7 +19,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 /**
+ * Abstract {@link ServiceProcessor} that should be used to process
+ * {@link JSONArray}s
  * 
+ * @param <OUTPUT>
+ *            the type of the output object that is constructed from the input
+ *            {@link JSONArray}
  */
 public abstract class JSONArrayProcessor<OUTPUT> extends DataProcessor<JSONArray, OUTPUT> {
 

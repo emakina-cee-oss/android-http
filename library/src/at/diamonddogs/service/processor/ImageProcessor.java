@@ -40,18 +40,34 @@ import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.exception.ProcessorExeception;
 import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.CacheManager.CachedObject;
 import at.diamonddogs.util.Utils;
 
+/**
+ * This processor should be used if the data returned by the {@link WebRequest}
+ * contains an image. This {@link ServiceProcessor} handles caching and handles
+ * image creation.
+ */
 public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 
+	/**
+	 * The processor id
+	 */
 	public static final int ID = 13452;
 
+	/**
+	 * {@link Bundle} key that is used to store the image
+	 */
 	public static final String BUNDLE_EXTRA_BITMAP = "BUNDLE_EXTRA_BITMAP";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessor.class);
 
+	/**
+	 * Determines if the request should be stored in memory, might cause OOM
+	 * errors if the image is very large
+	 */
 	protected boolean useMemCache = true;
 
 	@Override
@@ -139,6 +155,16 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		return c;
 	}
 
+	/**
+	 * Returns the absolute path of an image file as stored on the SDCard
+	 * 
+	 * @param url
+	 *            the url of the image file (web url)
+	 * @param context
+	 *            a {@link Context}
+	 * @return the absolute path of the image file on the file system or null if
+	 *         it does not exist
+	 */
 	public static String getImageFileUrl(String url, Context context) {
 		String filename = Utils.getMD5Hash(url);
 		File dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -179,6 +205,12 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		return m;
 	}
 
+	/**
+	 * Constructs a default image {@link WebRequest}
+	 * 
+	 * @param url
+	 * @return
+	 */
 	public static WebRequest getDefaultImageRequest(String url) {
 		WebRequest wr = new WebRequest();
 		wr.setUrl(url);
@@ -187,12 +219,27 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		return wr;
 	}
 
+	/**
+	 * A default {@link Handler} for image {@link WebRequest} will take care of
+	 * displaying the image on an {@link ImageView}
+	 */
 	public static class ImageProcessHandler extends Handler {
 		protected ImageView imageView;
 		private String url;
 		private Animation fadeInAnimation;
 		private boolean useDrawingCache = false;
 
+		/**
+		 * Constructor
+		 * 
+		 * @param imageView
+		 *            the {@link ImageView} the image should be displayed on
+		 * @param url
+		 *            the of the image, will be set as {@link ImageView} tag in
+		 *            order to identify the correct {@link ImageView}
+		 * @param fadeInAnimation
+		 *            an optional {@link Animation}
+		 */
 		public ImageProcessHandler(ImageView imageView, String url, Animation fadeInAnimation) {
 			if (imageView == null) {
 				throw new IllegalArgumentException("ImageView must not be null");
@@ -203,18 +250,52 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 			this.url = url;
 		}
 
+		/**
+		 * Convenience constructor for {@link URL} url types
+		 * 
+		 * @param imageView
+		 *            the {@link ImageView} the image should be displayed on
+		 * @param url
+		 *            the of the image, will be set as {@link ImageView} tag in
+		 *            order to identify the correct {@link ImageView}
+		 * @param fadeInAnimation
+		 *            an optional {@link Animation}
+		 */
 		public ImageProcessHandler(ImageView imageView, URL url, Animation fadeInAnimation) {
 			this(imageView, url.toString(), fadeInAnimation);
 		}
 
+		/**
+		 * Convenience constructor that causes {@link ImageProcessHandler} to
+		 * use a default animation and {@link URL} type
+		 * 
+		 * @param imageView
+		 *            the {@link ImageView} the image should be displayed on
+		 * @param url
+		 *            the of the image, will be set as {@link ImageView} tag in
+		 *            order to identify the correct {@link ImageView}
+		 */
 		public ImageProcessHandler(ImageView imageView, URL url) {
 			this(imageView, url.toString(), AnimationUtils.loadAnimation(imageView.getContext(), android.R.anim.fade_in));
 		}
 
+		/**
+		 * Convenience constructor that causes {@link ImageProcessHandler} to
+		 * use a default animation
+		 * 
+		 * @param imageView
+		 *            the {@link ImageView} the image should be displayed on
+		 * @param url
+		 *            the of the image, will be set as {@link ImageView} tag in
+		 *            order to identify the correct {@link ImageView}
+		 */
 		public ImageProcessHandler(ImageView imageView, String url) {
 			this(imageView, url, AnimationUtils.loadAnimation(imageView.getContext(), android.R.anim.fade_in));
 		}
 
+		/**
+		 * Enables the drawing cache of the {@link ImageView}
+		 */
 		public void enableDrawingCache() {
 			useDrawingCache = true;
 		}

@@ -37,6 +37,9 @@ import at.diamonddogs.data.dataobjects.WebRequest;
 /**
  * Xml processor for replies that cannot be handled using a DOM (mostly due to
  * memory issues)
+ * 
+ * @param <T>
+ *            the output type
  */
 public abstract class XMLProcessorNoDom<T> extends ServiceProcessor {
 
@@ -51,6 +54,13 @@ public abstract class XMLProcessorNoDom<T> extends ServiceProcessor {
 	 */
 	protected XmlProcessorNoDomHandler xmlHandler;
 
+	/**
+	 * Sets the {@link XmlProcessorNoDomHandler} that will be used to parse the
+	 * XML
+	 * 
+	 * @param handler
+	 *            the {@link XmlProcessorNoDomHandler}
+	 */
 	public void setXmlHandler(XmlProcessorNoDomHandler handler) {
 		try {
 			xmlHandler = handler;
@@ -78,7 +88,15 @@ public abstract class XMLProcessorNoDom<T> extends ServiceProcessor {
 
 	protected abstract Message createReturnMessage(T data);
 
+	/**
+	 * Wrapper for {@link DefaultHandler} that allows obtaining the data object
+	 */
 	public abstract class XmlProcessorNoDomHandler extends DefaultHandler {
+		/**
+		 * Gets the data object created by the handler
+		 * 
+		 * @return the data object
+		 */
 		public abstract T getData();
 	}
 }

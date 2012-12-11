@@ -21,7 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Abstract {@link ServiceProcessor} that should be used to process
+ * {@link JSONObject}s
  * 
+ * @param <OUTPUT>
+ *            the type of the data object that will be constructed from the
+ *            {@link JSONObject} input object
  */
 public abstract class JSONProcessor<OUTPUT> extends DataProcessor<JSONObject, OUTPUT> {
 

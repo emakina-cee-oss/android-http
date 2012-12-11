@@ -13,24 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.diamonddogs.service.processor;
+package at.diamonddogs.exception;
 
+import at.diamonddogs.service.processor.ServiceProcessor;
+
+/**
+ * A {@link RuntimeException} thrown by {@link ServiceProcessor}s
+ */
 public class ProcessorExeception extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Default constructor
+	 */
 	public ProcessorExeception() {
 		super();
 	}
 
+	/**
+	 * @param detailMessage
+	 * @param throwable
+	 */
 	public ProcessorExeception(String detailMessage, Throwable throwable) {
 		super(detailMessage, throwable);
 	}
 
+	/**
+	 * @param detailMessage
+	 */
 	public ProcessorExeception(String detailMessage) {
 		super(detailMessage);
 	}
 
+	/**
+	 * @param throwable
+	 */
 	public ProcessorExeception(Throwable throwable) {
 		super(throwable);
 	}

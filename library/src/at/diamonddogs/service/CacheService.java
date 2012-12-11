@@ -23,11 +23,21 @@ import android.content.Intent;
 import android.os.IBinder;
 import at.diamonddogs.util.Utils;
 
+/**
+ * Kills the cache cleaning process if the process is not visible to the user
+ */
 public class CacheService extends Service {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CacheService.class.getSimpleName());
+
+	/**
+	 * Argument key
+	 */
 	public static final String INTENT_EXTRA_START_ARGUMENT = "INTENT_EXTRA_START_ARGUMENT";
 
+	/**
+	 * Argument value that kills the {@link CacheService} process
+	 */
 	public static final int INTENT_EXTRA_KILL_PROCESS = 0;
 
 	@Override

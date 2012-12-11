@@ -37,6 +37,10 @@ import at.diamonddogs.util.CacheManager.CachedObject;
 public class DummyProcessor extends ServiceProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DummyProcessor.class.getSimpleName());
+
+	/**
+	 * The processors ID
+	 */
 	public static final int ID = 91591;
 
 	@Override

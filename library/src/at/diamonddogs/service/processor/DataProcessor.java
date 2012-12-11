@@ -28,7 +28,15 @@ import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.Utils;
 
 /**
+ * Base class for data processing
  * 
+ * @param <INPUT>
+ *            the input object type that will be created from the byte array
+ *            returned by a {@link WebRequest}. Examples: JSONArray, JSONObject,
+ *            etc
+ * @param <OUTPUT>
+ *            The output object that will be created from the input object,
+ *            usually a POJO
  */
 public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor {
 

@@ -26,8 +26,13 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import at.diamonddogs.exception.ProcessorExeception;
+
 /**
- *
+ * Abstract processor for DOM based XML parsing
+ * 
+ * @param <OUTPUT>
+ *            the type of the output object
  */
 public abstract class XMLProcessor<OUTPUT> extends DataProcessor<Document, OUTPUT> {
 

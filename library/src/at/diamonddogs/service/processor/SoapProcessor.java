@@ -33,12 +33,20 @@ import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.util.SoapUtil;
 
 /**
+ * Abstract base class for SOAP requests
  * 
+ * @param <T>
+ *            the output object
  */
 public abstract class SoapProcessor<T> extends ServiceProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoapProcessor.class);
 
+	/**
+	 * This method should not be overridden, will pre-process a SOAP reply and
+	 * coordinate callbacks and direct processing output to the appropriate
+	 * {@link Handler}
+	 */
 	@Override
 	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
 		if (r.getStatus() == Status.OK) {
@@ -75,11 +83,46 @@ public abstract class SoapProcessor<T> extends ServiceProcessor {
 		}
 	}
 
+	/**
+	 * Called when the SOAP result is null
+	 * 
+	 * @param wr
+	 *            the {@link WebRequest}
+	 * @return a message Object
+	 */
 	protected abstract Message processSoapNull(ReplyAdapter wr);
 
+	/**
+	 * Called when a SOAP result should be processed
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param wr
+	 *            a {@link WebRequest}
+	 * @param o
+	 *            the {@link SoapObject} created by
+	 *            {@link SoapProcessor#processWebReply(Context, ReplyAdapter, Handler)}
+	 * @return an output object of type T
+	 */
 	protected abstract T processSoapReply(Context c, ReplyAdapter wr, SoapObject o);
 
+	/**
+	 * Called if the result is a {@link SoapFault}
+	 * 
+	 * @param wr
+	 *            the {@link WebRequest}
+	 * @param fault
+	 *            the {@link SoapFault}
+	 * @return a {@link Message}
+	 */
 	protected abstract Message processSoapFault(ReplyAdapter wr, SoapFault fault);
 
+	/**
+	 * Called when a return {@link Message} needs to be created
+	 * 
+	 * @param returnType
+	 *            the output object created by the processor
+	 * @return a {@link Message}
+	 */
 	protected abstract Message createReturnMessage(T returnType);
 }
