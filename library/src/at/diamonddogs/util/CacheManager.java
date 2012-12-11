@@ -40,24 +40,43 @@ import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.exception.CacheManagerException;
 import at.diamonddogs.service.CacheService;
 
+/**
+ * This class manages the file system and memory cache. Please use this class
+ * instead of writing to the file system and database directly
+ */
 public class CacheManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CacheManager.class);
 
+	/**
+	 * Holds singleton instance
+	 */
 	private static CacheManager INSTANCE;
 
-	private static final int CACHE_SIZE_MAX = 20;
-
-	private LruCache<String, CacheItem> cache;
-
+	/**
+	 * Cache cleaning scheduling {@link Integer} action
+	 */
 	public static final String ACTION_INTENT_SCHEDULE_CACHE = "at.diamonddogs.action.schedule.cache";
 
+	/**
+	 * Max cache entries
+	 */
+	private static final int CACHE_SIZE_MAX_ENTRIES = 20;
+
+	/**
+	 * The {@link LruCache} that will be used as an in memory cache
+	 */
+	private LruCache<String, CacheItem> cache;
+
 	private CacheManager() {
-		// cache = new ConcurrentLRUCache<String,
-		// CacheManager.CacheItem>(CACHE_SIZE_MAX, CACHE_SIZE_INITIAL);
-		cache = new LruCache<String, CacheManager.CacheItem>(CACHE_SIZE_MAX);
+		cache = new LruCache<String, CacheManager.CacheItem>(CACHE_SIZE_MAX_ENTRIES);
 	}
 
+	/**
+	 * Obtains the {@link CacheManager} singleton instance
+	 * 
+	 * @return an instance of {@link CacheManager}
+	 */
 	public static synchronized CacheManager getInstance() {
 		if (INSTANCE == null) {
 			INSTANCE = new CacheManager();
@@ -65,11 +84,29 @@ public class CacheManager {
 		return INSTANCE;
 	}
 
+	/**
+	 * Adds data to the cache
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 * @param cacheInformation
+	 *            the information related to the object that gets cached
+	 */
 	public void addToCache(Context context, CacheInformation cacheInformation) {
 		DataBaseAdapterCacheInformation dbaci = new DataBaseAdapterCacheInformation(cacheInformation);
 		dbaci.insert(context);
 	}
 
+	/**
+	 * Retrieves an item from the cache. Memory cache has precedence over file
+	 * cache
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param request
+	 *            the request whose data is cached
+	 * @return a cached item
+	 */
 	public CachedObject getFromCache(Context c, Request request) {
 		try {
 			return getFromMemoryCache(c, request);
@@ -87,17 +124,36 @@ public class CacheManager {
 		}
 	}
 
+	/**
+	 * Adds an item to the memory cache.
+	 * 
+	 * @param fileUrl
+	 *            the url of the file
+	 * @param tag
+	 *            a tag (used to group cached items)
+	 * @param data
+	 *            the data to be cached
+	 */
 	public void addToMemoryCache(String fileUrl, Object tag, Object data) {
 		cache.put(fileUrl, new CacheItem(tag, data));
 		LOGGER.debug("new cache size: " + cache.size());
 	}
 
+	/**
+	 * Evicts all items from the memory cache
+	 */
 	public void clearMemoryCache() {
-		// cache.clear();
 		cache.evictAll();
 		LOGGER.debug("Manually cleaned complete cache.");
 	}
 
+	/**
+	 * Evicts all items with a specific tag from the memory cache
+	 * 
+	 * @param tag
+	 *            an arbitrary tag, see
+	 *            {@link CacheManager#addToMemoryCache(String, Object, Object)}
+	 */
 	public void clearMemoryCache(Object tag) {
 		Iterator<Entry<String, CacheItem>> i = cache.getMap().entrySet().iterator();
 		int count = 0;
@@ -153,6 +209,14 @@ public class CacheManager {
 		}
 	}
 
+	/**
+	 * Deleted expired files from the file cache
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @return <code>true</code> if the file cache was cleaned successfully,
+	 *         <code>false</code> otherwise
+	 */
 	public boolean cleanExpired(Context c) {
 		DataBaseAdapterCacheInformation dbaci = new DataBaseAdapterCacheInformation();
 		CacheInformation[] cacheInformation = dbaci.query(c, null);
@@ -185,6 +249,13 @@ public class CacheManager {
 		return (System.currentTimeMillis() - creationTime) >= cacheTime;
 	}
 
+	/**
+	 * Turn on scheduled cache cleaning (cache will be cleaned even if app is
+	 * not running)
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 */
 	public void enableScheduledCacheCleaner(Context context) {
 		AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		// @formatter:off
@@ -198,6 +269,12 @@ public class CacheManager {
 		LOGGER.info("Cache cleaning alarm has been set.");
 	}
 
+	/**
+	 * Turn off scheduled cache cleaning
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 */
 	public void disableScheduledCacheCleaner(Context context) {
 		AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		am.cancel(getAlarmIntent(context));
@@ -211,23 +288,47 @@ public class CacheManager {
 		return pi;
 	}
 
+	/**
+	 * Representation of a cached object. Includes the actual object and
+	 * metadata
+	 */
 	public static final class CachedObject {
+		/**
+		 * Cache source
+		 */
 		public enum From {
-			MEMORY, FILE
+			/**
+			 * {@link CachedObject} was obtained from memory
+			 */
+			MEMORY,
+			/**
+			 * {@link CachedObject} was obtained from the file system
+			 */
+			FILE
 		}
 
 		private Object cachedObject;
 		private From from;
 
+		/**
+		 * Constructor
+		 * 
+		 * @param cachedObject
+		 *            the actual object that was cached
+		 * @param from
+		 *            the source cache
+		 */
 		public CachedObject(Object cachedObject, From from) {
 			this.cachedObject = cachedObject;
 			this.from = from;
 		}
 
+		@SuppressWarnings("javadoc")
 		public Object getCachedObject() {
 			return cachedObject;
 		}
 
+		@SuppressWarnings("javadoc")
 		public From getFrom() {
 			return from;
 		}
@@ -243,6 +344,12 @@ public class CacheManager {
 		}
 	}
 
+	/**
+	 * Registers a component callback for cache cleaning on low memory
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 */
 	@TargetApi(14)
 	public void registerComponentCallback(Context c) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -272,7 +379,6 @@ public class CacheManager {
 		@Override
 		public void onTrimMemory(int level) {
 			if (level >= ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
-				// cache.clear();
 				cache.evictAll();
 			}
 			if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {

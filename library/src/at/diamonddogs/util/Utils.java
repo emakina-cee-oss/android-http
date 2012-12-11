@@ -41,10 +41,19 @@ import android.os.AsyncTask;
 import android.os.Process;
 import android.util.Base64;
 
+/**
+ * Collection of general util methods
+ */
 public class Utils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getSimpleName());
 
+	/**
+	 * Brings up the MAIN/LAUNCHER activity and clears the top
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 */
 	public static void returnToHome(Context context) {
 		PackageManager pm = context.getPackageManager();
 		Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -58,6 +67,13 @@ public class Utils {
 		context.startActivity(homeIntent);
 	}
 
+	/**
+	 * Checks if a timestamp (ms) is in the current month
+	 * 
+	 * @param when
+	 *            a ms timestamp
+	 * @return <code>true</code> if it is <code>false</code> otherwise
+	 */
 	public static boolean isSameMonth(long when) {
 		Calendar tmp = Calendar.getInstance();
 		tmp.setTimeInMillis(when);
@@ -74,17 +90,31 @@ public class Utils {
 		return (thenYear == nowYear) && (thenMonth == nowMonth);
 	}
 
-	public static String getMD5Hash(String url) {
+	/**
+	 * Computes a MD5 hash from an input string
+	 * 
+	 * @param input
+	 *            the input string
+	 * @return the MD5 hash or <code>null</code> if an error occured
+	 */
+	public static String getMD5Hash(String input) {
 		MessageDigest md = null;
 		try {
 			md = MessageDigest.getInstance("MD5");
-			return new String(Hex.encodeHex(md.digest(url.getBytes())));
+			return new String(Hex.encodeHex(md.digest(input.getBytes())));
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
 		return null;
 	}
 
+	/**
+	 * Creates and fills an {@link Integer} array with integer values
+	 * 
+	 * @param to
+	 *            size of array / max number to be added to array
+	 * @return an {@link Integer} array
+	 */
 	public static Integer[] getDigitArray(int to) {
 		to++;
 		Integer[] ret = new Integer[to];
@@ -94,6 +124,13 @@ public class Utils {
 		return ret;
 	}
 
+	/**
+	 * Computes a MD5 hash from an byte array
+	 * 
+	 * @param data
+	 *            the input data
+	 * @return the MD5 hash or <code>null</code> if an error occured
+	 */
 	public static String getMD5Hash(byte[] data) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
@@ -104,6 +141,14 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Checks a cursor for validity
+	 * 
+	 * @param c
+	 *            the {@link Cursor} to check
+	 * @return <code>true</code> if the cursor is not <code>null</code>, not
+	 *         closed and not empty, <code>false</code> otherwise
+	 */
 	public static boolean checkCursor(Cursor c) {
 		if (c == null || c.isClosed()) {
 			return false;
@@ -116,22 +161,59 @@ public class Utils {
 		return true;
 	}
 
+	/**
+	 * String to base64
+	 * 
+	 * @param inMsg
+	 *            the message to be converted to base64
+	 * @return the base64 string
+	 */
 	public static String encrypt(String inMsg) {
 		return encrypt(inMsg.getBytes());
 	}
 
+	/**
+	 * Byte array to base64
+	 * 
+	 * @param inMsg
+	 *            the message to be converted to base64
+	 * @return the base64 string
+	 */
 	public static String encrypt(byte[] inMsg) {
 		return Base64.encodeToString(inMsg, Base64.DEFAULT);
 	}
 
+	/**
+	 * Base64 string to string
+	 * 
+	 * @param inMsg
+	 *            the message to be converted from base64
+	 * @return the string
+	 */
 	public static String decrypt(String inMsg) {
 		return decrypt(inMsg.getBytes());
 	}
 
+	/**
+	 * Base64 byte array to string
+	 * 
+	 * @param encMsg
+	 *            the message to be converted from base64
+	 * @return the string
+	 */
 	public static String decrypt(byte[] encMsg) {
 		return new String(Base64.decode(encMsg, Base64.DEFAULT));
 	}
 
+	/**
+	 * Checks if the current process is a foreground process (visible by the
+	 * user)
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 * @return <code>true</code> if the process is visible, <code>false</code>
+	 *         otherwise
+	 */
 	public static boolean isInForground(Context context) {
 		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		List<RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
@@ -145,6 +227,15 @@ public class Utils {
 		return false;
 	}
 
+	/**
+	 * Converts input values to a {@link Calendar}
+	 * 
+	 * @param dayOfWeek
+	 * @param hourOfDay
+	 * @param minute
+	 * @param second
+	 * @return a {@link Calendar}r with the provided date
+	 */
 	public static final Calendar getScheduledDate(int dayOfWeek, int hourOfDay, int minute, int second) {
 		Calendar c = Calendar.getInstance();
 		int weekDay = c.get(Calendar.DAY_OF_WEEK);
@@ -159,6 +250,13 @@ public class Utils {
 		return c;
 	}
 
+	/**
+	 * Checks if the current process is a foreground process and kills it if it
+	 * is not
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 */
 	public static final void commitCarefulSuicide(Context c) {
 		try {
 			if (!new ForegroundCheckTask().execute(c).get()) {
@@ -171,6 +269,12 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Same as {@link Utils#commitCarefulSuicide(Context)} but threaded (non
+	 * blocking)
+	 * 
+	 * @param context
+	 */
 	public static final void commitCarefulSuicideThreaded(final Context context) {
 		new Thread(new Runnable() {
 			@Override
@@ -197,16 +301,43 @@ public class Utils {
 
 	}
 
+	/**
+	 * Kills the process without asking questions
+	 */
 	public static final void commitSuicide() {
 		android.os.Process.killProcess(android.os.Process.myPid());
 	}
 
+	/**
+	 * Creates a bitmap from an input uri
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param uri
+	 *            an image {@link Uri}
+	 * @param inSampleSize
+	 *            the sample size to be used when creating the bitmap
+	 * @return a {@link Bitmap}
+	 * @throws FileNotFoundException
+	 *             if the image file could not be found
+	 */
 	public static final Bitmap getBitmapFromUri(Context c, Uri uri, int inSampleSize) throws FileNotFoundException {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inSampleSize = inSampleSize;
 		return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, options);
 	}
 
+	/**
+	 * Creates a bitmap from an input uri
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param uri
+	 *            an image {@link Uri}
+	 * @return a {@link Bitmap}
+	 * @throws FileNotFoundException
+	 *             if the image file could not be found
+	 */
 	public static final Bitmap getBitmapFromUri(Context c, String uri) throws FileNotFoundException {
 		return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(Uri.parse(uri)));
 	}
