@@ -38,14 +38,31 @@ import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.exception.WebClientException;
 
+/**
+ * This {@link WebClient} will be used on Gingerbread and above. Please do not
+ * use
+ * this class directly, use {@link WebClientFactory} instead.
+ */
 public class WebClientHttpURLConnection extends WebClient {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebClientHttpURLConnection.class.getSimpleName());
 
+	/**
+	 * An instance of {@link HttpsURLConnection} handling the request
+	 */
 	private HttpURLConnection connection;
 
+	/**
+	 * Stores the number of retries for a request
+	 */
 	private int retryCount = 0;
 
+	/**
+	 * Default {@link WebClient} constructor
+	 * 
+	 * @param context
+	 *            a {@link Context} object
+	 */
 	public WebClientHttpURLConnection(Context context) {
 		super(context);
 		SSLSocketFactory sslSocketFactory = SSLHelper.getInstance().SSL_FACTORY_JAVA;

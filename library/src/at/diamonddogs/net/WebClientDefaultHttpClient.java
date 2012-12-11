@@ -68,13 +68,30 @@ import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.exception.WebClientException;
 
+/**
+ * This {@link WebClient} will be used on Froyo and below. Please do not use
+ * this class directly, use {@link WebClientFactory} instead.
+ */
 public class WebClientDefaultHttpClient extends WebClient implements HttpRequestRetryHandler, RedirectHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebClientDefaultHttpClient.class);
 
+	/**
+	 * The instance of {@link DefaultHttpClient} handling the request
+	 */
 	private DefaultHttpClient httpClient;
+
+	/**
+	 * Request parameters
+	 */
 	private HttpRequestBase requestBase;
 
+	/**
+	 * Default {@link WebClient} constructor
+	 * 
+	 * @param context
+	 *            a {@link Context} object
+	 */
 	public WebClientDefaultHttpClient(Context context) {
 		super(context);
 		SSLSocketFactory sslSocketFactory = SSLHelper.getInstance().SSL_FACTORY_APACHE;

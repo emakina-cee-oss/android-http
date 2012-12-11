@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +33,12 @@ import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.RecoverySystem.ProgressListener;
 import android.util.SparseArray;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.exception.ServiceException;
 import at.diamonddogs.net.WebClient;
 import at.diamonddogs.net.WebClient.DownloadProgressListener;
 import at.diamonddogs.net.WebClient.WebClientReplyListener;
@@ -46,31 +49,60 @@ import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.CacheManager.CachedObject;
 import at.diamonddogs.util.WorkerQueue;
 
+/**
+ * The central {@link Service} used to process {@link WebRequest}s
+ */
 public class HttpService extends Service implements WebClientReplyListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpService.class);
 
+	/**
+	 * The core thread pool size, refer to {@link ThreadPoolExecutor} for more
+	 * information
+	 */
 	private static final int POOL_SIZE_CORE = 10;
 
+	/**
+	 * The maximum thread pool size, refer to {@link ThreadPoolExecutor} for
+	 * more information
+	 */
 	private static final int POOL_SIZE_MAX = 20;
 
+	/**
+	 * The thread pool keep alive time, refer to {@link ThreadPoolExecutor} for
+	 * more information
+	 */
 	private static final int POOL_KEEPALIVE = 3000;
 
+	/**
+	 * Contains all registered processors
+	 */
 	private SparseArray<ServiceProcessor> registeredProcessors;
 
+	/**
+	 * Maps handler to {@link WebRequest}s
+	 */
 	private Map<Handler, List<WebRequest>> webRequestHandlerMap;
 
+	/**
+	 * {@link WorkerQueue} for threaded (async) {@link WebRequest} processing
+	 */
 	private WorkerQueue workerQueue;
 
+	/**
+	 * {@link Binder} instance for {@link HttpService} the default
+	 * {@link Binder} will return the {@link HttpService}
+	 */
 	private IBinder binder;
 
-	public static final String INTENT_EXTRA_WEBREQUEST = "webrequest";
-
-	public static final String BUNDLE_WEBREPLY = "webreply";
-
-	public static final String BUNDLE_THROWABLE = "throwable";
-
+	/**
+	 * A map storing {@link Future} {@link WebRequest}s
+	 */
 	private Map<String, Future<?>> webRequestMap;
+
+	/**
+	 * A map storing {@link WebRequest}s
+	 */
 	private Map<String, WebRequest> webReqeusts;
 
 	@Override
@@ -98,12 +130,19 @@ public class HttpService extends Service implements WebClientReplyListener {
 		super.onDestroy();
 	}
 
-	public final class HttpServiceBinder extends Binder {
-		public HttpService getHttpService() {
-			return HttpService.this;
-		}
-	}
-
+	/**
+	 * Runs a {@link WebRequest}
+	 * 
+	 * @param handler
+	 *            the handler that will be informed once the {@link WebRequest}
+	 *            has been completed
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @param progressListener
+	 *            a {@link ProgressListener} that will be informed of download
+	 *            progress
+	 * @return the {@link WebRequest} id as {@link String}
+	 */
 	public String runWebRequest(Handler handler, final WebRequest webRequest, final DownloadProgressListener progressListener) {
 		if (handler == null) {
 			throw new IllegalArgumentException("handler may not be null");
@@ -143,6 +182,18 @@ public class HttpService extends Service implements WebClientReplyListener {
 		return webRequest.getId();
 	}
 
+	/**
+	 * Convenience method that calls
+	 * {@link HttpService#runWebRequest(Handler, WebRequest, DownloadProgressListener)}
+	 * with a <code>null</code> {@link ProgressListener}
+	 * 
+	 * @param handler
+	 *            the handler that will be informed once the {@link WebRequest}
+	 *            has been completed
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @return
+	 */
 	public String runWebRequest(Handler handler, WebRequest webRequest) {
 		return runWebRequest(handler, webRequest, null);
 	}
@@ -191,6 +242,15 @@ public class HttpService extends Service implements WebClientReplyListener {
 		return client;
 	}
 
+	/**
+	 * Register a {@link ServiceProcessor} with the the {@link HttpService}.
+	 * Make sure that the {@link ServiceProcessor} that should be registered is
+	 * not registered with {@link HttpService} already by using
+	 * {@link HttpService#isProcessorRegistered(int)}
+	 * 
+	 * @param processor
+	 *            an instance of the {@link ServiceProcessor} to register
+	 */
 	public void registerProcessor(ServiceProcessor processor) {
 		int processorId = processor.getProcessorID();
 		if (isProcessorRegistered(processorId)) {
@@ -204,14 +264,36 @@ public class HttpService extends Service implements WebClientReplyListener {
 		registeredProcessors.put(processorId, processor);
 	}
 
+	/**
+	 * Unregisters a {@link ServiceProcessor} known by the given id
+	 * 
+	 * @param id
+	 *            the id of the {@link ServiceProcessor} to unregister
+	 */
 	public void unregisterProcessor(int id) {
 		registeredProcessors.remove(id);
 	}
 
+	/**
+	 * Checks if a {@link ServiceProcessor} has been registered with
+	 * {@link HttpService}
+	 * 
+	 * @param id
+	 *            the id of the {@link ServiceProcessor}
+	 * @return <code>true</code> if the {@link ServiceProcessor} known by id has
+	 *         been registered <code>false</code> otherwise
+	 */
 	public boolean isProcessorRegistered(int id) {
 		return (registeredProcessors.indexOfKey(id) >= 0);
 	}
 
+	/**
+	 * Returns the {@link ServiceProcessor} known by id
+	 * 
+	 * @param id
+	 *            the id of the {@link ServiceProcessor} to obtain
+	 * @return a {@link ServiceProcessor}
+	 */
 	public ServiceProcessor getRegisteredProcessorById(int id) {
 		return registeredProcessors.get(id);
 	}
@@ -253,11 +335,40 @@ public class HttpService extends Service implements WebClientReplyListener {
 		return processor;
 	}
 
+	/**
+	 * Convenience binding method
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 * @param serviceConnection
+	 *            a {@link ServiceConnection}
+	 */
 	public static void bindService(Context context, ServiceConnection serviceConnection) {
 		Intent intent = new Intent(context, HttpService.class);
 		context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
+	/**
+	 * Cancels a {@link Future} {@link WebRequest} by id
+	 * 
+	 * @param id
+	 *            the id of the {@link WebRequest} to cancel
+	 */
+	public void cancelRequest(String id) {
+		LOGGER.debug("cancelRequest " + id);
+		if (webRequestMap.containsKey(id)) {
+			LOGGER.debug("found cancelRequest " + id);
+			Future<?> request = webRequestMap.get(id);
+			request.cancel(true);
+			WebRequest cancelRequest = webReqeusts.get(id);
+			cancelRequest.setCancelled(true);
+			webRequestMap.remove(id);
+		}
+	}
+
+	/**
+	 * This runnable takes care of executing a {@link WebRequest}
+	 */
 	private class RequestRunnable implements Runnable {
 
 		WebRequest webRequest;
@@ -287,15 +398,17 @@ public class HttpService extends Service implements WebClientReplyListener {
 		}
 	}
 
-	public void cancelRequest(String id) {
-		LOGGER.debug("cancelRequest " + id);
-		if (webRequestMap.containsKey(id)) {
-			LOGGER.debug("found cancelRequest " + id);
-			Future<?> request = webRequestMap.get(id);
-			request.cancel(true);
-			WebRequest cancelRequest = webReqeusts.get(id);
-			cancelRequest.setCancelled(true);
-			webRequestMap.remove(id);
+	/**
+	 * Default {@link Binder} implementation
+	 */
+	public final class HttpServiceBinder extends Binder {
+		/**
+		 * Gets the {@link HttpService}
+		 * 
+		 * @return the {@link HttpService}
+		 */
+		public HttpService getHttpService() {
+			return HttpService.this;
 		}
 	}
 }

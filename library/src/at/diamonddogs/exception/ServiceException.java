@@ -13,24 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.diamonddogs.service.net;
+package at.diamonddogs.exception;
 
+import android.app.Service;
+
+/**
+ * This {@link RuntimeException} will be thrown by {@link Service}s
+ */
 public class ServiceException extends RuntimeException {
 
 	private static final long serialVersionUID = 99569179782163929L;
 
+	/**
+	 * Default Constructor
+	 */
 	public ServiceException() {
 		super();
 	}
 
+	/**
+	 * @param detailMessage
+	 * @param throwable
+	 */
 	public ServiceException(String detailMessage, Throwable throwable) {
 		super(detailMessage, throwable);
 	}
 
+	/**
+	 * @param detailMessage
+	 */
 	public ServiceException(String detailMessage) {
 		super(detailMessage);
 	}
 
+	/**
+	 * @param throwable
+	 */
 	public ServiceException(Throwable throwable) {
 		super(throwable);
 	}
