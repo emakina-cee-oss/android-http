@@ -15,6 +15,7 @@
  */
 package at.diamonddogs.service.net;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -104,9 +105,9 @@ public class HttpService extends Service implements WebClientReplyListener {
 	public void onCreate() {
 		super.onCreate();
 		workerQueue = new WorkerQueue(POOL_SIZE_CORE, POOL_SIZE_MAX, POOL_KEEPALIVE);
-		webRequestHandlerMap = new HashMap<Handler, List<WebRequest>>();
+		webRequestHandlerMap = Collections.synchronizedMap(new HashMap<Handler, List<WebRequest>>());
 		registeredProcessors = new SparseArray<ServiceProcessor>();
-		webRequests = new HashMap<String, WebRequestFutureContainer>();
+		webRequests = Collections.synchronizedMap(new HashMap<String, WebRequestFutureContainer>());
 	}
 
 	@Override
@@ -137,10 +138,11 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 *            progress
 	 * @return the {@link WebRequest} id as {@link String}
 	 */
-	public String runWebRequest(Handler handler, final WebRequest webRequest, final DownloadProgressListener progressListener) {
+	public String runWebRequest(final Handler handler, final WebRequest webRequest, final DownloadProgressListener progressListener) {
 		if (handler == null) {
 			throw new IllegalArgumentException("handler may not be null");
 		}
+
 		if (workerQueue.isShutDown()) {
 			LOGGER.info("service already shutdown, couldn't run: " + webRequest);
 			return null;
@@ -166,11 +168,18 @@ public class HttpService extends Service implements WebClientReplyListener {
 			ra.setThrowable(new IllegalArgumentException("WebRequest URL was null"));
 			dispatchWebReplyProcessor(ra, getHandler(ra.getRequest()));
 		}
-		RequestRunnable requestRunnable = new RequestRunnable(webRequest, progressListener);
 
-		Future<?> future = workerQueue.runCancelableTask(requestRunnable);
-
-		webRequests.put(webRequest.getId(), new WebRequestFutureContainer(webRequest, future));
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				Future<?> future = getWebRequestTask(webRequest, progressListener);
+				if (future != null) {
+					webRequests.put(webRequest.getId(), new WebRequestFutureContainer(webRequest, future));
+				}
+			}
+		};
+		Thread t = new Thread(r);
+		t.start();
 
 		return webRequest.getId();
 	}
@@ -352,42 +361,30 @@ public class HttpService extends Service implements WebClientReplyListener {
 		if (webRequests.containsKey(id)) {
 			LOGGER.debug("found cancelRequest " + id);
 			WebRequestFutureContainer container = webRequests.get(id);
-			container.future.cancel(true);
+			boolean hasBeenCanceled = container.future.cancel(true);
+			LOGGER.info("WebRequest with id " + id + " has been canceled " + hasBeenCanceled);
 			container.webRequest.setCancelled(true);
 			webRequests.remove(id);
 		}
 	}
 
-	/**
-	 * This runnable takes care of executing a {@link WebRequest}
-	 */
-	private class RequestRunnable implements Runnable {
-
-		WebRequest webRequest;
-		DownloadProgressListener downloadProgressListener;
-
-		public RequestRunnable(WebRequest webRequest, DownloadProgressListener downloadProgressListener) {
-			this.webRequest = webRequest;
-			this.downloadProgressListener = downloadProgressListener;
-		}
-
-		@Override
-		public void run() {
-			CacheManager cm = CacheManager.getInstance();
-			try {
-				CachedObject cachedObject = cm.getFromCache(HttpService.this, webRequest);
-				if (cachedObject == null) {
-					LOGGER.debug("No cached objects available for: " + webRequest.getUrl());
-					workerQueue.runTask(getNewWebClient(webRequest, downloadProgressListener));
-				} else {
-					LOGGER.debug("File found in file cache: " + webRequest.getUrl());
-					dispatchCachedObjectToProcessor(cachedObject, webRequest);
-				}
-			} catch (Throwable tr) {
+	private Future<?> getWebRequestTask(WebRequest webRequest, DownloadProgressListener downloadProgressListener) {
+		CacheManager cm = CacheManager.getInstance();
+		Future<?> ret = null;
+		try {
+			CachedObject cachedObject = cm.getFromCache(HttpService.this, webRequest);
+			if (cachedObject == null) {
 				LOGGER.debug("No cached objects available for: " + webRequest.getUrl());
-				workerQueue.runTask(getNewWebClient(webRequest, downloadProgressListener));
+				ret = workerQueue.runCancelableTask(getNewWebClient(webRequest, downloadProgressListener));
+			} else {
+				LOGGER.debug("File found in file cache: " + webRequest.getUrl());
+				dispatchCachedObjectToProcessor(cachedObject, webRequest);
 			}
+		} catch (Throwable tr) {
+			LOGGER.debug("No cached objects available for: " + webRequest.getUrl());
+			ret = workerQueue.runCancelableTask(getNewWebClient(webRequest, downloadProgressListener));
 		}
+		return ret;
 	}
 
 	/**
