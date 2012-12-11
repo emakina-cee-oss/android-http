@@ -96,14 +96,9 @@ public class HttpService extends Service implements WebClientReplyListener {
 	private IBinder binder;
 
 	/**
-	 * A map storing {@link Future} {@link WebRequest}s
-	 */
-	private Map<String, Future<?>> webRequestMap;
-
-	/**
 	 * A map storing {@link WebRequest}s
 	 */
-	private Map<String, WebRequest> webReqeusts;
+	private Map<String, WebRequestFutureContainer> webRequests;
 
 	@Override
 	public void onCreate() {
@@ -111,8 +106,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		workerQueue = new WorkerQueue(POOL_SIZE_CORE, POOL_SIZE_MAX, POOL_KEEPALIVE);
 		webRequestHandlerMap = new HashMap<Handler, List<WebRequest>>();
 		registeredProcessors = new SparseArray<ServiceProcessor>();
-		webRequestMap = new HashMap<String, Future<?>>();
-		webReqeusts = new HashMap<String, WebRequest>();
+		webRequests = new HashMap<String, WebRequestFutureContainer>();
 	}
 
 	@Override
@@ -176,8 +170,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 		Future<?> future = workerQueue.runCancelableTask(requestRunnable);
 
-		webReqeusts.put(webRequest.getId(), webRequest);
-		webRequestMap.put(webRequest.getId(), future);
+		webRequests.put(webRequest.getId(), new WebRequestFutureContainer(webRequest, future));
 
 		return webRequest.getId();
 	}
@@ -301,7 +294,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	@Override
 	public void onWebReply(WebClient webClient, ReplyAdapter reply) {
 		LOGGER.debug("onWebReply: " + reply.getStatus());
-		webRequestMap.remove(webClient.getWebRequest().getId());
+		webRequests.remove(webClient.getWebRequest().getId());
 		dispatchWebReplyProcessor(reply, getHandler(reply.getRequest()));
 	}
 
@@ -356,13 +349,12 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 */
 	public void cancelRequest(String id) {
 		LOGGER.debug("cancelRequest " + id);
-		if (webRequestMap.containsKey(id)) {
+		if (webRequests.containsKey(id)) {
 			LOGGER.debug("found cancelRequest " + id);
-			Future<?> request = webRequestMap.get(id);
-			request.cancel(true);
-			WebRequest cancelRequest = webReqeusts.get(id);
-			cancelRequest.setCancelled(true);
-			webRequestMap.remove(id);
+			WebRequestFutureContainer container = webRequests.get(id);
+			container.future.cancel(true);
+			container.webRequest.setCancelled(true);
+			webRequests.remove(id);
 		}
 	}
 
@@ -409,6 +401,16 @@ public class HttpService extends Service implements WebClientReplyListener {
 		 */
 		public HttpService getHttpService() {
 			return HttpService.this;
+		}
+	}
+
+	private static final class WebRequestFutureContainer {
+		private WebRequest webRequest;
+		private Future<?> future;
+
+		private WebRequestFutureContainer(WebRequest webRequest, Future<?> future) {
+			this.webRequest = webRequest;
+			this.future = future;
 		}
 	}
 }
