@@ -50,12 +50,18 @@ public class WorkerQueue {
 	}
 
 	/**
+	 * 
 	 * Cancel a running task
 	 * 
+	 * @param <T>
+	 *            the type of object to be returned by the {@link Callable} /
+	 *            {@link Future}
 	 * @param task
 	 *            the task to cancel
 	 * @return returns the {@link Future} of the task that has been canceled or
 	 *         <code>null</code> if the executer was shutdown
+	 * 
+	 * @return
 	 */
 	public <T> Future<T> runCancelableTask(Callable<T> task) {
 		if (!threadPoolExecuter.isShutdown()) {
