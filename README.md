@@ -6,6 +6,7 @@ The framework is designed to send, receive, process and publish webrequests and 
 
 ## Features
 * WebRequest / WebReply API: enables developers to conveniently send web requests and handle their replies concurrently
+* Blocking WebRequests
 * Processor: allows post processing of web replies
 * Several abstract processors that facilitate development of JSON and XML (SOAP) processors
 * Processors that ease every day development (Image processing)
@@ -15,7 +16,6 @@ The framework is designed to send, receive, process and publish webrequests and 
 
 ## Planned
 * Chaining multiple processors
-* Blocking web requests (developers need to manage concurrency manually)
 
 ## License
 Apache License, Version 2.0. Please refer to LICENSE and NOTICE for additional information.
