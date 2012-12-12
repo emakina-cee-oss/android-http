@@ -126,7 +126,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	}
 
 	/**
-	 * Runs a {@link WebRequest}
+	 * Runs a {@link WebRequest} asynchronously
 	 * 
 	 * @param handler
 	 *            the handler that will be informed once the {@link WebRequest}
@@ -378,7 +378,9 @@ public class HttpService extends Service implements WebClientReplyListener {
 				ret = workerQueue.runCancelableTask(getNewWebClient(webRequest, downloadProgressListener));
 			} else {
 				LOGGER.debug("File found in file cache: " + webRequest.getUrl());
-				dispatchCachedObjectToProcessor(cachedObject, webRequest);
+				if (!webRequest.isCancelled()) {
+					dispatchCachedObjectToProcessor(cachedObject, webRequest);
+				}
 			}
 		} catch (Throwable tr) {
 			LOGGER.debug("No cached objects available for: " + webRequest.getUrl());
