@@ -115,7 +115,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 	}
 
 	@Override
-	public void run() {
+	public ReplyAdapter call() {
 		ReplyAdapter listenerReply = null;
 		try {
 			WebReply reply;
@@ -154,6 +154,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 		if (webClientReplyListener != null) {
 			webClientReplyListener.onWebReply(this, listenerReply);
 		}
+		return listenerReply;
 	}
 
 	private void handlePostParameters(HttpPost post) throws Throwable {

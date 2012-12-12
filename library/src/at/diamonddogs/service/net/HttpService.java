@@ -45,6 +45,7 @@ import at.diamonddogs.net.WebClient;
 import at.diamonddogs.net.WebClient.DownloadProgressListener;
 import at.diamonddogs.net.WebClient.WebClientReplyListener;
 import at.diamonddogs.net.WebClientFactory;
+import at.diamonddogs.service.processor.DataProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
 import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.CacheManager.CachedObject;
@@ -172,7 +173,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
-				Future<?> future = getWebRequestTask(webRequest, progressListener);
+				Future<?> future = getWebRequestTask(webRequest, progressListener, true);
 				if (future != null) {
 					webRequests.put(webRequest.getId(), new WebRequestFutureContainer(webRequest, future));
 				}
@@ -182,6 +183,82 @@ public class HttpService extends Service implements WebClientReplyListener {
 		t.start();
 
 		return webRequest.getId();
+	}
+
+	/**
+	 * Executes a {@link WebRequest} on the same {@link Thread} this method is
+	 * called. Beware that calling
+	 * {@link HttpService#runSynchronousWebRequest(WebRequest,DownloadProgressListener)}
+	 * on the main thread may cause ANR issues. The processor handling the
+	 * {@link WebRequest} must be a {@link DataProcessor}, otherwise, an
+	 * exception will be thrown.
+	 * 
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @return
+	 *         The object created by the
+	 *         {@link DataProcessor#obtainDataObjectFromWebReply(ReplyAdapter)}
+	 *         method of the {@link DataProcessor} registered for this request,
+	 *         or <code>null</code> if the request failed.
+	 */
+	public Object runSynchronousWebRequest(final WebRequest webRequest) {
+		return runSynchronousWebRequest(webRequest, null);
+	}
+
+	/**
+	 * Executes a {@link WebRequest} on the same {@link Thread} this method is
+	 * called. Beware that calling
+	 * {@link HttpService#runSynchronousWebRequest(WebRequest,DownloadProgressListener)}
+	 * on the main thread may cause ANR issues. The processor handling the
+	 * {@link WebRequest} must be a {@link DataProcessor}, otherwise, an
+	 * exception will be thrown.
+	 * 
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @param progressListener
+	 *            an optional {@link ProgressListener}
+	 * @return
+	 *         The object created by the
+	 *         {@link DataProcessor#obtainDataObjectFromWebReply(ReplyAdapter)}
+	 *         method of the {@link DataProcessor} registered for this request,
+	 *         or <code>null</code> if the request failed.
+	 */
+	public Object runSynchronousWebRequest(final WebRequest webRequest, final DownloadProgressListener progressListener) {
+
+		if (workerQueue.isShutDown()) {
+			LOGGER.info("service already shutdown, couldn't run: " + webRequest);
+			return null;
+		}
+
+		if (webRequest == null) {
+			return null;
+		}
+
+		ServiceProcessor processor = registeredProcessors.get(webRequest.getProcessorId());
+		if (processor == null) {
+			int id = webRequest.getProcessorId();
+			if (id == -1) {
+				throw new ServiceException("processor id == -1 looks like you forgot to set a Processor ID for the WebRequest");
+			}
+			throw new ServiceException("No processor with id '" + id + "' has been registered!");
+		}
+		if (!(processor instanceof DataProcessor<?, ?>)) {
+			throw new ServiceException("Synchronous WebRequests can only be handled by DataProcessors");
+		}
+		if (webRequest.getUrl() == null) {
+			return null;
+		}
+		DataProcessor<?, ?> dataProcessor = (DataProcessor<?, ?>) processor;
+		try {
+			Future<ReplyAdapter> future = getWebRequestTask(webRequest, progressListener, false);
+			if (future != null) {
+				webRequests.put(webRequest.getId(), new WebRequestFutureContainer(webRequest, future));
+				return dataProcessor.obtainDataObjectFromWebReply(future.get());
+			}
+		} catch (Throwable tr) {
+			LOGGER.error("Error getting result!", tr);
+		}
+		return null;
 	}
 
 	/**
@@ -368,14 +445,19 @@ public class HttpService extends Service implements WebClientReplyListener {
 		}
 	}
 
-	private Future<?> getWebRequestTask(WebRequest webRequest, DownloadProgressListener downloadProgressListener) {
+	private Future<ReplyAdapter> getWebRequestTask(WebRequest webRequest, DownloadProgressListener downloadProgressListener, boolean async) {
 		CacheManager cm = CacheManager.getInstance();
-		Future<?> ret = null;
+		Future<ReplyAdapter> ret = null;
+		WebClient client = null;
 		try {
 			CachedObject cachedObject = cm.getFromCache(HttpService.this, webRequest);
 			if (cachedObject == null) {
 				LOGGER.debug("No cached objects available for: " + webRequest.getUrl());
-				ret = workerQueue.runCancelableTask(getNewWebClient(webRequest, downloadProgressListener));
+				client = getNewWebClient(webRequest, downloadProgressListener);
+				if (!async) {
+					client.setListener(null);
+				}
+				ret = workerQueue.<ReplyAdapter> runCancelableTask(client);
 			} else {
 				LOGGER.debug("File found in file cache: " + webRequest.getUrl());
 				if (!webRequest.isCancelled()) {
@@ -384,7 +466,11 @@ public class HttpService extends Service implements WebClientReplyListener {
 			}
 		} catch (Throwable tr) {
 			LOGGER.debug("No cached objects available for: " + webRequest.getUrl());
-			ret = workerQueue.runCancelableTask(getNewWebClient(webRequest, downloadProgressListener));
+			client = getNewWebClient(webRequest, downloadProgressListener);
+			if (!async) {
+				client.setListener(null);
+			}
+			ret = workerQueue.<ReplyAdapter> runCancelableTask(client);
 		}
 		return ret;
 	}

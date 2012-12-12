@@ -74,7 +74,7 @@ public class WebClientHttpURLConnection extends WebClient {
 	}
 
 	@Override
-	public void run() {
+	public ReplyAdapter call() {
 
 		ReplyAdapter listenerReply = null;
 		if (webRequest == null) {
@@ -125,6 +125,7 @@ public class WebClientHttpURLConnection extends WebClient {
 		if (webClientReplyListener != null) {
 			webClientReplyListener.onWebReply(this, listenerReply);
 		}
+		return listenerReply;
 	}
 
 	private String getRedirectUrl(WebReply wr) {

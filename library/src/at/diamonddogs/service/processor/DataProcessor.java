@@ -22,7 +22,9 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.os.Message;
+import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.dataobjects.CacheInformation;
+import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.Utils;
@@ -85,6 +87,20 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor {
 		Message message = createReturnMessage(output);
 		message.what = getProcessorID();
 		return new ProcessingData<OUTPUT>(message, output);
+	}
+
+	/**
+	 * Creates an OUTPUT object from a given {@link ReplyAdapter}, this method
+	 * should be used for synchronous {@link WebRequest} only!
+	 * 
+	 * @param reply
+	 *            a {@link ReplyAdapter}
+	 * @return the OUTPUT object like the one produced by
+	 *         {@link DataProcessor#processData(byte[])} ->
+	 *         {@link ProcessingData#output}
+	 */
+	public OUTPUT obtainDataObjectFromWebReply(ReplyAdapter reply) {
+		return parse(createParsedObjectFromByteArray(((WebReply) reply.getReply()).getData()));
 	}
 
 	protected void cacheObjectToFile(Context context, WebRequest request, byte[] data) {

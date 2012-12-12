@@ -24,6 +24,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ import at.diamonddogs.data.dataobjects.WebRequest;
  * An abstract {@link WebClient} to be used when implementing new
  * {@link WebClient} flavours
  */
-public abstract class WebClient implements Runnable {
+public abstract class WebClient implements Callable<ReplyAdapter> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebClient.class);
 

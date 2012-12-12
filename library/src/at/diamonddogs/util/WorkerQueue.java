@@ -15,7 +15,7 @@
  */
 package at.diamonddogs.util;
 
-import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -50,31 +50,6 @@ public class WorkerQueue {
 	}
 
 	/**
-	 * Run a task in the context of this {@link WorkerQueue}
-	 * 
-	 * @param task
-	 */
-	public void runTask(Runnable task) {
-		if (!threadPoolExecuter.isShutdown()) {
-			threadPoolExecuter.execute(task);
-		}
-	}
-
-	/**
-	 * Run mutiple tasks in the context of the {@link WorkerQueue}
-	 * 
-	 * @param tasks
-	 */
-	public void runTasks(Runnable[] tasks) {
-		if (!threadPoolExecuter.isShutdown()) {
-			for (Runnable r : tasks) {
-				threadPoolExecuter.execute(r);
-
-			}
-		}
-	}
-
-	/**
 	 * Cancel a running task
 	 * 
 	 * @param task
@@ -82,25 +57,11 @@ public class WorkerQueue {
 	 * @return returns the {@link Future} of the task that has been canceled or
 	 *         <code>null</code> if the executer was shutdown
 	 */
-	public Future<?> runCancelableTask(Runnable task) {
+	public <T> Future<T> runCancelableTask(Callable<T> task) {
 		if (!threadPoolExecuter.isShutdown()) {
 			return threadPoolExecuter.submit(task);
 		}
 		return null;
-	}
-
-	/**
-	 * Cancel multiple running tasks
-	 * 
-	 * @param tasks
-	 *            the tasks to cancel
-	 */
-	public void runTasks(List<Runnable> tasks) {
-		if (!threadPoolExecuter.isShutdown()) {
-			for (Runnable r : tasks) {
-				threadPoolExecuter.execute(r);
-			}
-		}
 	}
 
 	/**
