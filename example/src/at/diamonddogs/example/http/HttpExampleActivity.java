@@ -15,6 +15,9 @@
  */
 package at.diamonddogs.example.http;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -36,6 +39,9 @@ import at.diamonddogs.service.processor.ServiceProcessor;
  * 
  */
 public class HttpExampleActivity extends Activity {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpExampleActivity.class.getSimpleName());
+
 	/**
 	 * The service connection that will be used to connect with
 	 * {@link HttpService}
@@ -112,6 +118,14 @@ public class HttpExampleActivity extends Activity {
 		// run the web request, WeatherHandler will receive a callback once the
 		// web request has been finished
 		httpService.runWebRequest(new WeatherHandler(), request);
+
+		// sync webrequest POC, usually you should not execute synchronous web
+		// requests on the main thread. The result of this call will be logged,
+		// but not displayed in the UI
+		long start = System.currentTimeMillis();
+		LOGGER.error("Starting sync webrequest");
+		Weather w = (Weather) httpService.runSynchronousWebRequest(request, null);
+		LOGGER.error("Finished sync webrequest " + (System.currentTimeMillis() - start) + "ms -> " + w.getTemperature() + " " + w.getText());
 	}
 
 	/**
