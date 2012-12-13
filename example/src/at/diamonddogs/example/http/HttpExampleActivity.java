@@ -15,6 +15,9 @@
  */
 package at.diamonddogs.example.http;
 
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +33,10 @@ import android.os.Message;
 import android.widget.TextView;
 import android.widget.Toast;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.service.net.HttpService;
 import at.diamonddogs.service.net.HttpService.HttpServiceBinder;
+import at.diamonddogs.service.processor.HeadRequestProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
 
 /**
@@ -103,29 +108,54 @@ public class HttpExampleActivity extends Activity {
 	/**
 	 * Constructs and runs the weather web request
 	 */
+	@SuppressWarnings("unchecked")
 	private void runWebRequest() {
-		WebRequest request = new WebRequest();
+		String weatherUrl = getWeatherUrl("Austria", "Vienna");
+		LOGGER.info("URL: " + weatherUrl);
+		// --- SYNC WEB REQUEST
+
+		// sync webrequest POC, usually you should not execute synchronous web
+		// requests on the main thread. The result of this call will be logged,
+		// but not displayed in the UI
+
+		WebRequest syncWebRequest = new WebRequest();
+		syncWebRequest.setUrl(weatherUrl);
+		syncWebRequest.setRequestType(Type.HEAD);
+
+		// default header request processor
+		syncWebRequest.setProcessorId(HeadRequestProcessor.ID);
+
+		// required for HEAD request (yahoo specific!)
+		syncWebRequest.addHeaderField("Accept-Encoding", "gzip, deflate");
+
+		Map<String, List<String>> headers = (Map<String, List<String>>) httpService.runSynchronousWebRequest(syncWebRequest);
+		if (headers != null) {
+			for (String key : headers.keySet()) {
+				LOGGER.error("KEY -> " + key);
+				for (String value : headers.get(key)) {
+					LOGGER.error("    VALUE -> " + value);
+				}
+			}
+		} else {
+			Toast.makeText(this, "Error while optaining headers", Toast.LENGTH_SHORT).show();
+		}
+
+		// --- ASYNC WEB REQUEST
+
+		WebRequest asyncRequest = new WebRequest();
 		// takes a String or URL object!
-		request.setUrl(getWeatherUrl("Austria", "Vienna"));
+		asyncRequest.setUrl(weatherUrl);
 
 		// The processorid tells HttpService what to do once a web reply has
 		// been received.
 		// You MUST set a processor id and the processor needs to be registered
 		// with HttpService.
 		// You may use DummyProcessor.ID to circumvent processor implementation
-		request.setProcessorId(WeatherProcessor.ID);
+		asyncRequest.setProcessorId(WeatherProcessor.ID);
 
 		// run the web request, WeatherHandler will receive a callback once the
 		// web request has been finished
-		httpService.runWebRequest(new WeatherHandler(), request);
-
-		// sync webrequest POC, usually you should not execute synchronous web
-		// requests on the main thread. The result of this call will be logged,
-		// but not displayed in the UI
-		long start = System.currentTimeMillis();
-		LOGGER.error("Starting sync webrequest");
-		Weather w = (Weather) httpService.runSynchronousWebRequest(request, null);
-		LOGGER.error("Finished sync webrequest " + (System.currentTimeMillis() - start) + "ms -> " + w.getTemperature() + " " + w.getText());
+		httpService.runWebRequest(new WeatherHandler(), asyncRequest);
 	}
 
 	/**
@@ -172,6 +202,12 @@ public class HttpExampleActivity extends Activity {
 				// information
 				if (!httpService.isProcessorRegistered(WeatherProcessor.ID)) {
 					httpService.registerProcessor(new WeatherProcessor());
+				}
+
+				// registering the DummyProcessor, we need this processor for
+				// our HEAD request
+				if (!httpService.isProcessorRegistered(HeadRequestProcessor.ID)) {
+					httpService.registerProcessor(new HeadRequestProcessor());
 				}
 
 				// run the webrequest once the processor has been registered
