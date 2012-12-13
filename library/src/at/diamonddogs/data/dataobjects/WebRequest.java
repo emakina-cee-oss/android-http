@@ -43,7 +43,9 @@ public class WebRequest implements Request {
 		/** Post Request */
 		POST,
 		/** Get Request */
-		GET
+		GET,
+		/** Head Request */
+		HEAD
 	}
 
 	/**

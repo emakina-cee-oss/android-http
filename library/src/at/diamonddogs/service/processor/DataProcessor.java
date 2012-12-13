@@ -40,7 +40,7 @@ import at.diamonddogs.util.Utils;
  *            The output object that will be created from the input object,
  *            usually a POJO
  */
-public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor {
+public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor implements SynchronousProcessor<OUTPUT> {
 
 	/**
 	 * Parses the content of data into an INPUT object
@@ -89,16 +89,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor {
 		return new ProcessingData<OUTPUT>(message, output);
 	}
 
-	/**
-	 * Creates an OUTPUT object from a given {@link ReplyAdapter}, this method
-	 * should be used for synchronous {@link WebRequest} only!
-	 * 
-	 * @param reply
-	 *            a {@link ReplyAdapter}
-	 * @return the OUTPUT object like the one produced by
-	 *         {@link DataProcessor#processData(byte[])} ->
-	 *         {@link ProcessingData#output}
-	 */
+	@Override
 	public OUTPUT obtainDataObjectFromWebReply(ReplyAdapter reply) {
 		return parse(createParsedObjectFromByteArray(((WebReply) reply.getReply()).getData()));
 	}

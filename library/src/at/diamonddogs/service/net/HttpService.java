@@ -47,6 +47,7 @@ import at.diamonddogs.net.WebClient.WebClientReplyListener;
 import at.diamonddogs.net.WebClientFactory;
 import at.diamonddogs.service.processor.DataProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
+import at.diamonddogs.service.processor.SynchronousProcessor;
 import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.CacheManager.CachedObject;
 import at.diamonddogs.util.WorkerQueue;
@@ -242,21 +243,23 @@ public class HttpService extends Service implements WebClientReplyListener {
 			}
 			throw new ServiceException("No processor with id '" + id + "' has been registered!");
 		}
-		if (!(processor instanceof DataProcessor<?, ?>)) {
-			throw new ServiceException("Synchronous WebRequests can only be handled by DataProcessors");
-		}
 		if (webRequest.getUrl() == null) {
 			return null;
 		}
-		DataProcessor<?, ?> dataProcessor = (DataProcessor<?, ?>) processor;
-		try {
-			Future<ReplyAdapter> future = getWebRequestTask(webRequest, progressListener, false);
-			if (future != null) {
-				webRequests.put(webRequest.getId(), new WebRequestFutureContainer(webRequest, future));
-				return dataProcessor.obtainDataObjectFromWebReply(future.get());
+
+		if (processor instanceof SynchronousProcessor<?>) {
+			SynchronousProcessor<?> synchronousProcessor = (SynchronousProcessor<?>) processor;
+			try {
+				Future<ReplyAdapter> future = getWebRequestTask(webRequest, progressListener, false);
+				if (future != null) {
+					webRequests.put(webRequest.getId(), new WebRequestFutureContainer(webRequest, future));
+					return synchronousProcessor.obtainDataObjectFromWebReply(future.get());
+				}
+			} catch (Throwable tr) {
+				LOGGER.error("Error getting result!", tr);
 			}
-		} catch (Throwable tr) {
-			LOGGER.error("Error getting result!", tr);
+		} else {
+			throw new ServiceException("Invalid ServiceProcessor for sync WebRequest, only instances of SynchronousProcessor are allowed");
 		}
 		return null;
 	}

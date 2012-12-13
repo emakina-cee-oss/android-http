@@ -160,6 +160,9 @@ public class WebClientHttpURLConnection extends WebClient {
 		case GET:
 			connection.setRequestMethod("GET");
 			break;
+		case HEAD:
+			connection.setRequestMethod("HEAD");
+			break;
 		}
 	}
 

@@ -36,6 +36,7 @@ import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.RedirectHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.HttpClientParams;
@@ -127,6 +128,8 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 
 			if (webRequest.getRequestType() == Type.GET) {
 				requestBase = new HttpGet(webRequest.getUrl().toURI());
+			} else if (webRequest.getRequestType() == Type.HEAD) {
+				requestBase = new HttpHead(webRequest.getUrl().toURI());
 			} else if (webRequest.getRequestType() == Type.POST) {
 				HttpPost post = new HttpPost(webRequest.getUrl().toURI());
 
