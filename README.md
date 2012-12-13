@@ -22,3 +22,10 @@ Apache License, Version 2.0. Please refer to LICENSE and NOTICE for additional i
 
 ## Example
 Example code illustrating a simple web request can be found in the example/ directory.
+
+## Opensource Software used:
+- [ksoap2-android](http://code.google.com/p/ksoap2-android)
+- [kXML](http://kxml.sourceforge.net/)
+- [SLF4J](http://www.slf4j.org/)
+- [XMLPULL](http://www.xmlpull.org/)
+- [kObjects](http://kobjects.sourceforge.net/)
