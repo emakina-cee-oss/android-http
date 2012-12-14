@@ -41,7 +41,7 @@ import at.diamonddogs.data.dataobjects.WebRequest;
  *            the type of object created by this processor
  */
 public abstract class SynchronousXmlProcessorNoDom<T> extends DataProcessor<InputSource, T> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(XMLProcessorNoDom.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SynchronousXmlProcessorNoDom.class);
 
 	/**
 	 * The reader to be used
