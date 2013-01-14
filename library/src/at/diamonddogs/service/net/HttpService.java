@@ -224,6 +224,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @param progressListeners
 	 *            an array of {@link DownloadProgressListener} that will receive
 	 *            callbacks from their corresponding {@link WebRequest}
+	 * @return an array of results
 	 */
 	public Object[] runSynchronousWebRequests(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
 		Object[] ret = new Object[webRequests.length];
