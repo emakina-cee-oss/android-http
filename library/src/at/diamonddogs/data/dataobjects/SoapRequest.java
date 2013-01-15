@@ -56,7 +56,7 @@ public class SoapRequest extends WebRequest {
 		this.numberOfRetries = request.numberOfRetries;
 		this.retryInterval = request.retryInterval;
 		this.tmpFile = request.tmpFile;
-		this.postData = request.postData;
+		this.httpEntity = request.httpEntity;
 	}
 
 	@SuppressWarnings("javadoc")
