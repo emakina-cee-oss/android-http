@@ -92,4 +92,10 @@ public class ReplyAdapter {
 	public void setRequest(Request request) {
 		this.request = request;
 	}
+
+	@Override
+	public String toString() {
+		return "ReplyAdapter [status=" + status + ", throwable=" + throwable + ", reply=" + reply + ", request=" + request + "]";
+	}
+
 }

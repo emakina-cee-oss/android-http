@@ -140,6 +140,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 
 			configureConnection();
 
+			LOGGER.info("Running RequestBase: " + requestBase);
 			response = httpClient.execute(requestBase);
 			reply = runRequest(response);
 
