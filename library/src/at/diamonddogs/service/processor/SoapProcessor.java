@@ -56,9 +56,9 @@ public abstract class SoapProcessor<T> extends ServiceProcessor {
 			SoapUtil.printSoapEnvelopeToStdout(e);
 			Object result = null;
 			try {
-				result = (SoapObject) e.getResponse();
+				result = e.getResponse();
 			} catch (Throwable tr) {
-				LOGGER.warn("Problem while getting soap result.");
+				LOGGER.warn("Problem while getting soap result.", tr);
 				return;
 			}
 
