@@ -64,6 +64,11 @@ public abstract class ServiceProcessor {
 	public static final String BUNDLE_EXTRA_MESSAGE_REQUEST = "RETURN_MESSAGE_REQUEST";
 
 	/**
+	 * {@link Bundle} key for the HTTP status code returned by the operation
+	 */
+	public static final String BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE = "BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE";
+
+	/**
 	 * Called when a {@link Reply} is ready for processing
 	 * 
 	 * @param c
