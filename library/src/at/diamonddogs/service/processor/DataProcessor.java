@@ -68,6 +68,12 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor impl
 	 *            the resulting data that was created from INPUT
 	 * 
 	 * @return a message object
+	 * 
+	 *         TODO: since we have to change this method anyway (to provide the
+	 *         http status code), we might as well pass the whole ReplyAdapter
+	 *         in order to have access to the request (which according to
+	 *         {@link ServiceProcessor} contract needs to provide the
+	 *         {@link WebRequest} in a bundle.
 	 */
 	protected abstract Message createReturnMessage(OUTPUT data);
 
