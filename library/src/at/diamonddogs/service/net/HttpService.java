@@ -196,8 +196,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * 
 	 * @param webRequest
 	 *            the {@link WebRequest} to run
-	 * @return
-	 *         The object created by the
+	 * @return The object created by the
 	 *         {@link DataProcessor#obtainDataObjectFromWebReply(ReplyAdapter)}
 	 *         method of the {@link DataProcessor} registered for this request,
 	 *         or <code>null</code> if the request failed.
@@ -218,8 +217,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 *            the {@link WebRequest} to run
 	 * @param progressListener
 	 *            an optional {@link ProgressListener}
-	 * @return
-	 *         The object created by the
+	 * @return The object created by the
 	 *         {@link DataProcessor#obtainDataObjectFromWebReply(ReplyAdapter)}
 	 *         method of the {@link DataProcessor} registered for this request,
 	 *         or <code>null</code> if the request failed.
@@ -382,7 +380,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	@Override
 	public void onWebReply(WebClient webClient, ReplyAdapter reply) {
-		LOGGER.debug("onWebReply: " + reply.getStatus());
+		LOGGER.debug("onWebReply: " + reply.getStatus() + " from: " + reply.getRequest().getUrl());
 		webRequests.remove(webClient.getWebRequest().getId());
 		dispatchWebReplyProcessor(reply, getHandler(reply.getRequest()));
 	}
