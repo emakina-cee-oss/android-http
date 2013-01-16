@@ -187,6 +187,63 @@ public class HttpService extends Service implements WebClientReplyListener {
 	}
 
 	/**
+	 * Executes an array of {@link WebRequest} synchronously using
+	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
+	 * 
+	 * @param webRequests
+	 *            the {@link WebRequest}s to run
+	 * @return an array of length webRequest.length containing return objects
+	 */
+	public Object[] runSynchronousWebRequests(WebRequest[] webRequests) {
+		return runSynchronousWebRequests(webRequests, new DownloadProgressListener[0]);
+	}
+
+	/**
+	 * * Executes an array of {@link WebRequest} synchronously using
+	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
+	 * 
+	 * @param webRequests
+	 *            the {@link WebRequest}s to run
+	 * @param progressListener
+	 *            a single {@link DownloadProgressListener} that will receive
+	 *            callbacks from each {@link WebRequest}. Every time a new
+	 *            {@link WebRequest} is started,
+	 *            {@link DownloadProgressListener#downloadSize(long)} is called
+	 * @return an array of length webRequest.length containing return objects
+	 */
+	public Object[] runSynchronousWebRequests(WebRequest[] webRequests, DownloadProgressListener progressListener) {
+		return runSynchronousWebRequests(webRequests, new DownloadProgressListener[] { progressListener });
+	}
+
+	/**
+	 * * Executes an array of {@link WebRequest} synchronously using
+	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
+	 * 
+	 * @param webRequests
+	 *            the {@link WebRequest}s to run
+	 * @param progressListeners
+	 *            an array of {@link DownloadProgressListener} that will receive
+	 *            callbacks from their corresponding {@link WebRequest}
+	 * @return an array of results
+	 */
+	public Object[] runSynchronousWebRequests(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
+		Object[] ret = new Object[webRequests.length];
+		for (int i = 0; i < webRequests.length; i++) {
+			if (progressListeners.length == 0) {
+				ret[i] = runSynchronousWebRequest(webRequests[i], null);
+			} else if (progressListeners.length == 1) {
+				ret[i] = runSynchronousWebRequest(webRequests[i], progressListeners[0]);
+			} else if (progressListeners.length != webRequests.length) {
+				throw new ServiceException("progressListeners.length must be 0, 1 or equal to webRequest.length");
+			} else {
+				ret[i] = runSynchronousWebRequest(webRequests[i], progressListeners[i]);
+			}
+
+		}
+		return ret;
+	}
+
+	/**
 	 * Executes a {@link WebRequest} on the same {@link Thread} this method is
 	 * called. Beware that calling
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest,DownloadProgressListener)}

@@ -28,7 +28,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Message;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebReply;
@@ -36,19 +35,13 @@ import at.diamonddogs.data.dataobjects.WebRequest;
 
 /**
  * Xml processor for replies that cannot be handled using a DOM (mostly due to
- * memory issues)
+ * memory issues), supports synchronous {@link WebRequest}s
  * 
  * @param <T>
- *            the output type
- * @deprecated this class remains in the code base due to backwards
- *             compatibility reasons. It will receive updates and bugfixes,
- *             however, new code should use {@link SynchronousXmlProcessorNoDom}
- *             instead
+ *            the type of object created by this processor
  */
-@Deprecated
-public abstract class XMLProcessorNoDom<T> extends ServiceProcessor {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(XMLProcessorNoDom.class);
+public abstract class SynchronousXmlProcessorNoDom<T> extends DataProcessor<InputSource, T> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SynchronousXmlProcessorNoDom.class);
 
 	/**
 	 * The reader to be used
@@ -58,6 +51,44 @@ public abstract class XMLProcessorNoDom<T> extends ServiceProcessor {
 	 * Instance of the handler for a particular XML document.
 	 */
 	protected XmlProcessorNoDomHandler xmlHandler;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected InputSource createParsedObjectFromByteArray(byte[] data) {
+		return new InputSource(new InputStreamReader(new ByteArrayInputStream(data)));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected T parse(InputSource inputObject) {
+		try {
+			reader.parse(inputObject);
+		} catch (Throwable tr) {
+			return null;
+		}
+		return xmlHandler.getData();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
+		try {
+			if (r.getStatus() == Status.OK) {
+				ProcessingData<T> pData = processData(((WebReply) r.getReply()).getData());
+				handler.sendMessage(pData.returnMessage);
+			} else {
+				handler.sendMessage(createErrorMessage(getProcessorID(), (WebRequest) r.getRequest()));
+			}
+		} catch (Throwable tr) {
+			handler.sendMessage(createErrorMessage(getProcessorID(), (WebRequest) r.getRequest()));
+		}
+	}
 
 	/**
 	 * Sets the {@link XmlProcessorNoDomHandler} that will be used to parse the
@@ -76,23 +107,6 @@ public abstract class XMLProcessorNoDom<T> extends ServiceProcessor {
 		}
 	}
 
-	@Override
-	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
-		if (r.getStatus() == Status.OK) {
-			try {
-				byte[] data = ((WebReply) r.getReply()).getData();
-				InputSource inSource = new InputSource(new InputStreamReader(new ByteArrayInputStream(data)));
-				reader.parse(inSource);
-				handler.sendMessage(createReturnMessage(xmlHandler.getData()));
-			} catch (Throwable tr) {
-				LOGGER.warn("Failed to parse document", tr);
-				handler.sendMessage(createErrorMessage(getProcessorID(), tr, (WebRequest) r.getRequest()));
-			}
-		}
-	}
-
-	protected abstract Message createReturnMessage(T data);
-
 	/**
 	 * Wrapper for {@link DefaultHandler} that allows obtaining the data object
 	 */
@@ -104,4 +118,5 @@ public abstract class XMLProcessorNoDom<T> extends ServiceProcessor {
 		 */
 		public abstract T getData();
 	}
+
 }

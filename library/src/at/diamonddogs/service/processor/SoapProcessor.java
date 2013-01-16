@@ -38,7 +38,7 @@ import at.diamonddogs.util.SoapUtil;
  * @param <T>
  *            the output object
  */
-public abstract class SoapProcessor<T> extends ServiceProcessor {
+public abstract class SoapProcessor<T> extends ServiceProcessor implements SynchronousProcessor<T> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoapProcessor.class);
 
@@ -81,6 +81,15 @@ public abstract class SoapProcessor<T> extends ServiceProcessor {
 		} else {
 			handler.sendMessage(createErrorMessage(getProcessorID(), (WebRequest) r.getRequest()));
 		}
+	}
+
+	/**
+	 * Will throw an {@link UnsupportedOperationException} if not overridden by
+	 * the subclass.
+	 */
+	@Override
+	public T obtainDataObjectFromWebReply(ReplyAdapter reply) {
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	/**
