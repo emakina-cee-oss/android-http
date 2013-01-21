@@ -250,10 +250,10 @@ public class HttpServiceAssister {
 		synchronized (monitor) {
 			try {
 				monitor.wait(SYNC_REQUEST_BINDING_TIMEOUT);
-				return false;
+				return httpService != null;
 			} catch (Throwable tr) {
 				LOGGER.debug("Thread Interruption", tr);
-				return true;
+				return httpService != null;
 			}
 		}
 	}
@@ -314,7 +314,9 @@ public class HttpServiceAssister {
 				throw new IllegalArgumentException("Binder must be of type HttpServiceBinder");
 			}
 			httpService = ((HttpServiceBinder) service).getHttpService();
-
+			synchronized (monitor) {
+				monitor.notify();
+			}
 			WebRequestInformation webRequestInformation;
 			synchronized (pendingWebRequests) {
 				while ((webRequestInformation = pendingWebRequests.poll()) != null && httpService != null) {
