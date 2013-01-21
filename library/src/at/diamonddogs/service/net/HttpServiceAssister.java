@@ -155,8 +155,8 @@ public class HttpServiceAssister {
 	 *            the {@link WebRequest}
 	 * @return the {@link WebRequest} id as {@link String}
 	 */
-	public String runWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor serviceProcessor) {
-		return runWebRequest(handler, webRequest, null);
+	public void runWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor serviceProcessor) {
+		runWebRequest(handler, webRequest, serviceProcessor, null);
 	}
 
 	/**
@@ -335,6 +335,7 @@ public class HttpServiceAssister {
 					if (!httpService.isProcessorRegistered(webRequestInformation.serviceProcessor.getProcessorID())) {
 						httpService.registerProcessor(webRequestInformation.serviceProcessor);
 					}
+					LOGGER.debug("Running " + webRequestInformation.webRequest + " after service binding!");
 					httpService.runWebRequest(webRequestInformation.handler, webRequestInformation.webRequest,
 							webRequestInformation.progressListener);
 				}
