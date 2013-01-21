@@ -49,7 +49,7 @@ public class StartActivity extends Activity {
 		adapter.add(new Example("HttpExampleActivity",
 				"Explains how to issue, process and handle asynchronous and synchronous webrequests.", HttpExampleActivity.class));
 		adapter.add(new Example("HttpServiceAssisterExampleActivity", "Explains how to use the HttpServiceAssister",
-				HttpserviceassisterExampleActivity.class));
+				HttpServiceAssisterExampleActivity.class));
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new OnItemClickListener() {
 

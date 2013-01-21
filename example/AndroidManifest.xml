@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name="at.diamonddogs.example.http.activity.HttpExampleActivity" />
-        <activity android:name="at.diamonddogs.example.http.activity.HttpserviceassisterExampleActivity" />
+        <activity android:name="at.diamonddogs.example.http.activity.HttpServiceAssisterExampleActivity" />
 
         <provider
             android:name="at.diamonddogs.contentprovider.CacheContentProvider"
