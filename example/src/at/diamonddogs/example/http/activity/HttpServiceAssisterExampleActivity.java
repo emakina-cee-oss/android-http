@@ -10,12 +10,18 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.widget.TextView;
 import android.widget.Toast;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.example.http.R;
+import at.diamonddogs.example.http.dataobject.Weather;
+import at.diamonddogs.example.http.processor.WeatherProcessor;
 import at.diamonddogs.service.net.HttpServiceAssister;
 import at.diamonddogs.service.processor.HeadRequestProcessor;
+import at.diamonddogs.service.processor.ServiceProcessor;
 
 /**
  * {@link HttpServiceAssisterExampleActivity} illustrates the use of the
@@ -27,11 +33,23 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 
 	private HttpServiceAssister assister;
 
+	/**
+	 * Text view to display a weather string
+	 */
+	private TextView text;
+
+	/**
+	 * Text view to display the temperature
+	 */
+	private TextView temperature;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.httpserviceassisterexample);
 		assister = new HttpServiceAssister(this);
+		text = (TextView) findViewById(R.id.httpserviceassisterexampleactivity_text);
+		temperature = (TextView) findViewById(R.id.httpserviceassisterexampleactivity_temperature);
 	}
 
 	/**
@@ -44,8 +62,42 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 		assister.bindService();
 		String weatherUrl = getWeatherUrl("Austria", "Vienna");
 		LOGGER.info("URL: " + weatherUrl);
+
+		// we can start WebRequests without having to wait for service
+		// binding.
+		// HttpServiceAssister will queue asynchronous WebRequests and
+		// execute
+		// them once a connection has been established. The ServiceProcessor
+		// will automatically be registered as well.
+
+		// --- SYNC WEB REQUEST
+
+		// Synchronous WebRequest cannot be executed on the Main (UI) thread
+		// using HttpServiceAssister (technical limitation). The actual request
+		// will stick block the current thread though!
 		new ExampleAsyncTask().execute(weatherUrl);
 
+		// RESETTING THE ASSISTER FOR DEMONSTRATION PURPOSES!
+		assister.unbindService();
+		assister = new HttpServiceAssister(this);
+		assister.bindService();
+
+		// --- ASYNC WEB REQUEST
+
+		WebRequest asyncRequest = new WebRequest();
+		// takes a String or URL object!
+		asyncRequest.setUrl(weatherUrl);
+
+		// The processorid tells HttpService what to do once a web reply has
+		// been received.
+		// You MUST set a processor id and the processor needs to be registered
+		// with HttpService.
+		// You may use DummyProcessor.ID to circumvent processor implementation
+		asyncRequest.setProcessorId(WeatherProcessor.ID);
+
+		// run the web request, WeatherHandler will receive a callback once the
+		// web request has been finished
+		assister.runWebRequest(new WeatherHandler(), asyncRequest, new WeatherProcessor());
 	}
 
 	/**
@@ -78,6 +130,11 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 		return u.toString();
 	}
 
+	/**
+	 * This implementation of {@link AsyncTask} is used to execute a synchronous
+	 * HEAD {@link WebRequest}. As in {@link HttpExampleActivity}, the headers
+	 * will be logged and not displayed on the UI.
+	 */
 	private final class ExampleAsyncTask extends AsyncTask<String, Integer, Object> {
 
 		/**
@@ -85,23 +142,6 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 		 */
 		@Override
 		protected Object doInBackground(String... params) {
-			// we can start WebRequests without having to wait for service
-			// binding.
-			// HttpServiceAssister will queue asynchronous WebRequests and
-			// execute
-			// them once a connection has been established. The ServiceProcessor
-			// will automatically be registered as well.
-
-			// --- SYNC WEB REQUEST
-
-			// sync webrequest POC, usually you should not execute synchronous
-			// web
-			// requests on the main thread. The result of this call will be
-			// logged,
-			// but not displayed in the UI. Please be aware of the fact that
-			// this
-			// call will wait for a the service binging as well as the actual
-			// WebRequest.
 			WebRequest syncWebRequest = new WebRequest();
 			syncWebRequest.setUrl(params[0]);
 			syncWebRequest.setRequestType(Type.HEAD);
@@ -132,6 +172,29 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 			} else {
 				Toast.makeText(HttpServiceAssisterExampleActivity.this, "Error while optaining headers", Toast.LENGTH_SHORT).show();
 			}
+		}
+	}
+
+	/**
+	 * This handler receives a callback once the web request has been processed.
+	 */
+	private class WeatherHandler extends Handler {
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			if (msg.what == WeatherProcessor.ID) {
+				if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
+					Weather w = (Weather) msg.obj;
+					text.setText(w.getText());
+					temperature.setText(String.valueOf(w.getTemperature()));
+				} else {
+					Toast.makeText(HttpServiceAssisterExampleActivity.this, "Error fetching weather", Toast.LENGTH_LONG).show();
+				}
+			}
+
 		}
 	}
 
