@@ -268,11 +268,11 @@ public class HttpServiceAssister {
 		if (!(serviceProcessor instanceof SynchronousProcessor<?>)) {
 			throw new ServiceException("Supplied processor was no SynchronousProcessor");
 		}
-		if (httpService == null) {
-			throw new ServiceException("httpService was null!");
-		}
 		if (!waitForHttpService()) {
 			throw new ServiceException("Timeout reached while waiting for service binding");
+		}
+		if (httpService == null) {
+			throw new ServiceException("httpService was null!");
 		}
 		if (!httpService.isProcessorRegistered(serviceProcessor.getProcessorID())) {
 			httpService.registerProcessor(serviceProcessor);
