@@ -15,7 +15,6 @@
  */
 package at.diamonddogs.service.net;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -90,7 +89,7 @@ public class HttpServiceAssister {
 	 * to be processed once a connection to {@link HttpService} has been
 	 * established.
 	 */
-	private Queue<WebRequestInformation> pendingWebRequests;
+	private final Queue<WebRequestInformation> pendingWebRequests;
 
 	/**
 	 * This monitor {@link Object} is used to wait for a connection to
@@ -103,7 +102,7 @@ public class HttpServiceAssister {
 	 */
 	public HttpServiceAssister(Context context) {
 		this.context = context;
-		this.pendingWebRequests = (LinkedList<WebRequestInformation>) Collections.synchronizedList(new LinkedList<WebRequestInformation>());
+		this.pendingWebRequests = new LinkedList<WebRequestInformation>();
 	}
 
 	/**
@@ -291,7 +290,9 @@ public class HttpServiceAssister {
 	 */
 	private void addWebRequestToQueue(Handler handler, WebRequest webRequest, DownloadProgressListener progressListener,
 			ServiceProcessor serviceProcessor) {
-		pendingWebRequests.add(new WebRequestInformation(handler, webRequest, progressListener, serviceProcessor));
+		synchronized (pendingWebRequests) {
+			pendingWebRequests.add(new WebRequestInformation(handler, webRequest, progressListener, serviceProcessor));
+		}
 	}
 
 	/**
@@ -315,12 +316,14 @@ public class HttpServiceAssister {
 			httpService = ((HttpServiceBinder) service).getHttpService();
 
 			WebRequestInformation webRequestInformation;
-			while ((webRequestInformation = pendingWebRequests.poll()) != null && httpService != null) {
-				if (!httpService.isProcessorRegistered(webRequestInformation.serviceProcessor.getProcessorID())) {
-					httpService.registerProcessor(webRequestInformation.serviceProcessor);
+			synchronized (pendingWebRequests) {
+				while ((webRequestInformation = pendingWebRequests.poll()) != null && httpService != null) {
+					if (!httpService.isProcessorRegistered(webRequestInformation.serviceProcessor.getProcessorID())) {
+						httpService.registerProcessor(webRequestInformation.serviceProcessor);
+					}
+					httpService.runWebRequest(webRequestInformation.handler, webRequestInformation.webRequest,
+							webRequestInformation.progressListener);
 				}
-				httpService.runWebRequest(webRequestInformation.handler, webRequestInformation.webRequest,
-						webRequestInformation.progressListener);
 			}
 		}
 
