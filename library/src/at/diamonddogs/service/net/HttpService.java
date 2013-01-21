@@ -215,7 +215,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	}
 
 	/**
-	 * * Executes an array of {@link WebRequest} synchronously using
+	 * Executes an array of {@link WebRequest} synchronously using
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
 	 * 
 	 * @param webRequests
@@ -232,7 +232,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	}
 
 	/**
-	 * * Executes an array of {@link WebRequest} synchronously using
+	 * Executes an array of {@link WebRequest} synchronously using
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
 	 * 
 	 * @param webRequests
@@ -316,6 +316,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	}
 
 	protected Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
+		@SuppressWarnings("unchecked")
 		Future<ReplyAdapter>[] ret = new Future[webRequests.length];
 		for (int i = 0; i < webRequests.length; i++) {
 			if (progressListeners.length == 0) {
