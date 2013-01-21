@@ -197,6 +197,12 @@ public class HttpServiceAssister {
 	 * {@link WebRequest} must be a {@link DataProcessor}, otherwise, an
 	 * exception will be thrown.
 	 * 
+	 * WARNING: Unlike {@link HttpService#runSynchronousWebRequest(WebRequest)},
+	 * this method must be executed from a thread that is not the Main (UI)
+	 * thread. Calling this method from the Main (UI) thread will always result
+	 * in a timeout! This behaviour is due to technical constraints related to
+	 * service binding.
+	 * 
 	 * @param webRequest
 	 *            the {@link WebRequest} to run
 	 * @param serviceProcessor
@@ -219,6 +225,12 @@ public class HttpServiceAssister {
 	 * on the main thread may cause ANR issues. The processor handling the
 	 * {@link WebRequest} must be a {@link DataProcessor}, otherwise, an
 	 * exception will be thrown.
+	 * 
+	 * WARNING: Unlike {@link HttpService#runSynchronousWebRequest(WebRequest)},
+	 * this method must be executed from a thread that is not the Main (UI)
+	 * thread. Calling this method from the Main (UI) thread will always result
+	 * in a timeout! This behaviour is due to technical constraints related to
+	 * service binding.
 	 * 
 	 * @param webRequest
 	 *            the {@link WebRequest} to run
