@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.diamonddogs.example.http;
+package at.diamonddogs.example.http.dataobject;
 
 /**
- * @author siyb
  * 
  */
 public class Weather {

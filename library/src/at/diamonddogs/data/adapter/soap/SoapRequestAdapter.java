@@ -18,6 +18,7 @@ package at.diamonddogs.data.adapter.soap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.apache.http.entity.ByteArrayEntity;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.kxml2.io.KXmlSerializer;
@@ -68,7 +69,7 @@ public class SoapRequestAdapter {
 		request.addHeaderField("Content-Type", "text/xml");
 		request.addHeaderField("Connection", "close");
 		request.addHeaderField("Content-Length", String.valueOf(requestData.length));
-		request.setPostData(requestData);
+		request.setHttpEntity(new ByteArrayEntity(requestData));
 		request.setEnvelope(envelope);
 	}
 

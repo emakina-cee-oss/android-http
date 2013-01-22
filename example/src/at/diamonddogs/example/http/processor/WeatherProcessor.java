@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.diamonddogs.example.http;
+package at.diamonddogs.example.http.processor;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,6 +29,7 @@ import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.example.http.dataobject.Weather;
 import at.diamonddogs.service.processor.ServiceProcessor;
 import at.diamonddogs.service.processor.XMLProcessor;
 import at.diamonddogs.util.CacheManager.CachedObject;

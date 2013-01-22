@@ -15,6 +15,7 @@
  */
 package at.diamonddogs.data.dataobjects;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -58,4 +59,11 @@ public class WebReply implements Reply {
 	public void setReplyHeader(Map<String, List<String>> replyHeader) {
 		this.replyHeader = replyHeader;
 	}
+
+	@Override
+	public String toString() {
+		return "WebReply [httpStatusCode=" + httpStatusCode + ", data=" + (data == null ? null : Arrays.toString(data)) + ", replyHeader="
+				+ replyHeader + "]";
+	}
+
 }

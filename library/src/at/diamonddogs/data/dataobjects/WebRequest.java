@@ -16,12 +16,11 @@
 package at.diamonddogs.data.dataobjects;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.http.HttpEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +68,11 @@ public class WebRequest implements Request {
 	private Type requestType = Type.GET;
 
 	/**
+	 * An arbitrary entity (e.g. for post)
+	 */
+	protected HttpEntity httpEntity;
+
+	/**
 	 * The targe url of the request
 	 */
 	protected URL url;
@@ -114,35 +118,9 @@ public class WebRequest implements Request {
 	protected Pair<Boolean, TempFile> tmpFile = new Pair<Boolean, TempFile>(false, null);
 
 	/**
-	 * Data to be posted (only valid if {@link WebRequest#requestType} is
-	 * Type.POST
-	 */
-	protected byte[] postData;
-
-	/**
 	 * A flag to indicate if this {@link WebRequest} has been cancelled
 	 */
 	protected boolean isCancelled = false;
-
-	/**
-	 * Upload file information
-	 */
-	protected UploadFile uploadFile;
-
-	/**
-	 * Post value list
-	 */
-	protected List<Pair<String, String>> postValues;
-
-	@SuppressWarnings("javadoc")
-	public UploadFile getUploadFile() {
-		return uploadFile;
-	}
-
-	@SuppressWarnings("javadoc")
-	public void setUploadFile(UploadFile uploadFile) {
-		this.uploadFile = uploadFile;
-	}
 
 	@SuppressWarnings("javadoc")
 	public boolean isCancelled() {
@@ -301,47 +279,12 @@ public class WebRequest implements Request {
 	}
 
 	@SuppressWarnings("javadoc")
-	public byte[] getPostData() {
-		return postData;
-	}
-
-	/**
-	 * Do not use postValues and postData at the same time. These values will
-	 * override each other.
-	 * 
-	 * @param postData
-	 */
-	public void setPostData(byte[] postData) {
-		this.postData = postData;
+	public HttpEntity getHttpEntity() {
+		return httpEntity;
 	}
 
 	@SuppressWarnings("javadoc")
-	public void addPostValue(String key, String value) {
-		addPostValue(new Pair<String, String>(key, value));
+	public void setHttpEntity(HttpEntity httpEntity) {
+		this.httpEntity = httpEntity;
 	}
-
-	@SuppressWarnings("javadoc")
-	public void addPostValue(Pair<String, String> value) {
-		if (postValues == null) {
-			postValues = new ArrayList<Pair<String, String>>();
-		}
-		postValues.add(value);
-	}
-
-	@SuppressWarnings("javadoc")
-	public List<Pair<String, String>> getPostValues() {
-		return postValues;
-	}
-
-	/**
-	 * 
-	 * Will only be used if uploadfile is set.
-	 * 
-	 * @param postValues
-	 *            post values
-	 */
-	public void setPostValues(List<Pair<String, String>> postValues) {
-		this.postValues = postValues;
-	}
-
 }
