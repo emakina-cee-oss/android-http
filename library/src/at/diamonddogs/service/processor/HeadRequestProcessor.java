@@ -51,12 +51,7 @@ public class HeadRequestProcessor extends ServiceProcessor implements Synchronou
 		WebRequest request = ((WebRequest) r.getRequest());
 		Message m;
 		if (r.getStatus() == Status.OK) {
-			m = new Message();
-			m.what = ID;
-			m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
-			m.getData().putParcelable(ServiceProcessor.BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest(request));
-			m.obj = reply.getReplyHeader();
-
+			m = createReturnMessage(r);
 		} else {
 			m = createErrorMessage(ID, request);
 		}
@@ -88,6 +83,16 @@ public class HeadRequestProcessor extends ServiceProcessor implements Synchronou
 			return null;
 		}
 		return ((WebReply) reply.getReply()).getReplyHeader();
+	}
+
+	private Message createReturnMessage(ReplyAdapter r) {
+		Message m = new Message();
+		m.what = ID;
+		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
+		m.getData().putParcelable(ServiceProcessor.BUNDLE_EXTRA_MESSAGE_REQUEST,
+				new ParcelableAdapterWebRequest((WebRequest) r.getRequest()));
+		m.obj = ((WebReply) r.getReply()).getReplyHeader();
+		return m;
 	}
 
 }
