@@ -74,10 +74,11 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 
 		// Synchronous WebRequest cannot be executed on the Main (UI) thread
 		// using HttpServiceAssister (technical limitation). The actual request
-		// will stick block the current thread though!
+		// will still block the current thread though!
 		new ExampleAsyncTask().execute(weatherUrl);
 
-		// RESETTING THE ASSISTER FOR DEMONSTRATION PURPOSES!
+		// RESETTING THE ASSISTER FOR DEMONSTRATION PURPOSES! REBINDING THE
+		// SERVICE
 		assister.unbindService();
 		assister = new HttpServiceAssister(this);
 		assister.bindService();
@@ -96,7 +97,9 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 		asyncRequest.setProcessorId(WeatherProcessor.ID);
 
 		// run the web request, WeatherHandler will receive a callback once the
-		// web request has been finished
+		// web request has been finished. This call is alway possible, if the
+		// HttpService is not bound yet, the WebRequest will be appended to a
+		// queue and processed when HttpService becomes available
 		assister.runWebRequest(new WeatherHandler(), asyncRequest, new WeatherProcessor());
 	}
 
