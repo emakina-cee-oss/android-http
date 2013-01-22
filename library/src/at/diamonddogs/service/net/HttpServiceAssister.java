@@ -308,6 +308,18 @@ public class HttpServiceAssister {
 	}
 
 	/**
+	 * Sets the standard {@link ServiceConnection} that is used to bind to
+	 * {@link HttpService}. This method has to be called before
+	 * {@link HttpServiceAssister#bindService()} in order to have any effect.
+	 * 
+	 * @param standardServiceConnection
+	 *            the connection to use
+	 */
+	public void setStandardServiceConnection(ServiceConnection standardServiceConnection) {
+		this.standardServiceConnection = standardServiceConnection;
+	}
+
+	/**
 	 * Default {@link ServiceConnection} implementation for
 	 * {@link HttpServiceAssister}. Override this class if you wish to provide a
 	 * custom implementation. Make sure to call
