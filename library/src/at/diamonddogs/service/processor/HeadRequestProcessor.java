@@ -47,7 +47,6 @@ public class HeadRequestProcessor extends ServiceProcessor implements Synchronou
 	 */
 	@Override
 	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
-		WebReply reply = ((WebReply) r.getReply());
 		WebRequest request = ((WebRequest) r.getRequest());
 		Message m;
 		if (r.getStatus() == Status.OK) {

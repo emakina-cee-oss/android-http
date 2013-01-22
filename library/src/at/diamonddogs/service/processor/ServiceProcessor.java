@@ -20,9 +20,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import at.diamonddogs.data.adapter.ReplyAdapter;
+import at.diamonddogs.data.adapter.parcelable.ParcelableAdapterWebReply;
 import at.diamonddogs.data.adapter.parcelable.ParcelableAdapterWebRequest;
 import at.diamonddogs.data.dataobjects.Reply;
 import at.diamonddogs.data.dataobjects.Request;
+import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.util.CacheManager.CachedObject;
 
@@ -34,11 +36,11 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  * 
  * Message Format (Error and Success): 
  * 1) m.what - _MUST_ be the processorID 
- * 2) m.arg1 - _MUST_ be either ServiceProcessor.RETURN_MESSAGE_FAIL or ServiceProcessor.RETURN_MESSAGE_OK
- * 3) the request must be provided using ServiceProcessor.BUNDLE_EXTRA_MESSAGE_REQUEST as bundle key
- * 4) a throwable should be provided using ServiceProcessor.BUNDLE_EXTRA_MESSAGE_THROWABLE as bundle key, IF m.arg1 == ServiceProcessor.RETURN_MESSAGE_FAIL
- * 
- * TODO: Implement a way to pass http status codes down to the handler, using the message created by processors
+ * 2) m.arg1 - _MUST_ be either {@link ServiceProcessor#RETURN_MESSAGE_FAIL} or {@link ServiceProcessor#RETURN_MESSAGE_OK}
+ * 3) the {@link Request} must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_REQUEST} as bundle key
+ * 4) the {@link Reply} must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_REPLY} as bundle key
+ * 5) the http status code must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE} as {@link Bundle} key
+ * 6) a {@link Throwable} should be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_THROWABLE} as {@link Bundle} key, IF {@link Message#arg1} == {@link ServiceProcessor#RETURN_MESSAGE_FAIL}
  */
 // @formatter:on
 public abstract class ServiceProcessor {
@@ -56,12 +58,17 @@ public abstract class ServiceProcessor {
 	/**
 	 * {@link Bundle} key for {@link Throwable}s caused during processing
 	 */
-	public static final String BUNDLE_EXTRA_MESSAGE_THROWABLE = "RETURN_MESSAGE_THROWABLE";
+	public static final String BUNDLE_EXTRA_MESSAGE_THROWABLE = "BUNDLE_EXTRA_MESSAGE_THROWABLE";
 
 	/**
 	 * {@link Bundle} key for the {@link Request} that was processed
 	 */
-	public static final String BUNDLE_EXTRA_MESSAGE_REQUEST = "RETURN_MESSAGE_REQUEST";
+	public static final String BUNDLE_EXTRA_MESSAGE_REQUEST = "BUNDLE_EXTRA_MESSAGE_REQUEST";
+
+	/**
+	 * {@link Bundle} key for the {@link Reply} that was processed
+	 */
+	public static final String BUNDLE_EXTRA_MESSAGE_REPLY = "BUNDLE_EXTRA_MESSAGE_REPLY";
 
 	/**
 	 * {@link Bundle} key for the HTTP status code returned by the operation
@@ -102,6 +109,18 @@ public abstract class ServiceProcessor {
 	 * @return the id of the processor
 	 */
 	public abstract int getProcessorID();
+
+	protected Message createReturnMessage(ReplyAdapter replyAdapter, Object data) {
+		Message m = new Message();
+		m.what = ((WebRequest) replyAdapter.getRequest()).getProcessorId();
+		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
+		Bundle dataBundle = new Bundle();
+		dataBundle.putParcelable(BUNDLE_EXTRA_MESSAGE_REPLY, new ParcelableAdapterWebReply((WebReply) replyAdapter.getReply()));
+		dataBundle.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest((WebRequest) replyAdapter.getRequest()));
+		dataBundle.putInt(BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE, ((WebReply) replyAdapter.getReply()).getHttpStatusCode());
+		m.setData(dataBundle);
+		return m;
+	}
 
 	/**
 	 * Creates a default error message for a {@link WebRequest}

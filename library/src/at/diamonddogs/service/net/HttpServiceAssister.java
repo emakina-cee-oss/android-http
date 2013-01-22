@@ -99,6 +99,9 @@ public class HttpServiceAssister {
 
 	/**
 	 * Default constructor
+	 * 
+	 * @param context
+	 *            a {@link Context} object.
 	 */
 	public HttpServiceAssister(Context context) {
 		this.context = context;
