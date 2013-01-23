@@ -45,7 +45,7 @@ import at.diamonddogs.data.dataobjects.WebReply;
  *             instead
  */
 @Deprecated
-public abstract class XMLProcessorNoDom<T> extends ServiceProcessor {
+public abstract class XMLProcessorNoDom<T> extends ServiceProcessor<T> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(XMLProcessorNoDom.class);
 
