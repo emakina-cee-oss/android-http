@@ -80,7 +80,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	/**
 	 * Contains all registered processors
 	 */
-	private SparseArray<ServiceProcessor> registeredProcessors;
+	private SparseArray<ServiceProcessor<?>> registeredProcessors;
 
 	/**
 	 * Maps handler to {@link WebRequest}s
@@ -108,7 +108,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		super.onCreate();
 		workerQueue = new WorkerQueue(POOL_SIZE_CORE, POOL_SIZE_MAX, POOL_KEEPALIVE);
 		webRequestHandlerMap = Collections.synchronizedMap(new HashMap<Handler, List<WebRequest>>());
-		registeredProcessors = new SparseArray<ServiceProcessor>();
+		registeredProcessors = new SparseArray<ServiceProcessor<?>>();
 		webRequests = Collections.synchronizedMap(new HashMap<String, WebRequestFutureContainer>());
 	}
 
@@ -171,7 +171,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		}
 
 		addRequestToHandlerMap(handler, webRequest);
-		ServiceProcessor processor = registeredProcessors.get(webRequest.getProcessorId());
+		ServiceProcessor<?> processor = registeredProcessors.get(webRequest.getProcessorId());
 		if (processor == null) {
 			int id = webRequest.getProcessorId();
 			if (id == -1) {
@@ -347,7 +347,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 			return null;
 		}
 
-		ServiceProcessor processor = registeredProcessors.get(webRequest.getProcessorId());
+		ServiceProcessor<?> processor = registeredProcessors.get(webRequest.getProcessorId());
 		if (processor == null) {
 			int id = webRequest.getProcessorId();
 			if (id == -1) {
@@ -428,7 +428,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @param processor
 	 *            an instance of the {@link ServiceProcessor} to register
 	 */
-	public void registerProcessor(ServiceProcessor processor) {
+	public void registerProcessor(ServiceProcessor<?> processor) {
 		int processorId = processor.getProcessorID();
 		if (isProcessorRegistered(processorId)) {
 			if (registeredProcessors.get(processorId).getClass() != processor.getClass()) {
@@ -471,7 +471,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 *            the id of the {@link ServiceProcessor} to obtain
 	 * @return a {@link ServiceProcessor}
 	 */
-	public ServiceProcessor getRegisteredProcessorById(int id) {
+	public ServiceProcessor<?> getRegisteredProcessorById(int id) {
 		return registeredProcessors.get(id);
 	}
 
@@ -502,9 +502,9 @@ public class HttpService extends Service implements WebClientReplyListener {
 		}
 	}
 
-	private ServiceProcessor getProcessor(Request webRequest) {
+	private ServiceProcessor<?> getProcessor(Request webRequest) {
 		int processorId = ((WebRequest) webRequest).getProcessorId();
-		ServiceProcessor processor = registeredProcessors.get(processorId);
+		ServiceProcessor<?> processor = registeredProcessors.get(processorId);
 		if (processor == null) {
 			throw new ProcessorExeception("No processor with id " + processorId);
 		}

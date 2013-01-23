@@ -158,7 +158,7 @@ public class HttpServiceAssister {
 	 *            the {@link WebRequest}
 	 * @return the {@link WebRequest} id as {@link String}
 	 */
-	public void runWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor serviceProcessor) {
+	public void runWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor<?> serviceProcessor) {
 		runWebRequest(handler, webRequest, serviceProcessor, null);
 	}
 
@@ -178,7 +178,7 @@ public class HttpServiceAssister {
 	 *            progress
 	 * @return the {@link WebRequest} id as {@link String}
 	 */
-	public void runWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor serviceProcessor,
+	public void runWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor<?> serviceProcessor,
 			DownloadProgressListener progressListener) {
 		if (httpService == null) {
 			LOGGER.info("httpService is null, appending WebRequest to queue for later processing: " + webRequest);
@@ -216,7 +216,7 @@ public class HttpServiceAssister {
 	 *         method of the {@link DataProcessor} registered for this request,
 	 *         or <code>null</code> if the request failed.
 	 */
-	public Object runSynchronousWebRequest(WebRequest webRequest, ServiceProcessor serviceProcessor) {
+	public Object runSynchronousWebRequest(WebRequest webRequest, ServiceProcessor<?> serviceProcessor) {
 		prepareForSyncRequest(serviceProcessor);
 		return httpService.runSynchronousWebRequest(webRequest);
 	}
@@ -247,7 +247,7 @@ public class HttpServiceAssister {
 	 *         method of the {@link DataProcessor} registered for this request,
 	 *         or <code>null</code> if the request failed.
 	 */
-	public Object runSynchronousWebRequest(WebRequest webRequest, ServiceProcessor serviceProcessor,
+	public Object runSynchronousWebRequest(WebRequest webRequest, ServiceProcessor<?> serviceProcessor,
 			DownloadProgressListener progressListener) {
 		prepareForSyncRequest(serviceProcessor);
 		return httpService.runSynchronousWebRequest(webRequest, progressListener);
@@ -279,7 +279,7 @@ public class HttpServiceAssister {
 	 * @param serviceProcessor
 	 *            the {@link ServiceProcessor} used for the {@link WebRequest}
 	 */
-	private void prepareForSyncRequest(ServiceProcessor serviceProcessor) {
+	private void prepareForSyncRequest(ServiceProcessor<?> serviceProcessor) {
 		if (!(serviceProcessor instanceof SynchronousProcessor<?>)) {
 			throw new ServiceException("Supplied processor was no SynchronousProcessor");
 		}
@@ -304,7 +304,7 @@ public class HttpServiceAssister {
 	 * @param serviceProcessor
 	 */
 	private void addWebRequestToQueue(Handler handler, WebRequest webRequest, DownloadProgressListener progressListener,
-			ServiceProcessor serviceProcessor) {
+			ServiceProcessor<?> serviceProcessor) {
 		synchronized (pendingWebRequests) {
 			pendingWebRequests.add(new WebRequestInformation(handler, webRequest, progressListener, serviceProcessor));
 		}
@@ -372,11 +372,11 @@ public class HttpServiceAssister {
 
 		private Handler handler;
 		private WebRequest webRequest;
-		private ServiceProcessor serviceProcessor;
+		private ServiceProcessor<?> serviceProcessor;
 		private DownloadProgressListener progressListener;
 
 		public WebRequestInformation(Handler handler, WebRequest webRequest, DownloadProgressListener progressListener,
-				ServiceProcessor serviceProcessor) {
+				ServiceProcessor<?> serviceProcessor) {
 			this.handler = handler;
 			this.webRequest = webRequest;
 			this.progressListener = progressListener;
