@@ -30,11 +30,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.RedirectHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
@@ -47,11 +45,8 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -62,7 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
-import android.util.Pair;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebReply;
@@ -146,6 +140,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 
 			configureConnection();
 
+			LOGGER.info("Running RequestBase: " + requestBase);
 			response = httpClient.execute(requestBase);
 			reply = runRequest(response);
 
@@ -161,26 +156,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 	}
 
 	private void handlePostParameters(HttpPost post) throws Throwable {
-		byte[] postData = webRequest.getPostData();
-		List<Pair<String, String>> postValues = webRequest.getPostValues();
-
-		if (postData != null && postValues != null) {
-			throw new IllegalArgumentException("WebRequest specifies post data and post values, which are mutually exclusive");
-		}
-
-		AbstractHttpEntity entity = null;
-
-		if (postData != null) {
-			entity = new ByteArrayEntity(postData);
-		}
-
-		if (postValues != null) {
-			List<NameValuePair> nvps = new ArrayList<NameValuePair>(webRequest.getPostValues().size());
-			for (Pair<String, String> keyValue : webRequest.getPostValues()) {
-				nvps.add(new BasicNameValuePair(keyValue.first, keyValue.second));
-			}
-			entity = new UrlEncodedFormEntity(nvps);
-		}
+		HttpEntity entity = webRequest.getHttpEntity();
 
 		if (entity != null) {
 			post.setEntity(entity);

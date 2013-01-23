@@ -37,6 +37,8 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  * 2) m.arg1 - _MUST_ be either ServiceProcessor.RETURN_MESSAGE_FAIL or ServiceProcessor.RETURN_MESSAGE_OK
  * 3) the request must be provided using ServiceProcessor.BUNDLE_EXTRA_MESSAGE_REQUEST as bundle key
  * 4) a throwable should be provided using ServiceProcessor.BUNDLE_EXTRA_MESSAGE_THROWABLE as bundle key, IF m.arg1 == ServiceProcessor.RETURN_MESSAGE_FAIL
+ * 
+ * TODO: Implement a way to pass http status codes down to the handler, using the message created by processors
  */
 // @formatter:on
 public abstract class ServiceProcessor {
@@ -62,6 +64,11 @@ public abstract class ServiceProcessor {
 	public static final String BUNDLE_EXTRA_MESSAGE_REQUEST = "RETURN_MESSAGE_REQUEST";
 
 	/**
+	 * {@link Bundle} key for the HTTP status code returned by the operation
+	 */
+	public static final String BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE = "BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE";
+
+	/**
 	 * Called when a {@link Reply} is ready for processing
 	 * 
 	 * @param c
@@ -76,7 +83,8 @@ public abstract class ServiceProcessor {
 	public abstract void processWebReply(Context c, ReplyAdapter r, Handler handler);
 
 	/**
-	 * Called if there the {@link Request} has a {@link CachedObject} available
+	 * Called if there is a {@link CachedObject} available for the
+	 * {@link Request} that is being processed
 	 * 
 	 * @param cachedObject
 	 *            the {@link CachedObject} related to the {@link Request}

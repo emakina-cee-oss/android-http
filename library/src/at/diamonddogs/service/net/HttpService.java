@@ -128,6 +128,22 @@ public class HttpService extends Service implements WebClientReplyListener {
 	}
 
 	/**
+	 * Convenience method that calls
+	 * {@link HttpService#runWebRequest(Handler, WebRequest, DownloadProgressListener)}
+	 * with a <code>null</code> {@link ProgressListener}
+	 * 
+	 * @param handler
+	 *            the handler that will be informed once the {@link WebRequest}
+	 *            has been completed
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @return
+	 */
+	public String runWebRequest(Handler handler, WebRequest webRequest) {
+		return runWebRequest(handler, webRequest, null);
+	}
+
+	/**
 	 * Runs a {@link WebRequest} asynchronously
 	 * 
 	 * @param handler
@@ -199,7 +215,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	}
 
 	/**
-	 * * Executes an array of {@link WebRequest} synchronously using
+	 * Executes an array of {@link WebRequest} synchronously using
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
 	 * 
 	 * @param webRequests
@@ -216,7 +232,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	}
 
 	/**
-	 * * Executes an array of {@link WebRequest} synchronously using
+	 * Executes an array of {@link WebRequest} synchronously using
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
 	 * 
 	 * @param webRequests
@@ -280,6 +296,47 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 *         or <code>null</code> if the request failed.
 	 */
 	public Object runSynchronousWebRequest(final WebRequest webRequest, final DownloadProgressListener progressListener) {
+		SynchronousProcessor<?> synchronousProcessor = (SynchronousProcessor<?>) registeredProcessors.get(webRequest.getProcessorId());
+		try {
+			return synchronousProcessor.obtainDataObjectFromWebReply(runSynchronousWebRequestFuture(webRequest, progressListener).get());
+		} catch (Throwable tr) {
+			LOGGER.error("Error getting result", tr);
+		}
+		return null;
+	}
+
+	protected Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests) {
+		return runSynchronousWebRequestsFuture(webRequests, new DownloadProgressListener[0]);
+	}
+
+	protected Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener progressListener) {
+		return runSynchronousWebRequestsFuture(webRequests, new DownloadProgressListener[] { progressListener });
+	}
+
+	protected Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
+		@SuppressWarnings("unchecked")
+		Future<ReplyAdapter>[] ret = new Future[webRequests.length];
+		for (int i = 0; i < webRequests.length; i++) {
+			if (progressListeners.length == 0) {
+				ret[i] = runSynchronousWebRequestFuture(webRequests[i], null);
+			} else if (progressListeners.length == 1) {
+				ret[i] = runSynchronousWebRequestFuture(webRequests[i], progressListeners[0]);
+			} else if (progressListeners.length != webRequests.length) {
+				throw new ServiceException("progressListeners.length must be 0, 1 or equal to webRequest.length");
+			} else {
+				ret[i] = runSynchronousWebRequestFuture(webRequests[i], progressListeners[i]);
+			}
+
+		}
+		return ret;
+	}
+
+	protected Future<ReplyAdapter> runSynchronousWebRequestFuture(final WebRequest webRequest) {
+		return runSynchronousWebRequestFuture(webRequest, null);
+	}
+
+	protected Future<ReplyAdapter> runSynchronousWebRequestFuture(final WebRequest webRequest,
+			final DownloadProgressListener progressListener) {
 
 		if (workerQueue.isShutDown()) {
 			LOGGER.info("service already shutdown, couldn't run: " + webRequest);
@@ -303,12 +360,11 @@ public class HttpService extends Service implements WebClientReplyListener {
 		}
 
 		if (processor instanceof SynchronousProcessor<?>) {
-			SynchronousProcessor<?> synchronousProcessor = (SynchronousProcessor<?>) processor;
 			try {
 				Future<ReplyAdapter> future = getWebRequestTask(webRequest, progressListener, false);
 				if (future != null) {
 					webRequests.put(webRequest.getId(), new WebRequestFutureContainer(webRequest, future));
-					return synchronousProcessor.obtainDataObjectFromWebReply(future.get());
+					return future;
 				}
 			} catch (Throwable tr) {
 				LOGGER.error("Error getting result!", tr);
@@ -317,22 +373,6 @@ public class HttpService extends Service implements WebClientReplyListener {
 			throw new ServiceException("Invalid ServiceProcessor for sync WebRequest, only instances of SynchronousProcessor are allowed");
 		}
 		return null;
-	}
-
-	/**
-	 * Convenience method that calls
-	 * {@link HttpService#runWebRequest(Handler, WebRequest, DownloadProgressListener)}
-	 * with a <code>null</code> {@link ProgressListener}
-	 * 
-	 * @param handler
-	 *            the handler that will be informed once the {@link WebRequest}
-	 *            has been completed
-	 * @param webRequest
-	 *            the {@link WebRequest} to run
-	 * @return
-	 */
-	public String runWebRequest(Handler handler, WebRequest webRequest) {
-		return runWebRequest(handler, webRequest, null);
 	}
 
 	private void addRequestToHandlerMap(Handler handler, WebRequest webRequest) {

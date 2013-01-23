@@ -17,6 +17,7 @@ package at.diamonddogs.data.adapter;
 
 import at.diamonddogs.data.dataobjects.Reply;
 import at.diamonddogs.data.dataobjects.Request;
+import at.diamonddogs.data.dataobjects.WebRequest;
 
 /**
  * The {@link ReplyAdapter} holds the status, request, reply and a throwable
@@ -27,9 +28,15 @@ public class ReplyAdapter {
 	 * The status of the reply
 	 */
 	public enum Status {
-		/** indicates that the request was successfully executed */
+		/**
+		 * indicates that the request was successfully executed (no exceptions
+		 * during {@link WebRequest} execution)
+		 */
 		OK,
-		/** indicates that the request failed */
+		/**
+		 * indicates that the request failed (exception during
+		 * {@link WebRequest} execution
+		 */
 		FAILED,
 	}
 
@@ -92,4 +99,10 @@ public class ReplyAdapter {
 	public void setRequest(Request request) {
 		this.request = request;
 	}
+
+	@Override
+	public String toString() {
+		return "ReplyAdapter [status=" + status + ", throwable=" + throwable + ", reply=" + reply + ", request=" + request + "]";
+	}
+
 }

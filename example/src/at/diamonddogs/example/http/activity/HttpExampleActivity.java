@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.diamonddogs.example.http;
+package at.diamonddogs.example.http.activity;
 
 import java.util.List;
 import java.util.Map;
@@ -34,14 +34,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
+import at.diamonddogs.example.http.R;
+import at.diamonddogs.example.http.dataobject.Weather;
+import at.diamonddogs.example.http.processor.WeatherProcessor;
 import at.diamonddogs.service.net.HttpService;
 import at.diamonddogs.service.net.HttpService.HttpServiceBinder;
 import at.diamonddogs.service.processor.HeadRequestProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
 
 /**
- * @author siyb
- * 
+ * Basic HTTP request example
  */
 public class HttpExampleActivity extends Activity {
 
@@ -182,9 +184,6 @@ public class HttpExampleActivity extends Activity {
 	/**
 	 * A Simple {@link ServiceConnection} to be used in conjunction with
 	 * {@link HttpService}
-	 * 
-	 * @author siyb
-	 * 
 	 */
 	private final class HttpExampleConnection implements ServiceConnection {
 
@@ -226,9 +225,6 @@ public class HttpExampleActivity extends Activity {
 
 	/**
 	 * This handler receives a callback once the web request has been processed.
-	 * 
-	 * @author siyb
-	 * 
 	 */
 	private class WeatherHandler extends Handler {
 		/**

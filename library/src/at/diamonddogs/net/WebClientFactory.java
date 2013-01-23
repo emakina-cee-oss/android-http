@@ -82,6 +82,6 @@ public class WebClientFactory {
 	 * @return true or false, depending on the presence of post data
 	 */
 	public boolean isPostWithData(WebRequest wr) {
-		return wr.getRequestType() == Type.POST && (wr.getPostData() != null || wr.getPostValues() != null);
+		return wr.getRequestType() == Type.POST && wr.getHttpEntity() != null;
 	}
 }
