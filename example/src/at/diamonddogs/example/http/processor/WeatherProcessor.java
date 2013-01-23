@@ -23,14 +23,10 @@ import org.w3c.dom.NodeList;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Message;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.Request;
-import at.diamonddogs.data.dataobjects.WebReply;
-import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.example.http.dataobject.Weather;
-import at.diamonddogs.service.processor.ServiceProcessor;
 import at.diamonddogs.service.processor.XMLProcessor;
 import at.diamonddogs.util.CacheManager.CachedObject;
 
@@ -62,34 +58,21 @@ public class WeatherProcessor extends XMLProcessor<Weather> {
 	}
 
 	/**
-	 * Created a return {@link Message} that can be sent to the callback
-	 * handler.
-	 */
-	@Override
-	protected Message createReturnMessage(Weather data) {
-		Message m = new Message();
-		m.what = ID;
-		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
-		m.obj = data;
-		return m;
-	}
-
-	/**
 	 * This method has to inform the callback handler
 	 */
 	@Override
 	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
 		try {
 			if (r.getStatus() == Status.FAILED) {
-				handler.sendMessage(createErrorMessage(ID, (WebRequest) r.getRequest()));
+				handler.sendMessage(createErrorMessage(r));
 			} else {
 				// processData uses parse(...) and createReturnMessage(...) to
 				// create pData
-				ProcessingData<Weather> pData = processData(((WebReply) r.getReply()).getData());
+				ProcessingData<Weather> pData = processData(r);
 				handler.sendMessage(pData.returnMessage);
 			}
 		} catch (Throwable tr) {
-			handler.sendMessage(createErrorMessage(ID, tr, (WebRequest) r.getRequest()));
+			handler.sendMessage(createErrorMessage(tr, r));
 		}
 	}
 
