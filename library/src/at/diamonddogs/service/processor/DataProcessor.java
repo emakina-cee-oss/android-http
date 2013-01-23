@@ -90,9 +90,9 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor impl
 	protected ProcessingData<OUTPUT> processData(byte[] data) {
 		INPUT input = createParsedObjectFromByteArray(data);
 		OUTPUT output = parse(input);
-		Message message = createReturnMessage(output);
-		message.what = getProcessorID();
-		return new ProcessingData<OUTPUT>(message, output);
+		// Message message = createReturnMessage(output);
+		// message.what = getProcessorID();
+		return new ProcessingData<OUTPUT>(createReturnMessage(null, null), output);
 	}
 
 	@Override

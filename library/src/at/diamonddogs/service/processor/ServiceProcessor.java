@@ -41,6 +41,7 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  * 4) the {@link Reply} must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_REPLY} as bundle key
  * 5) the http status code must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE} as {@link Bundle} key
  * 6) a {@link Throwable} should be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_THROWABLE} as {@link Bundle} key, IF {@link Message#arg1} == {@link ServiceProcessor#RETURN_MESSAGE_FAIL}
+ * 7) 
  */
 // @formatter:on
 public abstract class ServiceProcessor {
@@ -110,10 +111,11 @@ public abstract class ServiceProcessor {
 	 */
 	public abstract int getProcessorID();
 
-	protected Message createReturnMessage(ReplyAdapter replyAdapter, Object data) {
+	protected final Message createReturnMessage(ReplyAdapter replyAdapter, Object payload) {
 		Message m = new Message();
 		m.what = ((WebRequest) replyAdapter.getRequest()).getProcessorId();
 		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
+		m.obj = payload;
 		Bundle dataBundle = new Bundle();
 		dataBundle.putParcelable(BUNDLE_EXTRA_MESSAGE_REPLY, new ParcelableAdapterWebReply((WebReply) replyAdapter.getReply()));
 		dataBundle.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest((WebRequest) replyAdapter.getRequest()));
