@@ -34,17 +34,22 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  * complexity reasons it is deprecated to save the state of a processing
  * operation, since the processor can be called from multiple threads at once.
  * 
- * Message Format (Error and Success): 
+ * Message Format (Error and Success):
+ * 
+ * android-http 1.0
  * 1) m.what - _MUST_ be the processorID 
  * 2) m.arg1 - _MUST_ be either {@link ServiceProcessor#RETURN_MESSAGE_FAIL} or {@link ServiceProcessor#RETURN_MESSAGE_OK}
- * 3) the {@link Request} must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_REQUEST} as bundle key
- * 4) the {@link Reply} must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_REPLY} as bundle key
- * 5) the http status code must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE} as {@link Bundle} key
- * 6) a {@link Throwable} should be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_THROWABLE} as {@link Bundle} key, IF {@link Message#arg1} == {@link ServiceProcessor#RETURN_MESSAGE_FAIL}
- * 7) 
+ * 3) The {@link Request} must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_REQUEST} as bundle key
+ * 4) A {@link Throwable} should be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_THROWABLE} as {@link Bundle} key, IF {@link Message#arg1} == {@link ServiceProcessor#RETURN_MESSAGE_FAIL}
+ * 
+ * android-http 1.0+
+ * 5) The {@link Reply} must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_REPLY} as bundle key UNLESS the object was obtained from cache
+ * 6) The http status code must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE} as {@link Bundle} key UNLESS the object was obtained from cache OR if an error prevents access to the http status code
+ * 7) Payload, which is defined as the result of the {@link WebRequest}, processed by a {@link ServiceProcessor} must be saved in m.obj
+ * 8) The {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_FROMCACHE} must be used to indicate if the Object was obtained from the cache or the {@link WebRequest}, {@link Boolean} flag!
  */
 // @formatter:on
-public abstract class ServiceProcessor {
+public abstract class ServiceProcessor<OUTPUT> {
 
 	/**
 	 * Constant that indicates failure
@@ -75,6 +80,12 @@ public abstract class ServiceProcessor {
 	 * {@link Bundle} key for the HTTP status code returned by the operation
 	 */
 	public static final String BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE = "BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE";
+
+	/**
+	 * {@link Bundle} key that indicates if the result of a {@link WebRequest}
+	 * was taken from the cache
+	 */
+	public static final String BUNDLE_EXTRA_MESSAGE_FROMCACHE = "BUNDLE_EXTRA_MESSAGE_FROMCACHE";
 
 	/**
 	 * Called when a {@link Reply} is ready for processing
@@ -111,7 +122,7 @@ public abstract class ServiceProcessor {
 	 */
 	public abstract int getProcessorID();
 
-	protected final Message createReturnMessage(ReplyAdapter replyAdapter, Object payload) {
+	protected Message createReturnMessage(ReplyAdapter replyAdapter, OUTPUT payload) {
 		Message m = new Message();
 		m.what = ((WebRequest) replyAdapter.getRequest()).getProcessorId();
 		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
@@ -120,6 +131,22 @@ public abstract class ServiceProcessor {
 		dataBundle.putParcelable(BUNDLE_EXTRA_MESSAGE_REPLY, new ParcelableAdapterWebReply((WebReply) replyAdapter.getReply()));
 		dataBundle.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest((WebRequest) replyAdapter.getRequest()));
 		dataBundle.putInt(BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE, ((WebReply) replyAdapter.getReply()).getHttpStatusCode());
+		dataBundle.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, false);
+		m.setData(dataBundle);
+		return m;
+	}
+
+	/**
+	 * From cache
+	 */
+	protected Message createReturnMessage(WebRequest webRequest, OUTPUT payload) {
+		Message m = new Message();
+		m.what = webRequest.getProcessorId();
+		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
+		m.obj = payload;
+		Bundle dataBundle = new Bundle();
+		dataBundle.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest(webRequest));
+		dataBundle.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, true);
 		m.setData(dataBundle);
 		return m;
 	}
@@ -127,21 +154,19 @@ public abstract class ServiceProcessor {
 	/**
 	 * Creates a default error message for a {@link WebRequest}
 	 * 
-	 * @param processorId
-	 *            the ID of the processor
 	 * @param tr
 	 *            the {@link Throwable} related to the error
-	 * @param wr
-	 *            the {@link WebRequest} that caused the error
 	 * @return an error {@link Message} object
 	 */
-	public Message createErrorMessage(int processorId, Throwable tr, WebRequest wr) {
+	public Message createErrorMessage(Throwable tr, ReplyAdapter replyAdapter) {
 		Message msg = new Message();
-		msg.what = processorId;
+		msg.what = getProcessorID();
 		msg.arg1 = RETURN_MESSAGE_FAIL;
 		Bundle b = new Bundle(1);
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_THROWABLE, tr);
-		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest(wr));
+		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest((WebRequest) replyAdapter.getRequest()));
+		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REPLY, new ParcelableAdapterWebReply((WebReply) replyAdapter.getReply()));
+		b.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, false);
 		msg.setData(b);
 		return msg;
 	}
@@ -150,19 +175,47 @@ public abstract class ServiceProcessor {
 	 * Creates a default error message for a {@link WebRequest}. Creates and
 	 * provides a new {@link Throwable}
 	 * 
-	 * @param processorId
-	 *            the ID of the processor
-	 * @param wr
-	 *            the {@link WebRequest} that caused the error
 	 * @return an error {@link Message} object
 	 */
-	public Message createErrorMessage(int processorId, WebRequest wr) {
+	public Message createErrorMessage(ReplyAdapter replyAdapter) {
 		Message msg = new Message();
-		msg.what = processorId;
+		msg.what = getProcessorID();
 		msg.arg1 = RETURN_MESSAGE_FAIL;
 		Bundle b = new Bundle(1);
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_THROWABLE, new Throwable());
-		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest(wr));
+		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest((WebRequest) replyAdapter.getRequest()));
+		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REPLY, new ParcelableAdapterWebReply((WebReply) replyAdapter.getReply()));
+		b.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, false);
+		msg.setData(b);
+		return msg;
+	}
+
+	/**
+	 * To be used when object was obtained from cache
+	 */
+	public Message createErrorMessage(Throwable tr, WebRequest webRequest) {
+		Message msg = new Message();
+		msg.what = getProcessorID();
+		msg.arg1 = RETURN_MESSAGE_FAIL;
+		Bundle b = new Bundle(1);
+		b.putSerializable(BUNDLE_EXTRA_MESSAGE_THROWABLE, tr);
+		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest(webRequest));
+		b.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, true);
+		msg.setData(b);
+		return msg;
+	}
+
+	/**
+	 * To be used when object was obtained from cache
+	 */
+	public Message createErrorMessage(WebRequest webRequest) {
+		Message msg = new Message();
+		msg.what = getProcessorID();
+		msg.arg1 = RETURN_MESSAGE_FAIL;
+		Bundle b = new Bundle(1);
+		b.putSerializable(BUNDLE_EXTRA_MESSAGE_THROWABLE, new Throwable());
+		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest(webRequest));
+		b.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, true);
 		msg.setData(b);
 		return msg;
 	}

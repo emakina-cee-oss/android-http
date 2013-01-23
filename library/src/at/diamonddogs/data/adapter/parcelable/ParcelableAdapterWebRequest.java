@@ -27,6 +27,8 @@ import at.diamonddogs.data.dataobjects.WebRequest.Type;
 
 /**
  * Use this {@link ParcelableAdapterWebRequest} to parcel {@link WebReply}s
+ * 
+ * TODO: check if all data is parcelled!
  */
 public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
 	/**

@@ -38,7 +38,6 @@ import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.Request;
-import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ProcessorExeception;
 import at.diamonddogs.util.CacheManager;
@@ -74,18 +73,17 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
 		LOGGER.info("processing imagerequest from: " + r.getRequest().getUrl());
 		if (r.getStatus() == Status.OK) {
-			WebReply reply = (WebReply) r.getReply();
-			WebRequest request = (WebRequest) r.getRequest();
-			ProcessingData<Bitmap> processingData = processData(reply.getData());
+			ProcessingData<Bitmap> processingData = processData(r);
 			Bitmap b = processingData.output;
-			saveBitmapToFile(c, request, handler, b);
+			saveBitmapToFile(c, r, handler, b);
 		} else if (r.getStatus() == Status.FAILED) {
-			handler.sendMessage(createErrorMessage(ID, r.getThrowable(), (WebRequest) r.getRequest()));
+			handler.sendMessage(createErrorMessage(r.getThrowable(), r));
 		}
 	}
 
-	private void saveBitmapToFile(Context c, WebRequest request, Handler handler, Bitmap b) {
+	private void saveBitmapToFile(Context c, ReplyAdapter r, Handler handler, Bitmap b) {
 		try {
+			WebRequest request = (WebRequest) r.getRequest();
 			String filename = Utils.getMD5Hash(request.getUrl().toString());
 			if (filename != null && b != null) {
 				if (request.getCacheTime() != CacheInformation.CACHE_NO) {
@@ -101,14 +99,14 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 						cm.addToMemoryCache(request.getUrl().toString(), ID, b);
 					}
 				}
-				handler.sendMessage(createReturnMessage(b));
+				handler.sendMessage(createReturnMessage(r, b));
 
 			} else {
-				handler.sendMessage(createReturnMessage(b));
+				handler.sendMessage(createReturnMessage(r, b));
 			}
 		} catch (FileNotFoundException e) {
 			LOGGER.error(e.getMessage(), e);
-			handler.sendMessage(createErrorMessage(ID, e, request));
+			handler.sendMessage(createErrorMessage(e, r));
 		}
 	}
 
@@ -130,19 +128,19 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 	private void processFileCache(byte[] data, Handler handler, WebRequest webRequest) throws IllegalArgumentException {
 		Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
 		if (b == null) {
-			handler.sendMessage(createErrorMessage(ID, new IllegalArgumentException("Couldn't decode Bitmap from data"), webRequest));
+			handler.sendMessage(createErrorMessage(new IllegalArgumentException("Couldn't decode Bitmap from data"), webRequest));
 			return;
 		}
 		CacheManager.getInstance().addToMemoryCache(webRequest.getUrl().toString(), webRequest.getUrl().toString(), b);
-		handler.sendMessage(createReturnMessage(b));
+		handler.sendMessage(createReturnMessage(webRequest, b));
 	}
 
 	private void processMemCache(Object data, Handler handler, WebRequest webRequest) throws IllegalArgumentException {
 		if (data instanceof Bitmap) {
 			Bitmap b = (Bitmap) data;
-			handler.sendMessage(createReturnMessage(b));
+			handler.sendMessage(createReturnMessage(webRequest, b));
 		} else {
-			handler.sendMessage(createErrorMessage(ID, new IllegalArgumentException("Data must be a Bitmap object"), webRequest));
+			handler.sendMessage(createErrorMessage(new IllegalArgumentException("Data must be a Bitmap object"), webRequest));
 		}
 	}
 
@@ -195,13 +193,9 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 	}
 
 	@Override
-	protected Message createReturnMessage(Bitmap data) {
-		Message m = new Message();
-		m.what = ID;
-		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
-		Bundle b = new Bundle();
-		b.putParcelable(BUNDLE_EXTRA_BITMAP, data);
-		m.setData(b);
+	protected Message createReturnMessage(ReplyAdapter replyAdapter, Bitmap payload) {
+		Message m = super.createReturnMessage(replyAdapter, payload);
+		m.getData().putParcelable(BUNDLE_EXTRA_BITMAP, payload);
 		return m;
 	}
 

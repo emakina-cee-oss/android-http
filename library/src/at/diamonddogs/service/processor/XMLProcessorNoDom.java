@@ -32,7 +32,6 @@ import android.os.Message;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebReply;
-import at.diamonddogs.data.dataobjects.WebRequest;
 
 /**
  * Xml processor for replies that cannot be handled using a DOM (mostly due to
@@ -86,7 +85,7 @@ public abstract class XMLProcessorNoDom<T> extends ServiceProcessor {
 				handler.sendMessage(createReturnMessage(xmlHandler.getData()));
 			} catch (Throwable tr) {
 				LOGGER.warn("Failed to parse document", tr);
-				handler.sendMessage(createErrorMessage(getProcessorID(), tr, (WebRequest) r.getRequest()));
+				handler.sendMessage(createErrorMessage(tr, r));
 			}
 		}
 	}

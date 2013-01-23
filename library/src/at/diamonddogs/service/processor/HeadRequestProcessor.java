@@ -23,7 +23,6 @@ import android.os.Handler;
 import android.os.Message;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
-import at.diamonddogs.data.adapter.parcelable.ParcelableAdapterWebRequest;
 import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
@@ -35,7 +34,8 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  * {@link Type#HEAD} {@link WebRequest}s. {@link HeadRequestProcessor} supports
  * asynchronous and synchronous {@link WebRequest}s.
  */
-public class HeadRequestProcessor extends ServiceProcessor implements SynchronousProcessor<Map<String, List<String>>> {
+public class HeadRequestProcessor extends ServiceProcessor<Map<String, List<String>>> implements
+		SynchronousProcessor<Map<String, List<String>>> {
 
 	/**
 	 * The processor's ID
@@ -47,12 +47,11 @@ public class HeadRequestProcessor extends ServiceProcessor implements Synchronou
 	 */
 	@Override
 	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
-		WebRequest request = ((WebRequest) r.getRequest());
 		Message m;
 		if (r.getStatus() == Status.OK) {
-			m = createReturnMessage(r);
+			m = createReturnMessage(r, ((WebReply) r.getReply()).getReplyHeader());
 		} else {
-			m = createErrorMessage(ID, request);
+			m = createErrorMessage(r);
 		}
 		handler.sendMessage(m);
 	}
@@ -83,15 +82,4 @@ public class HeadRequestProcessor extends ServiceProcessor implements Synchronou
 		}
 		return ((WebReply) reply.getReply()).getReplyHeader();
 	}
-
-	private Message createReturnMessage(ReplyAdapter r) {
-		Message m = new Message();
-		m.what = ID;
-		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
-		m.getData().putParcelable(ServiceProcessor.BUNDLE_EXTRA_MESSAGE_REQUEST,
-				new ParcelableAdapterWebRequest((WebRequest) r.getRequest()));
-		m.obj = ((WebReply) r.getReply()).getReplyHeader();
-		return m;
-	}
-
 }

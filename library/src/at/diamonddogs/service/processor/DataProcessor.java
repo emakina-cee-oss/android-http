@@ -40,7 +40,7 @@ import at.diamonddogs.util.Utils;
  *            The output object that will be created from the input object,
  *            usually a POJO
  */
-public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor implements SynchronousProcessor<OUTPUT> {
+public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTPUT> implements SynchronousProcessor<OUTPUT> {
 
 	/**
 	 * Parses the content of data into an INPUT object
@@ -61,23 +61,6 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor impl
 	protected abstract OUTPUT parse(INPUT inputObject);
 
 	/**
-	 * Constructs a reply message that can be used to inform activities about
-	 * processing
-	 * 
-	 * @param data
-	 *            the resulting data that was created from INPUT
-	 * 
-	 * @return a message object
-	 * 
-	 *         TODO: since we have to change this method anyway (to provide the
-	 *         http status code), we might as well pass the whole ReplyAdapter
-	 *         in order to have access to the request (which according to
-	 *         {@link ServiceProcessor} contract needs to provide the
-	 *         {@link WebRequest} in a bundle.
-	 */
-	protected abstract Message createReturnMessage(OUTPUT data);
-
-	/**
 	 * Handles processing using the provided callback methods of the respective
 	 * child classes
 	 * 
@@ -87,12 +70,11 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor impl
 	 *         input byte[] data and a Message object. Message.what will be set
 	 *         to the current processors id.
 	 */
-	protected ProcessingData<OUTPUT> processData(byte[] data) {
-		INPUT input = createParsedObjectFromByteArray(data);
+	protected ProcessingData<OUTPUT> processData(ReplyAdapter replyAdapter) {
+		INPUT input = createParsedObjectFromByteArray(((WebReply) replyAdapter.getReply()).getData());
 		OUTPUT output = parse(input);
-		// Message message = createReturnMessage(output);
-		// message.what = getProcessorID();
-		return new ProcessingData<OUTPUT>(createReturnMessage(null, null), output);
+		Message message = createReturnMessage(replyAdapter, output);
+		return new ProcessingData<OUTPUT>(message, output);
 	}
 
 	@Override
@@ -127,6 +109,11 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor impl
 				}
 			}
 		}
+	}
+
+	@Override
+	protected Message createReturnMessage(ReplyAdapter replyAdapter, OUTPUT payload) {
+		return super.createReturnMessage(replyAdapter, payload);
 	}
 
 	private CacheInformation createCachingInformation(long chacheTime, String filePath, String fileName) {

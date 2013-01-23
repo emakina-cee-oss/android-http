@@ -38,7 +38,7 @@ import at.diamonddogs.util.SoapUtil;
  * @param <T>
  *            the output object
  */
-public abstract class SoapProcessor<T> extends ServiceProcessor implements SynchronousProcessor<T> {
+public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements SynchronousProcessor<T> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoapProcessor.class);
 
@@ -71,15 +71,15 @@ public abstract class SoapProcessor<T> extends ServiceProcessor implements Synch
 			} else if (result instanceof SoapObject) {
 				try {
 					LOGGER.debug("processSoapObject");
-					handler.sendMessage(createReturnMessage(processSoapReply(c, r, (SoapObject) result)));
+					handler.sendMessage(createReturnMessage(r, processSoapReply(c, r, (SoapObject) result)));
 				} catch (Exception e2) {
 					LOGGER.debug("processSoapObject - failed", e2);
-					handler.sendMessage(createErrorMessage(getProcessorID(), (WebRequest) r.getRequest()));
+					handler.sendMessage(createErrorMessage(e2, r));
 				}
 
 			}
 		} else {
-			handler.sendMessage(createErrorMessage(getProcessorID(), (WebRequest) r.getRequest()));
+			handler.sendMessage(createErrorMessage(r));
 		}
 	}
 
@@ -125,13 +125,4 @@ public abstract class SoapProcessor<T> extends ServiceProcessor implements Synch
 	 * @return a {@link Message}
 	 */
 	protected abstract Message processSoapFault(ReplyAdapter wr, SoapFault fault);
-
-	/**
-	 * Called when a return {@link Message} needs to be created
-	 * 
-	 * @param returnType
-	 *            the output object created by the processor
-	 * @return a {@link Message}
-	 */
-	protected abstract Message createReturnMessage(T returnType);
 }

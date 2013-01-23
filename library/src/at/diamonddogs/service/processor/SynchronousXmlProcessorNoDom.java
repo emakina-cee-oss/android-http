@@ -30,7 +30,6 @@ import android.content.Context;
 import android.os.Handler;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
-import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 
 /**
@@ -80,13 +79,13 @@ public abstract class SynchronousXmlProcessorNoDom<T> extends DataProcessor<Inpu
 	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
 		try {
 			if (r.getStatus() == Status.OK) {
-				ProcessingData<T> pData = processData(((WebReply) r.getReply()).getData());
+				ProcessingData<T> pData = processData(r);
 				handler.sendMessage(pData.returnMessage);
 			} else {
-				handler.sendMessage(createErrorMessage(getProcessorID(), (WebRequest) r.getRequest()));
+				handler.sendMessage(createErrorMessage(r));
 			}
 		} catch (Throwable tr) {
-			handler.sendMessage(createErrorMessage(getProcessorID(), (WebRequest) r.getRequest()));
+			handler.sendMessage(createErrorMessage(tr, r));
 		}
 	}
 
