@@ -29,6 +29,8 @@ public class CacheInformation {
 	public static final long CACHE_1M = 60000l;
 	/** 1 hour caching */
 	public static final long CACHE_1H = 3600000;
+	/** 12 hour caching */
+	public static final long CACHE_12H = 7200000;
 	/** 1 day caching */
 	public static final long CACHE_24H = 86400000;
 	/** 7 days caching */
