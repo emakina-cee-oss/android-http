@@ -238,6 +238,9 @@ public class HttpExampleActivity extends Activity {
 					Weather w = (Weather) msg.obj;
 					text.setText(w.getText());
 					temperature.setText(String.valueOf(w.getTemperature()));
+
+					// getting the http status code
+					LOGGER.info("The HTTP status code is: " + msg.getData().getInt(ServiceProcessor.BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE));
 				} else {
 					Toast.makeText(HttpExampleActivity.this, "Error fetching weather", Toast.LENGTH_LONG).show();
 				}
