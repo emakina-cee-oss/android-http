@@ -47,6 +47,9 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  * 6) The http status code must be provided using {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE} as {@link Bundle} key UNLESS the object was obtained from cache OR if an error prevents access to the http status code
  * 7) Payload, which is defined as the result of the {@link WebRequest}, processed by a {@link ServiceProcessor} must be saved in m.obj
  * 8) The {@link ServiceProcessor#BUNDLE_EXTRA_MESSAGE_FROMCACHE} must be used to indicate if the Object was obtained from the cache or the {@link WebRequest}, {@link Boolean} flag!
+ *
+ * @param <OUTPUT>
+ *            the type out output {@link Object} the subclass will produce.
  */
 // @formatter:on
 public abstract class ServiceProcessor<OUTPUT> {
@@ -122,6 +125,17 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 */
 	public abstract int getProcessorID();
 
+	/**
+	 * Use this method to create a return {@link Message} if the result of the
+	 * {@link WebRequest} was obtained from the web rather than the cache
+	 * 
+	 * @param replyAdapter
+	 *            the {@link ReplyAdapter} that was passed to
+	 *            {@link ServiceProcessor#processWebReply(Context, ReplyAdapter, Handler)}
+	 * @param payload
+	 *            the processed data
+	 * @return a {@link Message} object containing all required return data
+	 */
 	protected Message createReturnMessage(ReplyAdapter replyAdapter, OUTPUT payload) {
 		Message m = new Message();
 		m.what = ((WebRequest) replyAdapter.getRequest()).getProcessorId();
@@ -137,7 +151,14 @@ public abstract class ServiceProcessor<OUTPUT> {
 	}
 
 	/**
-	 * From cache
+	 * Use this method to create a return {@link Message} if the result of the
+	 * {@link WebRequest} was obtained from the cache rather than the web
+	 * 
+	 * @param webRequest
+	 *            the {@link WebRequest} that is the root of this reply
+	 * @param payload
+	 *            the processed data
+	 * @return a {@link Message} object containing all required return data
 	 */
 	protected Message createReturnMessage(WebRequest webRequest, OUTPUT payload) {
 		Message m = new Message();
@@ -156,6 +177,9 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 * 
 	 * @param tr
 	 *            the {@link Throwable} related to the error
+	 * @param replyAdapter
+	 *            the instance of {@link ReplyAdapter} that was the result of
+	 *            the {@link WebRequest}
 	 * @return an error {@link Message} object
 	 */
 	public Message createErrorMessage(Throwable tr, ReplyAdapter replyAdapter) {
@@ -173,8 +197,11 @@ public abstract class ServiceProcessor<OUTPUT> {
 
 	/**
 	 * Creates a default error message for a {@link WebRequest}. Creates and
-	 * provides a new {@link Throwable}
+	 * provides a new {@link Throwable}.
 	 * 
+	 * @param replyAdapter
+	 *            the instance of {@link ReplyAdapter} that was the result of
+	 *            the {@link WebRequest}
 	 * @return an error {@link Message} object
 	 */
 	public Message createErrorMessage(ReplyAdapter replyAdapter) {
@@ -191,7 +218,15 @@ public abstract class ServiceProcessor<OUTPUT> {
 	}
 
 	/**
-	 * To be used when object was obtained from cache
+	 * Creates a default error message for a {@link WebRequest}. Use this method
+	 * when dealing with
+	 * errors caused by cache retrieval.
+	 * 
+	 * @param tr
+	 *            a {@link Throwable} explaining the error
+	 * @param webRequest
+	 *            the {@link WebRequest} that caused the error to appear
+	 * @return a {@link Message} {@link Object}
 	 */
 	public Message createErrorMessage(Throwable tr, WebRequest webRequest) {
 		Message msg = new Message();
@@ -206,7 +241,13 @@ public abstract class ServiceProcessor<OUTPUT> {
 	}
 
 	/**
-	 * To be used when object was obtained from cache
+	 * Creates a default error message for a {@link WebRequest}. Creates and
+	 * provides a new {@link Throwable}. Use this method when dealing with
+	 * errors caused by cache retrieval.
+	 * 
+	 * @param webRequest
+	 *            the {@link WebRequest} that caused the error to appear
+	 * @return a {@link Message} {@link Object}
 	 */
 	public Message createErrorMessage(WebRequest webRequest) {
 		Message msg = new Message();
