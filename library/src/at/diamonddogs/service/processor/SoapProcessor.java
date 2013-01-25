@@ -88,41 +88,45 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * the subclass.
 	 */
 	@Override
-	public T obtainDataObjectFromWebReply(ReplyAdapter reply) {
+	public T obtainDataObjectFromWebReply(ReplyAdapter replyAdapter) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	/**
 	 * Called when the SOAP result is null
 	 * 
-	 * @param wr
-	 *            the {@link WebRequest}
+	 * @param replyAdapter
+	 *            the {@link ReplyAdapter}
 	 * @return a message Object
 	 */
-	protected abstract Message processSoapNull(ReplyAdapter wr);
+	protected Message processSoapNull(ReplyAdapter replyAdapter) {
+		return createErrorMessage(replyAdapter);
+	}
 
 	/**
 	 * Called when a SOAP result should be processed
 	 * 
 	 * @param c
 	 *            a {@link Context}
-	 * @param wr
+	 * @param replyAdapter
 	 *            a {@link WebRequest}
 	 * @param o
 	 *            the {@link SoapObject} created by
 	 *            {@link SoapProcessor#processWebReply(Context, ReplyAdapter, Handler)}
 	 * @return an output object of type T
 	 */
-	protected abstract T processSoapReply(Context c, ReplyAdapter wr, SoapObject o);
+	protected abstract T processSoapReply(Context c, ReplyAdapter replyAdapter, SoapObject o);
 
 	/**
 	 * Called if the result is a {@link SoapFault}
 	 * 
-	 * @param wr
+	 * @param replyAdapter
 	 *            the {@link WebRequest}
 	 * @param fault
 	 *            the {@link SoapFault}
 	 * @return a {@link Message}
 	 */
-	protected abstract Message processSoapFault(ReplyAdapter wr, SoapFault fault);
+	protected Message processSoapFault(ReplyAdapter replyAdapter, SoapFault fault) {
+		return createErrorMessage(fault, replyAdapter);
+	}
 }
