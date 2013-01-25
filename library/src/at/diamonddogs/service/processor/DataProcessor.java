@@ -77,6 +77,24 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 		return new ProcessingData<OUTPUT>(message, output);
 	}
 
+	/**
+	 * Handles processing using the provided callback methods of the respective
+	 * child classes. This method should be used if the data was obtained from
+	 * the cache.
+	 * 
+	 * @param wr
+	 *            the {@link WebRequest}
+	 * @param data
+	 *            the data obtained from cache
+	 * @return {@link ProcessingData} containing all relevant information
+	 */
+	protected ProcessingData<OUTPUT> processData(WebRequest wr, byte[] data) {
+		INPUT input = createParsedObjectFromByteArray(data);
+		OUTPUT output = parse(input);
+		Message message = createReturnMessage(wr, output);
+		return new ProcessingData<OUTPUT>(message, output);
+	}
+
 	@Override
 	public OUTPUT obtainDataObjectFromWebReply(ReplyAdapter reply) {
 		return parse(createParsedObjectFromByteArray(((WebReply) reply.getReply()).getData()));
