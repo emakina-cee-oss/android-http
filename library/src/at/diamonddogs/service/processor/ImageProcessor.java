@@ -199,6 +199,12 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		return m;
 	}
 
+	protected Message createReturnMessage(WebRequest webRequest, Bitmap payload) {
+		Message m = super.createReturnMessage(webRequest, payload);
+		m.getData().putParcelable(BUNDLE_EXTRA_BITMAP, payload);
+		return m;
+	}
+
 	/**
 	 * Constructs a default image {@link WebRequest}
 	 * 
