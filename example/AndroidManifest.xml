@@ -24,6 +24,7 @@
         </activity>
         <activity android:name="at.diamonddogs.example.http.activity.HttpExampleActivity" />
         <activity android:name="at.diamonddogs.example.http.activity.HttpServiceAssisterExampleActivity" />
+        <activity android:name="at.diamonddogs.example.http.activity.HttpOrderedAsyncAssisiterExampleActivity" />
 
         <provider
             android:name="at.diamonddogs.contentprovider.CacheContentProvider"
