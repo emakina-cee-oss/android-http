@@ -76,16 +76,21 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 					@Override
 					public HttpOrderedAsyncRequest getNextWebRequest(Message message) {
 						Map<String, List<String>> header = (Map<String, List<String>>)message.obj;
-						if (header.containsKey("Content-Encoding") && header.get("Content-Encoding").equals("gzip")) {
-							LOGGER.error("Content-Encoding is gzip, will run actual WebRequest now!");
-							return new HttpOrderedAsyncRequest(
-									getWeatherRequest(),
-									new WeatherHandler(assister),
-									new NoNextWebRequestDelegate(),
-									new WeatherProcessor()
-							);
+						if (header != null) {
+							if (header.containsKey("Content-Encoding") && header.get("Content-Encoding").get(0).equals("gzip")) {
+								LOGGER.error("Content-Encoding is gzip, will run actual WebRequest now!");
+								return new HttpOrderedAsyncRequest(
+										getWeatherRequest(),
+										new WeatherHandler(assister),
+										new NoNextWebRequestDelegate(),
+										new WeatherProcessor()
+								);
+							} else {
+							LOGGER.error("Content-Encoding is not gzip but " + header.get("Content-Encoding") + " not running any successive WebRequests!");
+								return null;
+							}
 						} else {
-						LOGGER.error("Content-Encoding is not gzip but " + header.get("Content-Encoding") + " not running any successive WebRequests!");
+							LOGGER.error("Headers are null, not sending WebRequest");
 							return null;
 						}
 					}
