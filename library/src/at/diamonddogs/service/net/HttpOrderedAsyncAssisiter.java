@@ -114,7 +114,10 @@ public class HttpOrderedAsyncAssisiter {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			HttpOrderedAsyncRequest nextWebRequest = request.nextWebRequestDelegate.getNextWebRequest(msg);
-			orderedSyncAssister.assister.runWebRequest(nextWebRequest.handler, nextWebRequest.webRequest, nextWebRequest.serviceProcessor);
+			if (nextWebRequest != null) {
+				orderedSyncAssister.assister.runWebRequest(nextWebRequest.handler, nextWebRequest.webRequest,
+						nextWebRequest.serviceProcessor);
+			}
 		}
 
 		@SuppressWarnings("javadoc")
