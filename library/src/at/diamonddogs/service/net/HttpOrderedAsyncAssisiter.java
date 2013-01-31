@@ -69,21 +69,41 @@ public class HttpOrderedAsyncAssisiter {
 	}
 
 	/**
+	 * Dispatches the bind call to the {@link HttpServiceAssister} used to issue
+	 * {@link WebRequest}s
+	 * 
+	 * @return <code>true</code> if the connection to {@link HttpService} could
+	 *         be established, <code>false</code> if the service has already
+	 *         been bound or if binding is impossible.
+	 * @see HttpServiceAssister#bindService()
+	 */
+	public boolean bindService() {
+		return assister.bindService();
+	}
+
+	/**
+	 * Dispatches the unbind call to the {@link HttpServiceAssister} used to
+	 * issue {@link WebRequest}s
+	 * 
+	 * @return <code>true</code> if {@link HttpService} was bound and therefore
+	 *         successfully unbound, <code>false</code> otherwise.
+	 * @see HttpServiceAssister#unbindService()
+	 */
+	public boolean unbindService() {
+		return assister.unbindService();
+	}
+
+	/**
 	 * Base {@link Handler} for ordered asynchronous {@link WebRequest}s. Uses
 	 * {@link NextWebRequestDelegate} to run the next {@link WebRequest} in
 	 * line.
 	 */
-	public class HttpOrderedAsyncHandler extends Handler {
+	public static class HttpOrderedAsyncHandler extends Handler {
 		private HttpOrderedAsyncRequest request;
+		private HttpOrderedAsyncAssisiter orderedSyncAssister;
 
-		/**
-		 * Default construcor
-		 * 
-		 * @param webRequest
-		 *            the {@link HttpOrderedAsyncRequest} that uses this handler
-		 */
-		public HttpOrderedAsyncHandler(HttpOrderedAsyncRequest request) {
-			this.request = request;
+		public HttpOrderedAsyncHandler(HttpOrderedAsyncAssisiter orderedSyncAssister) {
+			this.orderedSyncAssister = orderedSyncAssister;
 		}
 
 		/**
@@ -94,7 +114,12 @@ public class HttpOrderedAsyncAssisiter {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			HttpOrderedAsyncRequest nextWebRequest = request.nextWebRequestDelegate.getNextWebRequest(msg);
-			assister.runWebRequest(nextWebRequest.handler, nextWebRequest.webRequest, nextWebRequest.serviceProcessor);
+			orderedSyncAssister.assister.runWebRequest(nextWebRequest.handler, nextWebRequest.webRequest, nextWebRequest.serviceProcessor);
+		}
+
+		@SuppressWarnings("javadoc")
+		public void setRequest(HttpOrderedAsyncRequest request) {
+			this.request = request;
 		}
 	}
 
@@ -104,7 +129,7 @@ public class HttpOrderedAsyncAssisiter {
 	 * be passed in order to enable {@link NextWebRequestDelegate} to make an
 	 * informed decision.
 	 */
-	public abstract class NextWebRequestDelegate {
+	public interface NextWebRequestDelegate {
 		/**
 		 * Gets the next {@link HttpOrderedAsyncRequest} in line. The request
 		 * may be determined using the provided {@link Message}. Therefore, it
@@ -118,14 +143,25 @@ public class HttpOrderedAsyncAssisiter {
 		 *         Returning <code>null</code> indicates that the current
 		 *         {@link WebRequest} is the last request in line.
 		 */
-		public abstract HttpOrderedAsyncRequest getNextWebRequest(Message message);
+		public HttpOrderedAsyncRequest getNextWebRequest(Message message);
+	}
+
+	/**
+	 * Premade {@link NextWebRequestDelegate} implementation that indicates that
+	 * the current {@link HttpOrderedAsyncRequest} is the last in line.
+	 */
+	public static final class NoNextWebRequestDelegate implements NextWebRequestDelegate {
+		@Override
+		public HttpOrderedAsyncRequest getNextWebRequest(Message message) {
+			return null;
+		}
 	}
 
 	/**
 	 * A wrapper for multiple objects that are relevant if {@link WebRequest}
 	 * should be chained.
 	 */
-	public class HttpOrderedAsyncRequest {
+	public static class HttpOrderedAsyncRequest {
 		/**
 		 * The actual {@link WebRequest}, usable by {@link HttpService}.
 		 */
@@ -161,8 +197,13 @@ public class HttpOrderedAsyncAssisiter {
 				NextWebRequestDelegate nextWebRequestDelegate, ServiceProcessor<?> serviceProcessor) {
 			this.webRequest = webRequest;
 			this.handler = handler;
+			this.handler.setRequest(this);
 			this.nextWebRequestDelegate = nextWebRequestDelegate;
 			this.serviceProcessor = serviceProcessor;
+		}
+
+		public HttpOrderedAsyncRequest() {
+
 		}
 
 		@SuppressWarnings("javadoc")
