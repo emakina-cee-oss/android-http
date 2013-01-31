@@ -28,7 +28,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.animation.Animation;
@@ -165,7 +164,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 	 */
 	public static String getImageFileUrl(String url, Context context) {
 		String filename = Utils.getMD5Hash(url);
-		File dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+		File dir = context.getExternalCacheDir();
 		File file = new File(dir, filename);
 		if (file.exists()) {
 			return file.getAbsolutePath();
