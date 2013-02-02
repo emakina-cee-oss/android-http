@@ -210,8 +210,7 @@ public class HttpServiceAssister {
 	 *            the {@link WebRequest} to run
 	 * @param serviceProcessor
 	 *            the processor that handles the {@link WebRequest}
-	 * @return
-	 *         The object created by the
+	 * @return The object created by the
 	 *         {@link DataProcessor#obtainDataObjectFromWebReply(ReplyAdapter)}
 	 *         method of the {@link DataProcessor} registered for this request,
 	 *         or <code>null</code> if the request failed.
@@ -241,8 +240,7 @@ public class HttpServiceAssister {
 	 *            an optional {@link ProgressListener}
 	 * @param serviceProcessor
 	 *            the processor that handles the {@link WebRequest}
-	 * @return
-	 *         The object created by the
+	 * @return The object created by the
 	 *         {@link DataProcessor#obtainDataObjectFromWebReply(ReplyAdapter)}
 	 *         method of the {@link DataProcessor} registered for this request,
 	 *         or <code>null</code> if the request failed.
@@ -262,6 +260,10 @@ public class HttpServiceAssister {
 	 *         <code>false</code> if the timeout was reached
 	 */
 	private boolean waitForHttpService() {
+		LOGGER.info("Waiting on thread " + Thread.currentThread());
+		if (httpService != null) {
+			return true;
+		}
 		synchronized (monitor) {
 			try {
 				monitor.wait(SYNC_REQUEST_BINDING_TIMEOUT);
