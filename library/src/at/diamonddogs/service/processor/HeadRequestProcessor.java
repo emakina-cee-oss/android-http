@@ -76,7 +76,7 @@ public class HeadRequestProcessor extends ServiceProcessor<Map<String, List<Stri
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, List<String>> obtainDataObjectFromWebReply(ReplyAdapter reply) {
+	public Map<String, List<String>> obtainDataObjectFromWebReply(Context c, ReplyAdapter reply) {
 		if (reply.getReply() == null) {
 			return null;
 		}

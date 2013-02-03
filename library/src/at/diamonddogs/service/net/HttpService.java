@@ -307,8 +307,8 @@ public class HttpService extends Service implements WebClientReplyListener {
 			if (cachedObject != null) {
 				return cachedObject.getCachedObject();
 			} else {
-				return synchronousProcessor
-						.obtainDataObjectFromWebReply(runSynchronousWebRequestFuture(webRequest, progressListener).get());
+				return synchronousProcessor.obtainDataObjectFromWebReply(this, runSynchronousWebRequestFuture(webRequest, progressListener)
+						.get());
 			}
 		} catch (Throwable tr) {
 			LOGGER.error("Error getting result", tr);

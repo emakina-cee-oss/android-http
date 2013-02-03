@@ -88,7 +88,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * the subclass.
 	 */
 	@Override
-	public T obtainDataObjectFromWebReply(ReplyAdapter replyAdapter) {
+	public T obtainDataObjectFromWebReply(Context c, ReplyAdapter replyAdapter) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 

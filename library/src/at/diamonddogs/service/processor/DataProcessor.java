@@ -96,7 +96,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 	}
 
 	@Override
-	public OUTPUT obtainDataObjectFromWebReply(ReplyAdapter reply) {
+	public OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply) {
 		return parse(createParsedObjectFromByteArray(((WebReply) reply.getReply()).getData()));
 	}
 
