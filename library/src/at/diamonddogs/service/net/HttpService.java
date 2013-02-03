@@ -244,8 +244,12 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 */
 	public Object[] runSynchronousWebRequests(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
 		Object[] ret = new Object[webRequests.length];
+		CacheManager cm = CacheManager.getInstance();
 		for (int i = 0; i < webRequests.length; i++) {
-			if (progressListeners.length == 0) {
+			CachedObject cachedObject = cm.getFromCache(this, webRequests[i]);
+			if (cachedObject != null) {
+				ret[i] = cachedObject.getCachedObject();
+			} else if (progressListeners.length == 0) {
 				ret[i] = runSynchronousWebRequest(webRequests[i], null);
 			} else if (progressListeners.length == 1) {
 				ret[i] = runSynchronousWebRequest(webRequests[i], progressListeners[0]);
@@ -264,7 +268,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * called. Beware that calling
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest,DownloadProgressListener)}
 	 * on the main thread may cause ANR issues. The processor handling the
-	 * {@link WebRequest} must be a {@link DataProcessor}, otherwise, an
+	 * {@link WebRequest} must be a {@link SynchronousProcessor}, otherwise, an
 	 * exception will be thrown.
 	 * 
 	 * @param webRequest
@@ -283,7 +287,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * called. Beware that calling
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest,DownloadProgressListener)}
 	 * on the main thread may cause ANR issues. The processor handling the
-	 * {@link WebRequest} must be a {@link DataProcessor}, otherwise, an
+	 * {@link WebRequest} must be a {@link SynchronousProcessor}, otherwise, an
 	 * exception will be thrown.
 	 * 
 	 * @param webRequest
@@ -298,22 +302,29 @@ public class HttpService extends Service implements WebClientReplyListener {
 	public Object runSynchronousWebRequest(final WebRequest webRequest, final DownloadProgressListener progressListener) {
 		SynchronousProcessor<?> synchronousProcessor = (SynchronousProcessor<?>) registeredProcessors.get(webRequest.getProcessorId());
 		try {
-			return synchronousProcessor.obtainDataObjectFromWebReply(runSynchronousWebRequestFuture(webRequest, progressListener).get());
+			CacheManager cm = CacheManager.getInstance();
+			CachedObject cachedObject = cm.getFromCache(HttpService.this, webRequest);
+			if (cachedObject != null) {
+				return cachedObject.getCachedObject();
+			} else {
+				return synchronousProcessor
+						.obtainDataObjectFromWebReply(runSynchronousWebRequestFuture(webRequest, progressListener).get());
+			}
 		} catch (Throwable tr) {
 			LOGGER.error("Error getting result", tr);
 		}
 		return null;
 	}
 
-	protected Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests) {
+	private Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests) {
 		return runSynchronousWebRequestsFuture(webRequests, new DownloadProgressListener[0]);
 	}
 
-	protected Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener progressListener) {
+	private Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener progressListener) {
 		return runSynchronousWebRequestsFuture(webRequests, new DownloadProgressListener[] { progressListener });
 	}
 
-	protected Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
+	private Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
 		@SuppressWarnings("unchecked")
 		Future<ReplyAdapter>[] ret = new Future[webRequests.length];
 		for (int i = 0; i < webRequests.length; i++) {
