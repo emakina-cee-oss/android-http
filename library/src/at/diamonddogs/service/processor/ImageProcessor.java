@@ -82,31 +82,43 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 
 	private void saveBitmapToFile(Context c, ReplyAdapter r, Handler handler, Bitmap b) {
 		try {
-			WebRequest request = (WebRequest) r.getRequest();
-			String filename = Utils.getMD5Hash(request.getUrl().toString());
-			if (filename != null && b != null) {
-				if (request.getCacheTime() != CacheInformation.CACHE_NO) {
-					File path = c.getExternalCacheDir();
-					FileOutputStream fos = new FileOutputStream(new File(path, filename));
-					b.compress(CompressFormat.PNG, 0, fos);
-
-					CacheInformation ci = createImage(request, path.toString(), filename);
-
-					CacheManager cm = CacheManager.getInstance();
-					cm.addToCache(c, ci);
-					if (useMemCache) {
-						cm.addToMemoryCache(request.getUrl().toString(), ID, b);
-					}
-				}
-				handler.sendMessage(createReturnMessage(r, b));
-
-			} else {
-				handler.sendMessage(createReturnMessage(r, b));
-			}
+			saveBitmapToFile(c, r, b);
+			handler.sendMessage(createReturnMessage(r, b));
 		} catch (FileNotFoundException e) {
 			LOGGER.error(e.getMessage(), e);
 			handler.sendMessage(createErrorMessage(e, r));
 		}
+	}
+
+	private void saveBitmapToFile(Context c, ReplyAdapter r, Bitmap b) throws FileNotFoundException {
+		WebRequest request = (WebRequest) r.getRequest();
+		String filename = Utils.getMD5Hash(request.getUrl().toString());
+		if (filename != null && b != null) {
+			if (request.getCacheTime() != CacheInformation.CACHE_NO) {
+				File path = c.getExternalCacheDir();
+				FileOutputStream fos = new FileOutputStream(new File(path, filename));
+				b.compress(CompressFormat.PNG, 0, fos);
+
+				CacheInformation ci = createImage(request, path.toString(), filename);
+
+				CacheManager cm = CacheManager.getInstance();
+				cm.addToCache(c, ci);
+				if (useMemCache) {
+					cm.addToMemoryCache(request.getUrl().toString(), ID, b);
+				}
+			}
+		}
+	}
+
+	@Override
+	public Bitmap obtainDataObjectFromWebReply(Context c, ReplyAdapter reply) {
+		Bitmap b = super.obtainDataObjectFromWebReply(c, reply);
+		try {
+			saveBitmapToFile(c, reply, b);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not cache bitmap (sync webrequest)", tr);
+		}
+		return b;
 	}
 
 	@Override
