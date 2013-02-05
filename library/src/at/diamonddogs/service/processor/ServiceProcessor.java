@@ -137,7 +137,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 * @return a {@link Message} object containing all required return data
 	 */
 	protected Message createReturnMessage(ReplyAdapter replyAdapter, OUTPUT payload) {
-		Message m = new Message();
+		Message m = Message.obtain();
 		m.what = ((WebRequest) replyAdapter.getRequest()).getProcessorId();
 		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
 		m.obj = payload;
@@ -161,7 +161,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 * @return a {@link Message} object containing all required return data
 	 */
 	protected Message createReturnMessage(WebRequest webRequest, OUTPUT payload) {
-		Message m = new Message();
+		Message m = Message.obtain();
 		m.what = webRequest.getProcessorId();
 		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
 		m.obj = payload;
@@ -183,16 +183,16 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 * @return an error {@link Message} object
 	 */
 	public Message createErrorMessage(Throwable tr, ReplyAdapter replyAdapter) {
-		Message msg = new Message();
-		msg.what = getProcessorID();
-		msg.arg1 = RETURN_MESSAGE_FAIL;
+		Message m = Message.obtain();
+		m.what = getProcessorID();
+		m.arg1 = RETURN_MESSAGE_FAIL;
 		Bundle b = new Bundle(1);
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_THROWABLE, tr);
 		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest((WebRequest) replyAdapter.getRequest()));
 		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REPLY, new ParcelableAdapterWebReply((WebReply) replyAdapter.getReply()));
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, false);
-		msg.setData(b);
-		return msg;
+		m.setData(b);
+		return m;
 	}
 
 	/**
@@ -205,22 +205,21 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 * @return an error {@link Message} object
 	 */
 	public Message createErrorMessage(ReplyAdapter replyAdapter) {
-		Message msg = new Message();
-		msg.what = getProcessorID();
-		msg.arg1 = RETURN_MESSAGE_FAIL;
+		Message m = Message.obtain();
+		m.what = getProcessorID();
+		m.arg1 = RETURN_MESSAGE_FAIL;
 		Bundle b = new Bundle(1);
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_THROWABLE, new Throwable());
 		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest((WebRequest) replyAdapter.getRequest()));
 		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REPLY, new ParcelableAdapterWebReply((WebReply) replyAdapter.getReply()));
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, false);
-		msg.setData(b);
-		return msg;
+		m.setData(b);
+		return m;
 	}
 
 	/**
 	 * Creates a default error message for a {@link WebRequest}. Use this method
-	 * when dealing with
-	 * errors caused by cache retrieval.
+	 * when dealing with errors caused by cache retrieval.
 	 * 
 	 * @param tr
 	 *            a {@link Throwable} explaining the error
@@ -229,15 +228,15 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 * @return a {@link Message} {@link Object}
 	 */
 	public Message createErrorMessage(Throwable tr, WebRequest webRequest) {
-		Message msg = new Message();
-		msg.what = getProcessorID();
-		msg.arg1 = RETURN_MESSAGE_FAIL;
+		Message m = Message.obtain();
+		m.what = getProcessorID();
+		m.arg1 = RETURN_MESSAGE_FAIL;
 		Bundle b = new Bundle(1);
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_THROWABLE, tr);
 		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest(webRequest));
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, true);
-		msg.setData(b);
-		return msg;
+		m.setData(b);
+		return m;
 	}
 
 	/**
@@ -250,14 +249,14 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 * @return a {@link Message} {@link Object}
 	 */
 	public Message createErrorMessage(WebRequest webRequest) {
-		Message msg = new Message();
-		msg.what = getProcessorID();
-		msg.arg1 = RETURN_MESSAGE_FAIL;
+		Message m = Message.obtain();
+		m.what = getProcessorID();
+		m.arg1 = RETURN_MESSAGE_FAIL;
 		Bundle b = new Bundle(1);
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_THROWABLE, new Throwable());
 		b.putParcelable(BUNDLE_EXTRA_MESSAGE_REQUEST, new ParcelableAdapterWebRequest(webRequest));
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, true);
-		msg.setData(b);
-		return msg;
+		m.setData(b);
+		return m;
 	}
 }
