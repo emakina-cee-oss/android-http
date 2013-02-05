@@ -138,7 +138,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 */
 	protected Message createReturnMessage(ReplyAdapter replyAdapter, OUTPUT payload) {
 		Message m = Message.obtain();
-		m.what = ((WebRequest) replyAdapter.getRequest()).getProcessorId();
+		m.what = getProcessorID();
 		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
 		m.obj = payload;
 		Bundle dataBundle = new Bundle();
@@ -162,7 +162,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 	 */
 	protected Message createReturnMessage(WebRequest webRequest, OUTPUT payload) {
 		Message m = Message.obtain();
-		m.what = webRequest.getProcessorId();
+		m.what = getProcessorID();
 		m.arg1 = ServiceProcessor.RETURN_MESSAGE_OK;
 		m.obj = payload;
 		Bundle dataBundle = new Bundle();
