@@ -116,6 +116,18 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 		return null;
 	}
 
+	/**
+	 * Writes {@link WebRequest} specific data to the cache. Ignores
+	 * {@link WebRequest} whose {@link WebRequest#getCacheTime()} is
+	 * {@link CacheInformation#CACHE_NO}
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 * @param request
+	 *            the {@link WebRequest} whose data will be saved to the cache
+	 * @param data
+	 *            the actual data
+	 */
 	protected void cacheObjectToFile(Context context, WebRequest request, byte[] data) {
 		String filename = Utils.getMD5Hash(request.getUrl().toString());
 		BufferedOutputStream bos = null;
