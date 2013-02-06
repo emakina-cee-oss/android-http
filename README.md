@@ -16,7 +16,6 @@ The framework is designed to send, receive, process and publish webrequests and 
 
 ## Planned
 * Chaining multiple processors
-* Ordered asychronous web requests
 * OAuth 2.0
 
 ## License
