@@ -51,10 +51,10 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.httporderedasyncassisterexample);
+		setContentView(R.layout.httporderedasyncassisterexampleactivity);
 		assister = new HttpOrderedAsyncAssisiter(this);
-		text = (TextView) findViewById(R.id.httporderedasyncassisiterexample_text);
-		temperature = (TextView) findViewById(R.id.httporderedasyncassisiterexample_temperature);
+		text = (TextView) findViewById(R.id.httporderedasyncassisiterexampleactivity_text);
+		temperature = (TextView) findViewById(R.id.httporderedasyncassisiterexampleactivity_temperature);
 	}
 
 	/**
