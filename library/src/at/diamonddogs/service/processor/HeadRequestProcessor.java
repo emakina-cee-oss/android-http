@@ -76,10 +76,19 @@ public class HeadRequestProcessor extends ServiceProcessor<Map<String, List<Stri
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, List<String>> obtainDataObjectFromWebReply(ReplyAdapter reply) {
+	public Map<String, List<String>> obtainDataObjectFromWebReply(Context c, ReplyAdapter reply) {
 		if (reply.getReply() == null) {
 			return null;
 		}
 		return ((WebReply) reply.getReply()).getReplyHeader();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Map<String, List<String>> obtainDataObjectFromCachedObject(Context c, CachedObject object) {
+		// no cache support
+		return null;
 	}
 }

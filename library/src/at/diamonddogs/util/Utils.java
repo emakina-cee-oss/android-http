@@ -18,6 +18,7 @@ package at.diamonddogs.util;
 import java.io.FileNotFoundException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -40,6 +41,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Process;
 import android.util.Base64;
+import at.diamonddogs.data.adapter.database.DatabaseAdapter;
 
 /**
  * Collection of general util methods
@@ -47,6 +49,31 @@ import android.util.Base64;
 public class Utils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getSimpleName());
+
+	public static <T> List<T> convertCursorToList(Cursor cursor, DatabaseAdapter<T> databaseAdapter) {
+		List<T> list = new ArrayList<T>();
+		if (!checkCursor(cursor)) {
+			return null;
+		}
+		cursor.moveToFirst();
+		do {
+			list.add(databaseAdapter.deserialize(cursor));
+		} while (cursor.moveToNext());
+		return list;
+	}
+
+	public static List<String> convertColumnToList(Cursor cursor, String name) {
+		List<String> list = new ArrayList<String>();
+		if (!checkCursor(cursor)) {
+			return null;
+		}
+		cursor.moveToFirst();
+		do {
+			list.add(cursor.getString(cursor.getColumnIndex(name)));
+		} while (cursor.moveToNext());
+
+		return list;
+	}
 
 	/**
 	 * Brings up the MAIN/LAUNCHER activity and clears the top
