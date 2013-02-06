@@ -18,6 +18,7 @@ package at.diamonddogs.service.processor;
 import android.content.Context;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.service.net.HttpService;
 import at.diamonddogs.service.processor.DataProcessor.ProcessingData;
 import at.diamonddogs.util.CacheManager.CachedObject;
 
@@ -45,10 +46,14 @@ public interface SynchronousProcessor<OUTPUT> {
 	public abstract OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply);
 
 	/**
+	 * This method is called by {@link HttpService} in order to allow post
+	 * processing of cache data.
 	 * 
 	 * @param c
+	 *            a {@link Context} object
 	 * @param object
-	 * @return
+	 *            the {@link CachedObject} retrieved from the cache
+	 * @return an OUTPUT object
 	 */
 	public abstract OUTPUT obtainDataObjectFromCachedObject(Context c, CachedObject object);
 }

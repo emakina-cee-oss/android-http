@@ -102,6 +102,13 @@ public class HttpOrderedAsyncAssisiter {
 		private HttpOrderedAsyncRequest request;
 		private HttpOrderedAsyncAssisiter orderedSyncAssister;
 
+		/**
+		 * Constructor
+		 * 
+		 * @param orderedSyncAssister
+		 *            the {@link HttpOrderedAsyncAssisiter} running the
+		 *            {@link WebRequest} that is handled by this {@link Handler}
+		 */
 		public HttpOrderedAsyncHandler(HttpOrderedAsyncAssisiter orderedSyncAssister) {
 			this.orderedSyncAssister = orderedSyncAssister;
 		}
@@ -205,6 +212,9 @@ public class HttpOrderedAsyncAssisiter {
 			this.serviceProcessor = serviceProcessor;
 		}
 
+		/**
+		 * Constructor
+		 */
 		public HttpOrderedAsyncRequest() {
 
 		}
