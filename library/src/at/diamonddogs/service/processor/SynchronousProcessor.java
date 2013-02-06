@@ -19,6 +19,7 @@ import android.content.Context;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.service.processor.DataProcessor.ProcessingData;
+import at.diamonddogs.util.CacheManager.CachedObject;
 
 /**
  * {@link SynchronousProcessor} has to be implemented by all processors that
@@ -42,4 +43,12 @@ public interface SynchronousProcessor<OUTPUT> {
 	 *         {@link ProcessingData#output}
 	 */
 	public abstract OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply);
+
+	/**
+	 * 
+	 * @param c
+	 * @param object
+	 * @return
+	 */
+	public abstract OUTPUT obtainDataObjectFromCachedObject(Context c, CachedObject object);
 }

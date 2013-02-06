@@ -121,6 +121,29 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		return b;
 	}
 
+	/**
+	 * Obtains a {@link Bitmap} from cache.
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param object
+	 *            the {@link CachedObject} obtained from the cache database
+	 * @return returns the {@link Bitmap}, either from file or from memory cache
+	 *         or <code>null</code> if something goes awefully wrong
+	 */
+	@Override
+	public Bitmap obtainDataObjectFromCachedObject(Context c, CachedObject object) {
+		switch (object.getFrom()) {
+		case MEMORY:
+			return (Bitmap) object.getCachedObject();
+		case FILE:
+			byte[] data = (byte[]) object.getCachedObject();
+			return BitmapFactory.decodeByteArray(data, 0, data.length);
+		default:
+			return null;
+		}
+	}
+
 	@Override
 	public void processCachedObject(CachedObject cachedObject, Handler handler, Request request) {
 		WebRequest wr = (WebRequest) request;
