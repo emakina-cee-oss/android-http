@@ -15,6 +15,7 @@
  */
 package at.diamonddogs.data.dataobjects;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -175,6 +176,16 @@ public class WebRequest implements Request {
 	public void setUrl(String url) {
 		try {
 			this.url = new URL(url);
+		} catch (Throwable t) {
+			LOGGER.error("Invalid url:" + url);
+			this.url = null;
+		}
+	}
+
+	@SuppressWarnings("javadoc")
+	public void setUrl(URI uri) {
+		try {
+			this.url = uri.toURL();
 		} catch (Throwable t) {
 			LOGGER.error("Invalid url:" + url);
 			this.url = null;
