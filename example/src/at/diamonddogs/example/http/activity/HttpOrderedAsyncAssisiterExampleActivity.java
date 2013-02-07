@@ -29,8 +29,8 @@ import at.diamonddogs.service.processor.HeadRequestProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
 
 /**
- * @author siyb
- * 
+ * A simple example that illustrates how asynchronous {@link WebRequest}s can be
+ * executed in order, according to certain conditions.
  */
 public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 
