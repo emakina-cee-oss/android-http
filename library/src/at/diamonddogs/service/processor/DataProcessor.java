@@ -21,9 +21,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.content.Context;
+import android.os.Handler;
 import android.os.Message;
 import at.diamonddogs.data.adapter.ReplyAdapter;
+import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.CacheInformation;
+import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.util.CacheManager;
@@ -94,6 +97,35 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 		OUTPUT output = parse(input);
 		Message message = createReturnMessage(wr, output);
 		return new ProcessingData<OUTPUT>(message, output);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
+		try {
+			if (r.getStatus() == Status.OK) {
+				handler.sendMessage(processData(r).returnMessage);
+				cacheObjectToFile(c, (WebRequest) r.getRequest(), ((WebReply) r.getReply()).getData());
+			} else {
+				handler.sendMessage(createErrorMessage(r));
+			}
+		} catch (Throwable tr) {
+			handler.sendMessage(createErrorMessage(tr, r));
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void processCachedObject(CachedObject cachedObject, Handler handler, Request request) {
+		try {
+			handler.sendMessage(processData((WebRequest) request, (byte[]) cachedObject.getCachedObject()).returnMessage);
+		} catch (Throwable tr) {
+			handler.sendMessage(createErrorMessage(tr, (WebRequest) request));
+		}
 	}
 
 	@Override
