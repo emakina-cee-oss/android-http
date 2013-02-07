@@ -123,6 +123,20 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 	 * 
 	 * @param context
 	 *            a {@link Context}
+	 * @param r
+	 *            a {@link ReplyAdapter}
+	 */
+	protected void cacheObjectToFile(Context context, ReplyAdapter r) {
+		cacheObjectToFile(context, (WebRequest) r.getRequest(), ((WebReply) r.getReply()).getData());
+	}
+
+	/**
+	 * Writes {@link WebRequest} specific data to the cache. Ignores
+	 * {@link WebRequest} whose {@link WebRequest#getCacheTime()} is
+	 * {@link CacheInformation#CACHE_NO}
+	 * 
+	 * @param context
+	 *            a {@link Context}
 	 * @param request
 	 *            the {@link WebRequest} whose data will be saved to the cache
 	 * @param data
