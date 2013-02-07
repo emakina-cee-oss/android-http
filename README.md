@@ -17,8 +17,6 @@ The framework is designed to send, receive, process and publish webrequests and 
 ## Planned
 * Chaining multiple processors
 * OAuth 2.0
-* Use cache if offline
-* Connectivity awareness
 
 ## License
 Apache License, Version 2.0. Please refer to LICENSE and NOTICE for additional information.
