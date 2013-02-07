@@ -50,6 +50,18 @@ public class Utils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getSimpleName());
 
+	/**
+	 * Creates a {@link List} from a {@link Cursor}
+	 * 
+	 * @param <T>
+	 *            the generic type of the {@link List}
+	 * @param cursor
+	 *            the {@link Cursor} to be converted to a {@link List}
+	 * @param databaseAdapter
+	 *            the {@link DatabaseAdapter} that will be used for conversion
+	 * @return a {@link List} containing objects created from the input
+	 *         {@link Cursor}
+	 */
 	public static <T> List<T> convertCursorToList(Cursor cursor, DatabaseAdapter<T> databaseAdapter) {
 		List<T> list = new ArrayList<T>();
 		if (!checkCursor(cursor)) {
@@ -62,6 +74,15 @@ public class Utils {
 		return list;
 	}
 
+	/**
+	 * Creates a {@link String} {@link List} from a {@link Cursor}
+	 * 
+	 * @param cursor
+	 *            the input {@link Cursor}
+	 * @param name
+	 *            the name of the colum
+	 * @return a {@link String} {@link List}
+	 */
 	public static List<String> convertColumnToList(Cursor cursor, String name) {
 		List<String> list = new ArrayList<String>();
 		if (!checkCursor(cursor)) {
