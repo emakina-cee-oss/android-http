@@ -31,6 +31,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.ConnectivityManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -103,6 +104,12 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 */
 	private Map<String, WebRequestFutureContainer> webRequests;
 
+	/**
+	 * An instance of {@link ConnectivityManager} used to check for connectivity
+	 * (o rly?! :>)
+	 */
+	private ConnectivityManager connectivityManager;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -110,6 +117,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		webRequestHandlerMap = Collections.synchronizedMap(new HashMap<Handler, List<WebRequest>>());
 		registeredProcessors = new SparseArray<ServiceProcessor<?>>();
 		webRequests = Collections.synchronizedMap(new HashMap<String, WebRequestFutureContainer>());
+		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	}
 
 	@Override
@@ -316,16 +324,88 @@ public class HttpService extends Service implements WebClientReplyListener {
 		return null;
 	}
 
-	@SuppressWarnings("unused")
-	private Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests) {
+	/**
+	 * Runs an asynchronous {@link WebRequest} and returns a {@link Future} so
+	 * that the caller can wait for a result. This is a convenience method,
+	 * {@link HttpService#runSynchronousWebRequest(WebRequest, DownloadProgressListener)}
+	 * will be called with a <code>null</code> {@link DownloadProgressListener}
+	 * 
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @return a {@link Future} that allows the caller to wait for the result
+	 */
+	protected Future<ReplyAdapter> runSynchronousWebRequestFuture(WebRequest webRequest) {
+		return runSynchronousWebRequestFuture(webRequest, null);
+	}
+
+	/**
+	 * Runs multiple asynchronous {@link WebRequest}s and returns an array of
+	 * {@link Future}s so
+	 * that the caller can wait for the results. This is a convenience method,
+	 * {@link HttpService#runSynchronousWebRequest(WebRequest[], DownloadProgressListener[])}
+	 * will be called with a <code>null</code> array of
+	 * {@link DownloadProgressListener}s
+	 * 
+	 * @param webRequests
+	 *            the {@link WebRequest}s to run
+	 * @return an array of {@link Future} that allows the caller to wait for the
+	 *         result
+	 */
+	protected Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests) {
 		return runSynchronousWebRequestsFuture(webRequests, new DownloadProgressListener[0]);
 	}
 
-	@SuppressWarnings("unused")
-	private Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener progressListener) {
+	/**
+	 * Runs multiple asynchronous {@link WebRequest}s and returns an array of
+	 * {@link Future}s so
+	 * that the caller can wait for the results. This is a convenience method,
+	 * {@link HttpService#runSynchronousWebRequest(WebRequest[], DownloadProgressListener[])}
+	 * will be called with an array, containing a single
+	 * {@link DownloadProgressListener}
+	 * 
+	 * @param webRequests
+	 *            the {@link WebRequest}s to run
+	 * @param progressListener
+	 *            the {@link DownloadProgressListener} that will receive updates
+	 *            for all {@link WebRequest}
+	 * @return an array of {@link Future} that allows the caller to wait for the
+	 *         result
+	 */
+	protected Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener progressListener) {
 		return runSynchronousWebRequestsFuture(webRequests, new DownloadProgressListener[] { progressListener });
 	}
 
+	/**
+	 * Runs multiple asynchronous {@link WebRequest}s and returns an array of
+	 * {@link Future}s so
+	 * that the caller can wait for the results. If the array of
+	 * {@link DownloadProgressListener} has a length of 0, no progress will be
+	 * published, if it has a length of 1, all {@link WebRequest}s will use the
+	 * same {@link DownloadProgressListener} to publish the progress, if the
+	 * {@link WebRequest} array and the {@link DownloadProgressListener} array
+	 * have the same size, each {@link WebRequest} uses the corresponding
+	 * {@link DownloadProgressListener} to report progress. If both arrays have
+	 * an unequal length, an exception is thrown.
+	 * 
+	 * @see HttpService#runSynchronousWebRequestsFuture(WebRequest[],
+	 *      DownloadProgressListener[])
+	 * 
+	 * @see HttpService#runSynchronousWebRequestsFuture(WebRequest[],
+	 *      DownloadProgressListener)
+	 * @see HttpService#runSynchronousWebRequestsFuture(WebRequest[])
+	 * 
+	 * @see HttpService#runSynchronousWebRequestFuture(WebRequest,
+	 *      DownloadProgressListener)
+	 * @see HttpService#runSynchronousWebRequestFuture(WebRequest)
+	 * 
+	 * @param webRequests
+	 *            the {@link WebRequest}s to run
+	 * @param progressListener
+	 *            the {@link DownloadProgressListener}s that will receive
+	 *            updates for corresponding {@link WebRequest}s
+	 * @return an array of {@link Future} that allows the caller to wait for the
+	 *         result
+	 */
 	private Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
 		@SuppressWarnings("unchecked")
 		Future<ReplyAdapter>[] ret = new Future[webRequests.length];
@@ -344,12 +424,17 @@ public class HttpService extends Service implements WebClientReplyListener {
 		return ret;
 	}
 
-	protected Future<ReplyAdapter> runSynchronousWebRequestFuture(final WebRequest webRequest) {
-		return runSynchronousWebRequestFuture(webRequest, null);
-	}
-
-	protected Future<ReplyAdapter> runSynchronousWebRequestFuture(final WebRequest webRequest,
-			final DownloadProgressListener progressListener) {
+	/**
+	 * Runs an asynchronous {@link WebRequest} and returns a {@link Future} so
+	 * that the caller can wait for a result.
+	 * 
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @param progressListener
+	 *            a {@link DownloadProgressListener}, can be <code>null</code>
+	 * @return a {@link Future} that allows the caller to wait for the result
+	 */
+	private Future<ReplyAdapter> runSynchronousWebRequestFuture(final WebRequest webRequest, final DownloadProgressListener progressListener) {
 
 		if (workerQueue.isShutDown()) {
 			LOGGER.info("service already shutdown, couldn't run: " + webRequest);
