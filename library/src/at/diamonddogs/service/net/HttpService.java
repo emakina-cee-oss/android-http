@@ -31,7 +31,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.ConnectivityManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -51,6 +50,7 @@ import at.diamonddogs.service.processor.ServiceProcessor;
 import at.diamonddogs.service.processor.SynchronousProcessor;
 import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.CacheManager.CachedObject;
+import at.diamonddogs.util.ConnectivityHelper;
 import at.diamonddogs.util.WorkerQueue;
 
 /**
@@ -104,11 +104,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 */
 	private Map<String, WebRequestFutureContainer> webRequests;
 
-	/**
-	 * An instance of {@link ConnectivityManager} used to check for connectivity
-	 * (o rly?! :>)
-	 */
-	private ConnectivityManager connectivityManager;
+	private ConnectivityHelper connectivityHelper;
 
 	@Override
 	public void onCreate() {
@@ -117,7 +113,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		webRequestHandlerMap = Collections.synchronizedMap(new HashMap<Handler, List<WebRequest>>());
 		registeredProcessors = new SparseArray<ServiceProcessor<?>>();
 		webRequests = Collections.synchronizedMap(new HashMap<String, WebRequestFutureContainer>());
-		connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		connectivityHelper = new ConnectivityHelper(this);
 	}
 
 	@Override
@@ -146,8 +142,9 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @param webRequest
 	 *            the {@link WebRequest} to run
 	 * @return
+	 *         a {@link WebRequestReturnContainer}
 	 */
-	public String runWebRequest(Handler handler, WebRequest webRequest) {
+	public WebRequestReturnContainer runWebRequest(Handler handler, WebRequest webRequest) {
 		return runWebRequest(handler, webRequest, null);
 	}
 
@@ -162,23 +159,30 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @param progressListener
 	 *            a {@link ProgressListener} that will be informed of download
 	 *            progress
-	 * @return the {@link WebRequest} id as {@link String}
+	 * @return the a {@link WebRequestReturnContainer}
 	 */
-	public String runWebRequest(final Handler handler, final WebRequest webRequest, final DownloadProgressListener progressListener) {
+	public WebRequestReturnContainer runWebRequest(final Handler handler, final WebRequest webRequest,
+			final DownloadProgressListener progressListener) {
+		WebRequestReturnContainer ret = new WebRequestReturnContainer();
+		ret.id = webRequest.getId();
+		ret.payload = null; // we have no payload at this point!
+		ret.successful = true;
 		if (handler == null) {
 			throw new IllegalArgumentException("handler may not be null");
 		}
-
+		if (webRequest == null) {
+			throw new IllegalArgumentException("webRequest may not be null");
+		}
+		if (webRequest.getUrl() == null) {
+			LOGGER.warn("WebRequest URL was null, cannot run request");
+			ret.successful = false;
+			return ret;
+		}
 		if (workerQueue.isShutDown()) {
 			LOGGER.info("service already shutdown, couldn't run: " + webRequest);
-			return null;
+			ret.successful = false;
+			return ret;
 		}
-
-		if (webRequest == null) {
-			return null;
-		}
-
-		addRequestToHandlerMap(handler, webRequest);
 		ServiceProcessor<?> processor = registeredProcessors.get(webRequest.getProcessorId());
 		if (processor == null) {
 			int id = webRequest.getProcessorId();
@@ -187,14 +191,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 			}
 			throw new ServiceException("No processor with id '" + id + "' has been registered!");
 		}
-		if (webRequest.getUrl() == null) {
-			ReplyAdapter ra = new ReplyAdapter();
-			ra.setRequest(webRequest);
-			ra.setStatus(ReplyAdapter.Status.FAILED);
-			ra.setThrowable(new IllegalArgumentException("WebRequest URL was null"));
-			dispatchWebReplyProcessor(ra, getHandler(ra.getRequest()));
-		}
-
+		addRequestToHandlerMap(handler, webRequest);
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
@@ -207,7 +204,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		Thread t = new Thread(r);
 		t.start();
 
-		return webRequest.getId();
+		return ret;
 	}
 
 	/**
@@ -216,9 +213,9 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * 
 	 * @param webRequests
 	 *            the {@link WebRequest}s to run
-	 * @return an array of length webRequest.length containing return objects
+	 * @return an array of {@link WebRequestReturnContainer}s
 	 */
-	public Object[] runSynchronousWebRequests(WebRequest[] webRequests) {
+	public WebRequestReturnContainer[] runSynchronousWebRequests(WebRequest[] webRequests) {
 		return runSynchronousWebRequests(webRequests, new DownloadProgressListener[0]);
 	}
 
@@ -233,9 +230,9 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 *            callbacks from each {@link WebRequest}. Every time a new
 	 *            {@link WebRequest} is started,
 	 *            {@link DownloadProgressListener#downloadSize(long)} is called
-	 * @return an array of length webRequest.length containing return objects
+	 * @return an array of {@link WebRequestReturnContainer}s
 	 */
-	public Object[] runSynchronousWebRequests(WebRequest[] webRequests, DownloadProgressListener progressListener) {
+	public WebRequestReturnContainer[] runSynchronousWebRequests(WebRequest[] webRequests, DownloadProgressListener progressListener) {
 		return runSynchronousWebRequests(webRequests, new DownloadProgressListener[] { progressListener });
 	}
 
@@ -248,16 +245,12 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @param progressListeners
 	 *            an array of {@link DownloadProgressListener} that will receive
 	 *            callbacks from their corresponding {@link WebRequest}
-	 * @return an array of results
+	 * @return an array of {@link WebRequestReturnContainer}s
 	 */
-	public Object[] runSynchronousWebRequests(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
-		Object[] ret = new Object[webRequests.length];
-		CacheManager cm = CacheManager.getInstance();
+	public WebRequestReturnContainer[] runSynchronousWebRequests(WebRequest[] webRequests, DownloadProgressListener[] progressListeners) {
+		WebRequestReturnContainer[] ret = new WebRequestReturnContainer[webRequests.length];
 		for (int i = 0; i < webRequests.length; i++) {
-			CachedObject cachedObject = cm.getFromCache(this, webRequests[i]);
-			if (cachedObject != null) {
-				ret[i] = cachedObject.getCachedObject();
-			} else if (progressListeners.length == 0) {
+			if (progressListeners.length == 0) {
 				ret[i] = runSynchronousWebRequest(webRequests[i], null);
 			} else if (progressListeners.length == 1) {
 				ret[i] = runSynchronousWebRequest(webRequests[i], progressListeners[0]);
@@ -266,7 +259,6 @@ public class HttpService extends Service implements WebClientReplyListener {
 			} else {
 				ret[i] = runSynchronousWebRequest(webRequests[i], progressListeners[i]);
 			}
-
 		}
 		return ret;
 	}
@@ -284,9 +276,9 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @return The object created by the
 	 *         {@link DataProcessor#obtainDataObjectFromWebReply(ReplyAdapter)}
 	 *         method of the {@link DataProcessor} registered for this request,
-	 *         or <code>null</code> if the request failed.
+	 *         wrapped in a {@link WebRequestReturnContainer}.
 	 */
-	public Object runSynchronousWebRequest(final WebRequest webRequest) {
+	public WebRequestReturnContainer runSynchronousWebRequest(final WebRequest webRequest) {
 		return runSynchronousWebRequest(webRequest, null);
 	}
 
@@ -305,29 +297,40 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @return The object created by the
 	 *         {@link DataProcessor#obtainDataObjectFromWebReply(ReplyAdapter)}
 	 *         method of the {@link DataProcessor} registered for this request,
-	 *         or <code>null</code> if the request failed.
+	 *         wrapped in a {@link WebRequestReturnContainer}.
 	 */
-	public Object runSynchronousWebRequest(final WebRequest webRequest, final DownloadProgressListener progressListener) {
+	public WebRequestReturnContainer runSynchronousWebRequest(final WebRequest webRequest, final DownloadProgressListener progressListener) {
 		SynchronousProcessor<?> synchronousProcessor = (SynchronousProcessor<?>) registeredProcessors.get(webRequest.getProcessorId());
+		WebRequestReturnContainer ret = new WebRequestReturnContainer();
+		ret.id = webRequest.getId();
+		ret.successful = true;
 		try {
 			CacheManager cm = CacheManager.getInstance();
 			CachedObject cachedObject = cm.getFromCache(HttpService.this, webRequest);
-			if (cachedObject != null) {
-				return synchronousProcessor.obtainDataObjectFromCachedObject(this, cachedObject);
+			if (!connectivityHelper.checkConnectivityWebRequest(webRequest)) {
+				if (cachedObject != null) {
+					ret.payload = synchronousProcessor.obtainDataObjectFromCachedObject(this, cachedObject);
+				} else {
+					ret.successful = false;
+				}
 			} else {
-				return synchronousProcessor.obtainDataObjectFromWebReply(this, runSynchronousWebRequestFuture(webRequest, progressListener)
-						.get());
+				if (cachedObject != null) {
+					ret.payload = synchronousProcessor.obtainDataObjectFromCachedObject(this, cachedObject);
+				} else {
+					ret.payload = synchronousProcessor.obtainDataObjectFromWebReply(this,
+							runSynchronousWebRequestFuture(webRequest, progressListener).get());
+				}
 			}
 		} catch (Throwable tr) {
 			LOGGER.error("Error getting result", tr);
 		}
-		return null;
+		return ret;
 	}
 
 	/**
 	 * Runs an asynchronous {@link WebRequest} and returns a {@link Future} so
 	 * that the caller can wait for a result. This is a convenience method,
-	 * {@link HttpService#runSynchronousWebRequest(WebRequest, DownloadProgressListener)}
+	 * {@link HttpService#runSynchronousWebRequestsFuture(WebRequest, DownloadProgressListener)}
 	 * will be called with a <code>null</code> {@link DownloadProgressListener}
 	 * 
 	 * @param webRequest
@@ -342,7 +345,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * Runs multiple asynchronous {@link WebRequest}s and returns an array of
 	 * {@link Future}s so
 	 * that the caller can wait for the results. This is a convenience method,
-	 * {@link HttpService#runSynchronousWebRequest(WebRequest[], DownloadProgressListener[])}
+	 * {@link HttpService#runSynchronousWebRequestsFuture(WebRequest[], DownloadProgressListener[])}
 	 * will be called with a <code>null</code> array of
 	 * {@link DownloadProgressListener}s
 	 * 
@@ -359,7 +362,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * Runs multiple asynchronous {@link WebRequest}s and returns an array of
 	 * {@link Future}s so
 	 * that the caller can wait for the results. This is a convenience method,
-	 * {@link HttpService#runSynchronousWebRequest(WebRequest[], DownloadProgressListener[])}
+	 * {@link HttpService#runSynchronousWebRequestsFuture(WebRequest[], DownloadProgressListener[])}
 	 * will be called with an array, containing a single
 	 * {@link DownloadProgressListener}
 	 * 
@@ -692,6 +695,36 @@ public class HttpService extends Service implements WebClientReplyListener {
 		private WebRequestFutureContainer(WebRequest webRequest, Future<?> future) {
 			this.webRequest = webRequest;
 			this.future = future;
+		}
+	}
+
+	public static final class WebRequestReturnContainer {
+		private boolean successful;
+		private String id;
+		private Object payload;
+
+		public boolean isSuccessful() {
+			return successful;
+		}
+
+		public void setSuccessful(boolean successful) {
+			this.successful = successful;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		public Object getPayload() {
+			return payload;
+		}
+
+		public void setPayload(Object payload) {
+			this.payload = payload;
 		}
 	}
 }
