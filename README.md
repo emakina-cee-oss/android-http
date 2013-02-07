@@ -13,6 +13,10 @@ The framework is designed to send, receive, process and publish webrequests and 
 * In memory (LRU) and file based caching
 * SSL support
 * Automatic selection of web clients based on the Android version running on individual devices
+* Connectivity aware
+* Convenient assisting API:
+    * "fire-and-forget" API that enques web requests for later execution when service is not available
+    * Ordered-conditional synchronous web request API
 
 ## Planned
 * Chaining multiple processors
