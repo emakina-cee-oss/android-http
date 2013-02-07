@@ -61,6 +61,9 @@ public class ConnectivityHelper {
 	 * permissions are not sufficient, <code>true</code> will be returned as a
 	 * fallback value.
 	 * 
+	 * @param wr
+	 *            the {@link WebRequest} whose rules will determine if the
+	 *            connectivity test fails
 	 * @return <code>true</code> if the device is connected according to the
 	 *         rules provided in {@link WebRequest}
 	 */

@@ -698,31 +698,54 @@ public class HttpService extends Service implements WebClientReplyListener {
 		}
 	}
 
+	/**
+	 * A wrapper object wrapping the {@link WebRequest}s id, the payload (in
+	 * case of a synchronous {@link WebRequest}) and the state of the operation.
+	 * {@link WebRequestReturnContainer} must be returned by any public method,
+	 * capable of running {@link WebRequest}s.
+	 */
 	public static final class WebRequestReturnContainer {
+		/**
+		 * A flag indiciating the success of an operation
+		 */
 		private boolean successful;
+		/**
+		 * The id of the {@link WebRequest}
+		 */
 		private String id;
+		/**
+		 * The payload of the {@link WebRequest}. For synchronous
+		 * {@link WebRequest}s, this is the result of the webrequest, for
+		 * asynchronous {@link WebRequest} payload will always be null
+		 */
 		private Object payload;
 
+		@SuppressWarnings("javadoc")
 		public boolean isSuccessful() {
 			return successful;
 		}
 
+		@SuppressWarnings("javadoc")
 		public void setSuccessful(boolean successful) {
 			this.successful = successful;
 		}
 
+		@SuppressWarnings("javadoc")
 		public String getId() {
 			return id;
 		}
 
+		@SuppressWarnings("javadoc")
 		public void setId(String id) {
 			this.id = id;
 		}
 
+		@SuppressWarnings("javadoc")
 		public Object getPayload() {
 			return payload;
 		}
 
+		@SuppressWarnings("javadoc")
 		public void setPayload(Object payload) {
 			this.payload = payload;
 		}
