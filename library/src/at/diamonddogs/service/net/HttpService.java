@@ -164,14 +164,14 @@ public class HttpService extends Service implements WebClientReplyListener {
 	public WebRequestReturnContainer runWebRequest(final Handler handler, final WebRequest webRequest,
 			final DownloadProgressListener progressListener) {
 		WebRequestReturnContainer ret = new WebRequestReturnContainer();
+		if (webRequest == null) {
+			throw new IllegalArgumentException("webRequest may not be null");
+		}
 		ret.id = webRequest.getId();
 		ret.payload = null; // we have no payload at this point!
 		ret.successful = true;
 		if (handler == null) {
 			throw new IllegalArgumentException("handler may not be null");
-		}
-		if (webRequest == null) {
-			throw new IllegalArgumentException("webRequest may not be null");
 		}
 		if (webRequest.getUrl() == null) {
 			LOGGER.warn("WebRequest URL was null, cannot run request");
