@@ -19,6 +19,7 @@ import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.example.http.R;
 import at.diamonddogs.example.http.dataobject.Weather;
 import at.diamonddogs.example.http.processor.WeatherProcessor;
+import at.diamonddogs.service.net.HttpService.WebRequestReturnContainer;
 import at.diamonddogs.service.net.HttpServiceAssister;
 import at.diamonddogs.service.processor.HeadRequestProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
@@ -164,7 +165,7 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 		@SuppressWarnings("unchecked")
 		@Override
 		protected void onPostExecute(Object result) {
-			Map<String, List<String>> headers = (Map<String, List<String>>) result;
+			Map<String, List<String>> headers = (Map<String, List<String>>) ((WebRequestReturnContainer) result).getPayload();
 			if (headers != null) {
 				for (String key : headers.keySet()) {
 					LOGGER.error("KEY -> " + key);
