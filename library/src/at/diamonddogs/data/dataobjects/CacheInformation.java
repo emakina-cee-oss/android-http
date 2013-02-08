@@ -16,6 +16,7 @@
 package at.diamonddogs.data.dataobjects;
 
 import at.diamonddogs.contentprovider.CacheContentProvider;
+import at.diamonddogs.service.net.HttpService;
 
 /**
  * Represents {@link CacheInformation} of a file. Is used by
@@ -67,6 +68,16 @@ public class CacheInformation {
 	private String filePath;
 
 	/**
+	 * If there is no usable internet connection, {@link HttpService} will try
+	 * and retrieve the {@link WebRequest} result from cache. This only works as
+	 * long as the item is not expired (otherwise it will be deleted before
+	 * retrieval). Set this flag to <code>true</code> if you want to prevent
+	 * expiry if there is no internet connection, thus fully enabling offline
+	 * caching.
+	 */
+	private boolean useOfflineCache = false;
+
+	/**
 	 * Constructor to privide all information on {@link CacheInformation}
 	 * 
 	 * @param creationTimeStamp
@@ -79,6 +90,23 @@ public class CacheInformation {
 		this.cacheTime = cacheTime;
 		this.fileName = fileName;
 		this.filePath = filePath;
+	}
+
+	/**
+	 * Constructor to privide all information on {@link CacheInformation}
+	 * 
+	 * @param creationTimeStamp
+	 * @param cacheTime
+	 * @param fileName
+	 * @param filePath
+	 * @param useOfflineCache
+	 */
+	public CacheInformation(long creationTimeStamp, long cacheTime, String fileName, String filePath, boolean useOfflineCache) {
+		this.creationTimeStamp = creationTimeStamp;
+		this.cacheTime = cacheTime;
+		this.fileName = fileName;
+		this.filePath = filePath;
+		this.useOfflineCache = useOfflineCache;
 	}
 
 	/**
@@ -136,5 +164,15 @@ public class CacheInformation {
 	@SuppressWarnings("javadoc")
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
+	}
+
+	@SuppressWarnings("javadoc")
+	public boolean isUseOfflineCache() {
+		return useOfflineCache;
+	}
+
+	@SuppressWarnings("javadoc")
+	public void setUseOfflineCache(boolean useOfflineCache) {
+		this.useOfflineCache = useOfflineCache;
 	}
 }
