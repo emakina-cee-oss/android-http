@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import at.diamonddogs.data.dataobjects.WebRequest;
 
 /**
@@ -79,7 +80,8 @@ public class ConnectivityHelper {
 				// @formatter:on
 				return true;
 			}
-			return connectivityManager.getActiveNetworkInfo().isConnected();
+			NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+			return networkInfo == null ? false : networkInfo.isConnected();
 		} else {
 			LOGGER.info("WebRequest does not require connectivity check, returning true");
 			return true;
@@ -102,7 +104,8 @@ public class ConnectivityHelper {
 				LOGGER.warn("Hostname could not be resolved and therefore not be pinged. Returning false", tr);
 				return false;
 			}
-			return connectivityManager.requestRouteToHost(connectivityManager.getActiveNetworkInfo().getType(), inetAddressToInt(addr));
+			NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+			return networkInfo == null ? false : connectivityManager.requestRouteToHost(networkInfo.getType(), inetAddressToInt(addr));
 		} else {
 			LOGGER.info("WebRequest does not require connectivity check, returning true");
 			return true;
