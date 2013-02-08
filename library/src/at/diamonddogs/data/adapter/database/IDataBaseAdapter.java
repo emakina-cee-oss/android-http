@@ -27,7 +27,7 @@ import android.database.Cursor;
  * @param <T>
  *            the type the database adapter interfaces to
  */
-public interface IDataBaseAdapater<T> {
+public interface IDataBaseAdapter<T> {
 
 	/**
 	 * Serializes the dataObject (null check!) to ContentValues that can be used
@@ -114,7 +114,7 @@ public interface IDataBaseAdapater<T> {
 	 * 
 	 * @param dataObject
 	 *            an object of type {@link T} to be inserted when
-	 *            {@link IDataBaseAdapater#commitBulkInsert(Context)} is called
+	 *            {@link IDataBaseAdapter#commitBulkInsert(Context)} is called
 	 */
 	public void addToBulkInsert(T dataObject);
 
@@ -123,7 +123,7 @@ public interface IDataBaseAdapater<T> {
 	 * 
 	 * @param dataObjects
 	 *            a list of type {@link T} to be inserted when
-	 *            {@link IDataBaseAdapater#commitBulkInsert(Context)} is called
+	 *            {@link IDataBaseAdapter#commitBulkInsert(Context)} is called
 	 */
 	public void addToBulkInsert(List<T> dataObjects);
 
@@ -132,7 +132,7 @@ public interface IDataBaseAdapater<T> {
 	 * 
 	 * @param dataObjects
 	 *            an array of type {@link T} to be inserted when
-	 *            {@link IDataBaseAdapater#commitBulkInsert(Context)} is called
+	 *            {@link IDataBaseAdapter#commitBulkInsert(Context)} is called
 	 */
 	public void addToBulkInsert(T[] dataObjects);
 

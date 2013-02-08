@@ -30,7 +30,7 @@ import android.net.Uri;
  * @param <T>
  *            The type of the entity this adapter provides access to
  */
-public abstract class DatabaseAdapter<T> implements IDataBaseAdapater<T> {
+public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 	protected T dataObject;
 
 	protected List<T> bulkList;
