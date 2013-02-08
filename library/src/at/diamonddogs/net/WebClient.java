@@ -194,15 +194,23 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 		}
 
 		int bytesRead = 0;
-		while ((bytesRead = toRead.read(buffer)) != -1) {
-			if (!webRequest.isCancelled()) {
-				baos.write(buffer, 0, bytesRead);
-				publishDownloadProgress(bytesRead);
-			} else {
-				break;
+		long bytesTotalRead = 0;
+		try {
+			while ((bytesRead = toRead.read(buffer)) != -1) {
+				if (!webRequest.isCancelled()) {
+					baos.write(buffer, 0, bytesRead);
+					publishDownloadProgress(bytesRead);
+					bytesTotalRead += bytesRead;
+				} else {
+					break;
+				}
 			}
+			reply.setData(baos.toByteArray());
+		} catch (IOException tr) {
+			throw tr;
+		} finally {
+			reply.setBytesRead(bytesTotalRead);
 		}
-		reply.setData(baos.toByteArray());
 
 		return reply;
 	}

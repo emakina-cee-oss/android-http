@@ -38,6 +38,7 @@ public class ParcelableAdapterWebReply extends ParcelableAdapter<WebReply> {
 		in.readByteArray(data);
 		dataObject.setData(data);
 		dataObject.setReplyHeader(readHeaderMap(in, dataObject.getReplyHeader()));
+		dataObject.setBytesRead(in.readLong());
 	}
 
 	/**
@@ -62,6 +63,7 @@ public class ParcelableAdapterWebReply extends ParcelableAdapter<WebReply> {
 		dest.writeInt(dataObject.getData().length);
 		dest.writeByteArray(dataObject.getData());
 		writeHeaderMap(dest, dataObject.getReplyHeader());
+		dest.writeLong(dataObject.getBytesRead());
 	}
 
 	/**

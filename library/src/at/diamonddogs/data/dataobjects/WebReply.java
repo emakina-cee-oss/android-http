@@ -29,6 +29,11 @@ public class WebReply implements Reply {
 	protected byte[] data;
 	/** the header of the reply */
 	protected Map<String, List<String>> replyHeader;
+	/**
+	 * total number of bytes read. If the request was successful this value will
+	 * be the same as {@link WebReply#data}.length.
+	 */
+	protected long bytesRead;
 
 	@SuppressWarnings("javadoc")
 	public int getHttpStatusCode() {
@@ -60,10 +65,20 @@ public class WebReply implements Reply {
 		this.replyHeader = replyHeader;
 	}
 
+	@SuppressWarnings("javadoc")
+	public long getBytesRead() {
+		return bytesRead;
+	}
+
+	@SuppressWarnings("javadoc")
+	public void setBytesRead(long bytesRead) {
+		this.bytesRead = bytesRead;
+	}
+
 	@Override
 	public String toString() {
 		return "WebReply [httpStatusCode=" + httpStatusCode + ", data=" + (data == null ? null : Arrays.toString(data)) + ", replyHeader="
-				+ replyHeader + "]";
+				+ replyHeader + ", bytesRead=" + bytesRead + "]";
 	}
 
 }
