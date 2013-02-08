@@ -37,7 +37,8 @@ public class ParcelableAdapterTempFile extends ParcelableAdapter<TempFile> {
 		dataObject.setPath(in.readString());
 		dataObject.setDate(in.readLong());
 		dataObject.setSize(in.readInt());
-		dataObject.setUseChecksum(in.readInt() == 0 ? false : true);
+		dataObject.setUseChecksum(in.readInt() == 1);
+		dataObject.setAppend(in.readInt() == 1);
 	}
 
 	/**
@@ -58,6 +59,7 @@ public class ParcelableAdapterTempFile extends ParcelableAdapter<TempFile> {
 		dest.writeLong(dataObject.getDate());
 		dest.writeInt(dataObject.getSize());
 		dest.writeInt(dataObject.isUseChecksum() ? 1 : 0);
+		dest.writeInt(dataObject.isAppend() ? 1 : 0);
 	}
 
 	@Override

@@ -15,10 +15,12 @@
  */
 package at.diamonddogs.data.dataobjects;
 
+
 /**
  * Represents a temorary file
  */
 public class TempFile {
+
 	/** the url of the file represented by this object */
 	private String url;
 
