@@ -190,12 +190,14 @@ public class CacheManager {
 
 		File f = new File(filePath, fileName);
 
-		if (fileExpired(creationTimeStamp, cacheTime) || !f.exists()) {
+		if ((fileExpired(creationTimeStamp, cacheTime) || !f.exists()) && !ci.isUseOfflineCache()) {
 			daci.setDataObject(ci);
 			daci.delete(c);
 			f.delete();
 			return null;
 		} else {
+			LOGGER.info("Obtaining file from Cache. Expired: " + fileExpired(creationTimeStamp, cacheTime) + " File Exists: " + f.exists()
+					+ " UseOfflineCache: " + ci.isUseOfflineCache());
 			try {
 				byte[] buffer = new byte[(int) f.length()];
 				FileInputStream fis;
