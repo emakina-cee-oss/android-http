@@ -184,6 +184,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		c.setCreationTimeStamp(System.currentTimeMillis());
 		c.setFileName(fileName);
 		c.setFilePath(filePath);
+		c.setUseOfflineCache(true);
 		return c;
 	}
 
