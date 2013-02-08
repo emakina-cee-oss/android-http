@@ -86,14 +86,16 @@ public class CacheContentProvider extends ContentProvider {
 
 		private void createTable(SQLiteDatabase db) {
 			// @formatter:off
-			db.execSQL("CREATE TABLE " + 
-					DataBaseAdapterCacheInformation.TABLE + " (" + 
-					DataBaseAdapterCacheInformation._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
-					DataBaseAdapterCacheInformation.CREATIONTIMESTAMP + " INTEGER, " + 
-					DataBaseAdapterCacheInformation.CACHETIME + " INTEGER, " +
-					DataBaseAdapterCacheInformation.FILENAME + " TEXT UNIQUE, " +
-					DataBaseAdapterCacheInformation.FILEPATH + " TEXT" +
-					DataBaseAdapterCacheInformation.USEOFFLINECACHE + " INTEGER);");
+			String s = "CREATE TABLE " + 
+				DataBaseAdapterCacheInformation.TABLE + " (" + 
+				DataBaseAdapterCacheInformation._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
+				DataBaseAdapterCacheInformation.CREATIONTIMESTAMP + " INTEGER, " + 
+				DataBaseAdapterCacheInformation.CACHETIME + " INTEGER, " +
+				DataBaseAdapterCacheInformation.FILENAME + " TEXT UNIQUE, " +
+				DataBaseAdapterCacheInformation.FILEPATH + " TEXT, " +
+				DataBaseAdapterCacheInformation.USEOFFLINECACHE + " INTEGER);";
+			LOGGER.info("Creating cache: " + s);
+			db.execSQL(s);
 			// @formatter:on
 		}
 
