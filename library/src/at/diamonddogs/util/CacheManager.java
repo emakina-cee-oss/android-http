@@ -192,10 +192,11 @@ public class CacheManager {
 
 		File f = new File(filePath, fileName);
 
+		boolean connected = connectivityHelper.checkConnectivityWebRequest((WebRequest) request);
 		// @formatter:off
 		if (
 				(fileExpired(creationTimeStamp, cacheTime) || !f.exists()) && 
-				(!ci.isUseOfflineCache() && connectivityHelper.checkConnectivityWebRequest((WebRequest) request))
+				(!ci.isUseOfflineCache() || connected)
 		) {
 		// @formatter:on
 			daci.setDataObject(ci);
@@ -204,7 +205,7 @@ public class CacheManager {
 			return null;
 		} else {
 			LOGGER.info("Obtaining file from Cache. Expired: " + fileExpired(creationTimeStamp, cacheTime) + " File Exists: " + f.exists()
-					+ " UseOfflineCache: " + ci.isUseOfflineCache());
+					+ " UseOfflineCache: " + ci.isUseOfflineCache() + " Connectivity: " + connected);
 			try {
 				byte[] buffer = new byte[(int) f.length()];
 				FileInputStream fis;
