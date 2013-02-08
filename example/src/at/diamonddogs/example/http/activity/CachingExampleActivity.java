@@ -25,7 +25,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.example.http.R;
 import at.diamonddogs.example.http.processor.RssProcessor;
@@ -74,11 +73,17 @@ public class CachingExampleActivity extends ListActivity {
 		wr.setUrl(RSS);
 		wr.setProcessorId(RssProcessor.ID);
 
-		// this is the important part, telling HttpService how long a WebRequest
+		// This is the important part, telling HttpService how long a WebRequest
 		// will be saved. Since RssProcessor extends XMLProcessor, which extends
 		// DataProcessor, the WebRequest's data will be cached automatically,
 		// provided that cacheTime is not CACHE_NO.
-		wr.setCacheTime(CacheInformation.CACHE_1H);
+		wr.setCacheTime(5000);
+
+		// Enables offline caching. usually, cache data is deleted on retrieval
+		// if it has expired even if the device is not online. If this flag is
+		// set to true, cache data will not be removed if it has expired as long
+		// as the device was offline during the request
+		wr.setUseOfflineCache(true);
 		return wr;
 	}
 
