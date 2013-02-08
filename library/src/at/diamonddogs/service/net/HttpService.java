@@ -104,6 +104,9 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 */
 	private Map<String, WebRequestFutureContainer> webRequests;
 
+	/**
+	 * Connectivity interface
+	 */
 	private ConnectivityHelper connectivityHelper;
 
 	@Override
