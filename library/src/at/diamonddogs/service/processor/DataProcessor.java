@@ -108,7 +108,8 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 			if (r.getStatus() == Status.OK) {
 				handler.sendMessage(processData(r).returnMessage);
 				if (((WebRequest) r.getRequest()).getCacheTime() != CacheInformation.CACHE_NO) {
-					cacheObjectToFile(c, (WebRequest) r.getRequest(), ((WebReply) r.getReply()).getData(), false);
+					cacheObjectToFile(c, (WebRequest) r.getRequest(), ((WebReply) r.getReply()).getData(),
+							((WebRequest) r.getRequest()).isUseOfflineCache());
 				}
 			} else {
 				handler.sendMessage(createErrorMessage(r));

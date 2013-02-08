@@ -108,6 +108,11 @@ public class WebRequest implements Request {
 	protected long cacheTime = CacheInformation.CACHE_NO;
 
 	/**
+	 * Constrols {@link CacheInformation#useOfflineCache}
+	 */
+	protected boolean useOfflineCache = false;
+
+	/**
 	 * Retry attempts of this request
 	 */
 	protected int numberOfRetries = 3;
@@ -285,6 +290,16 @@ public class WebRequest implements Request {
 	@SuppressWarnings("javadoc")
 	public void setCacheTime(long cacheTime) {
 		this.cacheTime = cacheTime;
+	}
+
+	@SuppressWarnings("javadoc")
+	public boolean isUseOfflineCache() {
+		return useOfflineCache;
+	}
+
+	@SuppressWarnings("javadoc")
+	public void setUseOfflineCache(boolean useOfflineCache) {
+		this.useOfflineCache = useOfflineCache;
 	}
 
 	@SuppressWarnings("javadoc")
