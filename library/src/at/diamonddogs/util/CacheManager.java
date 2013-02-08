@@ -37,6 +37,7 @@ import at.diamonddogs.android.support.v4.util.LruCache;
 import at.diamonddogs.data.adapter.database.DataBaseAdapterCacheInformation;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.Request;
+import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.CacheManagerException;
 import at.diamonddogs.service.CacheService;
 
@@ -170,6 +171,7 @@ public class CacheManager {
 	}
 
 	private CachedObject getFromFileCache(Context c, Request request) {
+		ConnectivityHelper connectivityHelper = new ConnectivityHelper(c);
 		String fileName = Utils.getMD5Hash(request.getUrl().toString());
 		DataBaseAdapterCacheInformation daci = new DataBaseAdapterCacheInformation();
 		CacheInformation ci;
@@ -190,7 +192,12 @@ public class CacheManager {
 
 		File f = new File(filePath, fileName);
 
-		if ((fileExpired(creationTimeStamp, cacheTime) || !f.exists()) && !ci.isUseOfflineCache()) {
+		// @formatter:off
+		if (
+				(fileExpired(creationTimeStamp, cacheTime) || !f.exists()) && 
+				(!ci.isUseOfflineCache() && connectivityHelper.checkConnectivityWebRequest((WebRequest) request))
+		) {
+		// @formatter:on
 			daci.setDataObject(ci);
 			daci.delete(c);
 			f.delete();
