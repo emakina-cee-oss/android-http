@@ -36,4 +36,11 @@ public class HttpTransactionConnected extends HttpTransaction {
 		this.replyAdapter = replyAdapter;
 	}
 
+	@Override
+	public String toString() {
+		return "HttpTransactionConnected [replyAdapter=" + replyAdapter + ", get_id()=" + get_id() + ", getStartTime()=" + getStartTime()
+				+ ", getFinishTime()=" + getFinishTime() + ", getProcessorClass()=" + getProcessorClass() + ", isConnected()="
+				+ isConnected() + ", isPingable()=" + isPingable() + "]";
+	}
+
 }

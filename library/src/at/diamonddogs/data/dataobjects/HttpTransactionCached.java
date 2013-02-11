@@ -52,4 +52,11 @@ public class HttpTransactionCached extends HttpTransaction {
 		this.webRequest = webRequest;
 	}
 
+	@Override
+	public String toString() {
+		return "HttpTransactionCached [cachedObject=" + cachedObject + ", webRequest=" + webRequest + ", get_id()=" + get_id()
+				+ ", getStartTime()=" + getStartTime() + ", getFinishTime()=" + getFinishTime() + ", getProcessorClass()="
+				+ getProcessorClass() + ", isConnected()=" + isConnected() + ", isPingable()=" + isPingable() + "]";
+	}
+
 }

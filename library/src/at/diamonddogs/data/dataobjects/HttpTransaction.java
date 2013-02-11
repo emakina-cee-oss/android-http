@@ -113,4 +113,10 @@ public abstract class HttpTransaction {
 	public void setPingable(boolean pingable) {
 		this.pingable = pingable;
 	}
+
+	@Override
+	public String toString() {
+		return "HttpTransaction [_id=" + _id + ", startTime=" + startTime + ", finishTime=" + finishTime + ", processorClass="
+				+ processorClass + ", connected=" + connected + ", pingable=" + pingable + "]";
+	}
 }
