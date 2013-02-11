@@ -46,7 +46,7 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.httpserviceassisterexample);
+		setContentView(R.layout.httpserviceassisterexampleactivity);
 		assister = new HttpServiceAssister(this);
 		text = (TextView) findViewById(R.id.httpserviceassisterexampleactivity_text);
 		temperature = (TextView) findViewById(R.id.httpserviceassisterexampleactivity_temperature);

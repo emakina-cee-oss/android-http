@@ -305,10 +305,10 @@ public class HttpService extends Service implements WebClientReplyListener {
 			CacheManager cm = CacheManager.getInstance();
 			CachedObject cachedObject = cm.getFromCache(HttpService.this, webRequest);
 			if (cachedObject != null) {
-				return cachedObject.getCachedObject();
+				return synchronousProcessor.obtainDataObjectFromCachedObject(this, cachedObject);
 			} else {
-				return synchronousProcessor
-						.obtainDataObjectFromWebReply(runSynchronousWebRequestFuture(webRequest, progressListener).get());
+				return synchronousProcessor.obtainDataObjectFromWebReply(this, runSynchronousWebRequestFuture(webRequest, progressListener)
+						.get());
 			}
 		} catch (Throwable tr) {
 			LOGGER.error("Error getting result", tr);
@@ -316,10 +316,12 @@ public class HttpService extends Service implements WebClientReplyListener {
 		return null;
 	}
 
+	@SuppressWarnings("unused")
 	private Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests) {
 		return runSynchronousWebRequestsFuture(webRequests, new DownloadProgressListener[0]);
 	}
 
+	@SuppressWarnings("unused")
 	private Future<ReplyAdapter>[] runSynchronousWebRequestsFuture(WebRequest[] webRequests, DownloadProgressListener progressListener) {
 		return runSynchronousWebRequestsFuture(webRequests, new DownloadProgressListener[] { progressListener });
 	}

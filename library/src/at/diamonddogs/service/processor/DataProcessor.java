@@ -27,6 +27,7 @@ import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.util.CacheManager;
+import at.diamonddogs.util.CacheManager.CachedObject;
 import at.diamonddogs.util.Utils;
 
 /**
@@ -96,10 +97,37 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 	}
 
 	@Override
-	public OUTPUT obtainDataObjectFromWebReply(ReplyAdapter reply) {
+	public OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply) {
 		return parse(createParsedObjectFromByteArray(((WebReply) reply.getReply()).getData()));
 	}
 
+	/**
+	 * Default implementation - no caching support
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param object
+	 *            the {@link CachedObject}
+	 * @return
+	 *         always returns <code>null</code>
+	 */
+	@Override
+	public OUTPUT obtainDataObjectFromCachedObject(Context c, CachedObject object) {
+		return null;
+	}
+
+	/**
+	 * Writes {@link WebRequest} specific data to the cache. Ignores
+	 * {@link WebRequest} whose {@link WebRequest#getCacheTime()} is
+	 * {@link CacheInformation#CACHE_NO}
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 * @param request
+	 *            the {@link WebRequest} whose data will be saved to the cache
+	 * @param data
+	 *            the actual data
+	 */
 	protected void cacheObjectToFile(Context context, WebRequest request, byte[] data) {
 		String filename = Utils.getMD5Hash(request.getUrl().toString());
 		BufferedOutputStream bos = null;

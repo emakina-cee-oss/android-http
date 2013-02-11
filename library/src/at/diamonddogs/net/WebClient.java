@@ -25,6 +25,7 @@ import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
@@ -174,10 +175,26 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 
 	private WebReply getData(InputStream i, WebReply reply) throws IOException {
 		byte buffer[] = new byte[READ_BUFFER_SIZE];
+
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
+		InputStream toRead;
+		if (isGzipEncoded(reply)) {
+			LOGGER.info("Reply is gzip encoded! " + reply);
+			try {
+				toRead = new GZIPInputStream(i);
+			} catch (Throwable tr) {
+				LOGGER.warn(
+						"Problem with GZIP reply, using normal input stream! This issue can be caused by an empty body (i.e. HEAD request)",
+						tr);
+				toRead = i;
+			}
+		} else {
+			toRead = i;
+		}
+
 		int bytesRead = 0;
-		while ((bytesRead = i.read(buffer)) != -1) {
+		while ((bytesRead = toRead.read(buffer)) != -1) {
 			if (!webRequest.isCancelled()) {
 				baos.write(buffer, 0, bytesRead);
 				publishDownloadProgress(bytesRead);
@@ -188,6 +205,20 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 		reply.setData(baos.toByteArray());
 
 		return reply;
+	}
+
+	private boolean isGzipEncoded(WebReply reply) {
+		if (!reply.getReplyHeader().containsKey("Content-Encoding")) {
+			return false;
+		}
+		List<String> encodings = reply.getReplyHeader().get("Content-Encoding");
+		for (String encoding : encodings) {
+			LOGGER.debug("Encoding: " + encoding);
+			if (encoding.contains("gzip")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected void publishFileSize(long size) {
