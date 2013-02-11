@@ -16,7 +16,6 @@
 package at.diamonddogs.util;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +40,8 @@ public class HttpTransactionManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpTransactionManager.class.getSimpleName());
 
 	private ConnectivityHelper connectivityHelper;
-	private Map<String, Pair<Date, ServiceProcessor<?>>> trackingMap = Collections
-			.synchronizedMap(new HashMap<String, Pair<Date, ServiceProcessor<?>>>());
+	private Map<String, Pair<Long, ServiceProcessor<?>>> trackingMap = Collections
+			.synchronizedMap(new HashMap<String, Pair<Long, ServiceProcessor<?>>>());
 
 	public HttpTransactionManager(Context c) {
 		this.connectivityHelper = new ConnectivityHelper(c);
@@ -52,7 +51,7 @@ public class HttpTransactionManager {
 		if (trackingMap.containsKey(webRequestId)) {
 			throw new RuntimeException("Already tracking request with id " + webRequestId);
 		}
-		trackingMap.put(webRequestId, new Pair<Date, ServiceProcessor<?>>(new Date(), processor));
+		trackingMap.put(webRequestId, new Pair<Long, ServiceProcessor<?>>(System.currentTimeMillis(), processor));
 	}
 
 	public void commit(ReplyAdapter replyAdapter) {
@@ -78,9 +77,9 @@ public class HttpTransactionManager {
 	}
 
 	private void setCommonAttributes(HttpTransaction httpTransaction, WebRequest wr) {
-		Pair<Date, ServiceProcessor<?>> p = trackingMap.get(wr.getId());
+		Pair<Long, ServiceProcessor<?>> p = trackingMap.get(wr.getId());
 		httpTransaction.setStartTime(p.first);
-		httpTransaction.setFinishTime(new Date());
+		httpTransaction.setFinishTime(System.currentTimeMillis());
 		httpTransaction.setProcessorClass((Class<ServiceProcessor<?>>) p.second.getClass());
 	}
 }

@@ -15,8 +15,6 @@
  */
 package at.diamonddogs.data.dataobjects;
 
-import java.util.Date;
-
 import at.diamonddogs.service.processor.ServiceProcessor;
 
 /**
@@ -27,15 +25,15 @@ public abstract class HttpTransaction {
 	/**
 	 * Database id
 	 */
-	private long _id;
+	private long _id = -1;
 	/**
 	 * The time at which this {@link HttpTransaction} was started
 	 */
-	private Date startTime;
+	private long startTime;
 	/**
 	 * The time at which this {@link HttpTransaction} finished
 	 */
-	private Date finishTime;
+	private long finishTime;
 	/**
 	 * The {@link ServiceProcessor} handling the {@link WebRequest} of this
 	 * transaction
@@ -65,22 +63,22 @@ public abstract class HttpTransaction {
 	}
 
 	@SuppressWarnings("javadoc")
-	public Date getStartTime() {
+	public long getStartTime() {
 		return startTime;
 	}
 
 	@SuppressWarnings("javadoc")
-	public void setStartTime(Date startTime) {
+	public void setStartTime(long startTime) {
 		this.startTime = startTime;
 	}
 
 	@SuppressWarnings("javadoc")
-	public Date getFinishTime() {
+	public long getFinishTime() {
 		return finishTime;
 	}
 
 	@SuppressWarnings("javadoc")
-	public void setFinishTime(Date finishTime) {
+	public void setFinishTime(long finishTime) {
 		this.finishTime = finishTime;
 	}
 
