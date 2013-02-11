@@ -123,6 +123,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		registeredProcessors = new SparseArray<ServiceProcessor<?>>();
 		webRequests = Collections.synchronizedMap(new HashMap<String, WebRequestFutureContainer>());
 		connectivityHelper = new ConnectivityHelper(this);
+		httpTransactionManager = new HttpTransactionManager(this);
 	}
 
 	@Override
