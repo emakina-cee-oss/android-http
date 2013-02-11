@@ -63,6 +63,7 @@ public class HttpTransactionManager {
 		HttpTransactionConnected httpTransaction = new HttpTransactionConnected();
 		setCommonAttributes(httpTransaction, wr);
 		httpTransaction.setReplyAdapter(replyAdapter);
+		LOGGER.info("Transaction commited: " + httpTransaction);
 	}
 
 	public void commit(CachedObject cachedObject, WebRequest webRequest) {
@@ -73,6 +74,7 @@ public class HttpTransactionManager {
 		setCommonAttributes(httpTransaction, webRequest);
 		httpTransaction.setCachedObject(cachedObject);
 		httpTransaction.setWebRequest(webRequest);
+		LOGGER.info("Transaction commited: " + httpTransaction);
 	}
 
 	private void setCommonAttributes(HttpTransaction httpTransaction, WebRequest wr) {
