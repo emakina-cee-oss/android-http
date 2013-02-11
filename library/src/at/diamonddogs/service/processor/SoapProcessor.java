@@ -17,6 +17,7 @@ package at.diamonddogs.service.processor;
 
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,22 +63,25 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 				return;
 			}
 
-			if (result == null) {
-				LOGGER.debug("processSoapNull");
-				handler.sendMessage(processSoapNull(r));
-			} else if (result instanceof SoapFault) {
-				LOGGER.debug("processSoapFault");
-				handler.sendMessage(processSoapFault(r, (SoapFault) result));
-			} else if (result instanceof SoapObject) {
-				try {
+			try {
+				if (result == null) {
+					LOGGER.debug("processSoapNull");
+					handler.sendMessage(processSoapNull(r));
+				} else if (result instanceof SoapFault) {
+					LOGGER.debug("processSoapFault");
+					handler.sendMessage(processSoapFault(r, (SoapFault) result));
+				} else if (result instanceof SoapObject) {
 					LOGGER.debug("processSoapObject");
 					handler.sendMessage(createReturnMessage(r, processSoapReply(c, r, (SoapObject) result)));
-				} catch (Exception e2) {
-					LOGGER.debug("processSoapObject - failed", e2);
-					handler.sendMessage(createErrorMessage(e2, r));
+				} else if (result instanceof SoapPrimitive) {
+					LOGGER.debug("processSoapPrimitive");
+					handler.sendMessage(createReturnMessage(r, processSoapReply(c, r, (SoapPrimitive) result)));
 				}
-
+			} catch (Exception e2) {
+				LOGGER.debug("processSoap - failed", e2);
+				handler.sendMessage(createErrorMessage(e2, r));
 			}
+
 		} else {
 			handler.sendMessage(createErrorMessage(r));
 		}
@@ -116,6 +120,20 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @return an output object of type T
 	 */
 	protected abstract T processSoapReply(Context c, ReplyAdapter replyAdapter, SoapObject o);
+
+	/**
+	 * Called when a SOAP result should be processed
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param replyAdapter
+	 *            a {@link WebRequest}
+	 * @param o
+	 *            the {@link SoapPrimitive} created by
+	 *            {@link SoapProcessor#processWebReply(Context, ReplyAdapter, Handler)}
+	 * @return an output object of type T
+	 */
+	protected abstract T processSoapReply(Context c, ReplyAdapter replyAdapter, SoapPrimitive o);
 
 	/**
 	 * Called if the result is a {@link SoapFault}
