@@ -76,6 +76,8 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 				} else if (result instanceof SoapPrimitive) {
 					LOGGER.debug("processSoapPrimitive");
 					handler.sendMessage(createReturnMessage(r, processSoapReply(c, r, (SoapPrimitive) result)));
+				} else {
+					handler.sendMessage(createErrorMessage(r));
 				}
 			} catch (Exception e2) {
 				LOGGER.debug("processSoap - failed", e2);
