@@ -51,6 +51,7 @@ import at.diamonddogs.service.processor.SynchronousProcessor;
 import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.CacheManager.CachedObject;
 import at.diamonddogs.util.ConnectivityHelper;
+import at.diamonddogs.util.HttpTransactionManager;
 import at.diamonddogs.util.WorkerQueue;
 
 /**
@@ -108,6 +109,11 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * Connectivity interface
 	 */
 	private ConnectivityHelper connectivityHelper;
+
+	/**
+	 * Used for transaction tracking
+	 */
+	private HttpTransactionManager httpTransactionManager;
 
 	@Override
 	public void onCreate() {
@@ -195,6 +201,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 			throw new ServiceException("No processor with id '" + id + "' has been registered!");
 		}
 		addRequestToHandlerMap(handler, webRequest);
+		httpTransactionManager.begin(ret.id, processor);
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
@@ -583,6 +590,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	public void onWebReply(WebClient webClient, ReplyAdapter reply) {
 		LOGGER.debug("onWebReply: " + reply.getStatus() + " from: " + reply.getRequest().getUrl());
 		webRequests.remove(webClient.getWebRequest().getId());
+		httpTransactionManager.commit(reply);
 		dispatchWebReplyProcessor(reply, getHandler(reply.getRequest()));
 	}
 
@@ -663,6 +671,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 			} else {
 				LOGGER.debug("File found in file cache: " + webRequest.getUrl());
 				if (!webRequest.isCancelled()) {
+					httpTransactionManager.commit(cachedObject, webRequest);
 					dispatchCachedObjectToProcessor(cachedObject, webRequest);
 				}
 			}
