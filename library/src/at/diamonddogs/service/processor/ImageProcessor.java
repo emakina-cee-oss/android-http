@@ -132,7 +132,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 	 *         or <code>null</code> if something goes awefully wrong
 	 */
 	@Override
-	public Bitmap obtainDataObjectFromCachedObject(Context c, CachedObject object) {
+	public Bitmap obtainDataObjectFromCachedObject(Context c, WebRequest wr, CachedObject object) {
 		switch (object.getFrom()) {
 		case MEMORY:
 			return (Bitmap) object.getCachedObject();
@@ -362,7 +362,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 				}
 			} else {
 				ProcessorExeception e = new ProcessorExeception("Image request failed", (Throwable) msg.getData().getParcelable(
-						ServiceProcessor.BUNDLE_EXTRA_MESSAGE_THROWABLE));
+				        ServiceProcessor.BUNDLE_EXTRA_MESSAGE_THROWABLE));
 				LOGGER.error("Image request failed", e);
 			}
 		}

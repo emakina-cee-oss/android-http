@@ -147,8 +147,15 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 	 * @return always returns <code>null</code>
 	 */
 	@Override
-	public OUTPUT obtainDataObjectFromCachedObject(Context c, CachedObject object) {
-		return null;
+	public OUTPUT obtainDataObjectFromCachedObject(Context c, WebRequest wr, CachedObject object) {
+		switch (object.getFrom()) {
+		case MEMORY:
+			return (OUTPUT) object.getCachedObject();
+		case FILE:
+			return processData(wr, (byte[]) object.getCachedObject()).output;
+		default:
+			throw new RuntimeException("Invalid cache source");
+		}
 	}
 
 	/**

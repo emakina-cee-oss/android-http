@@ -51,9 +51,11 @@ public interface SynchronousProcessor<OUTPUT> {
 	 * 
 	 * @param c
 	 *            a {@link Context} object
+	 * @param webRequest
+	 *            the {@link WebRequest} resulting in this call
 	 * @param object
 	 *            the {@link CachedObject} retrieved from the cache
 	 * @return an OUTPUT object
 	 */
-	public abstract OUTPUT obtainDataObjectFromCachedObject(Context c, CachedObject object);
+	public abstract OUTPUT obtainDataObjectFromCachedObject(Context c, WebRequest webRequest, CachedObject object);
 }

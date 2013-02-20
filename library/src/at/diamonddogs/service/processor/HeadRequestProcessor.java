@@ -35,7 +35,7 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  * asynchronous and synchronous {@link WebRequest}s.
  */
 public class HeadRequestProcessor extends ServiceProcessor<Map<String, List<String>>> implements
-		SynchronousProcessor<Map<String, List<String>>> {
+        SynchronousProcessor<Map<String, List<String>>> {
 
 	/**
 	 * The processor's ID
@@ -87,7 +87,7 @@ public class HeadRequestProcessor extends ServiceProcessor<Map<String, List<Stri
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, List<String>> obtainDataObjectFromCachedObject(Context c, CachedObject object) {
+	public Map<String, List<String>> obtainDataObjectFromCachedObject(Context c, WebRequest wr, CachedObject object) {
 		// no cache support
 		return null;
 	}

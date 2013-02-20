@@ -144,8 +144,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 *            has been completed
 	 * @param webRequest
 	 *            the {@link WebRequest} to run
-	 * @return
-	 *         a {@link WebRequestReturnContainer}
+	 * @return a {@link WebRequestReturnContainer}
 	 */
 	public WebRequestReturnContainer runWebRequest(Handler handler, WebRequest webRequest) {
 		return runWebRequest(handler, webRequest, null);
@@ -165,7 +164,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @return the a {@link WebRequestReturnContainer}
 	 */
 	public WebRequestReturnContainer runWebRequest(final Handler handler, final WebRequest webRequest,
-			final DownloadProgressListener progressListener) {
+	        final DownloadProgressListener progressListener) {
 		WebRequestReturnContainer ret = new WebRequestReturnContainer();
 		if (webRequest == null) {
 			throw new IllegalArgumentException("webRequest may not be null");
@@ -312,16 +311,16 @@ public class HttpService extends Service implements WebClientReplyListener {
 			CachedObject cachedObject = cm.getFromCache(HttpService.this, webRequest);
 			if (!connectivityHelper.checkConnectivityWebRequest(webRequest)) {
 				if (cachedObject != null) {
-					ret.payload = synchronousProcessor.obtainDataObjectFromCachedObject(this, cachedObject);
+					ret.payload = synchronousProcessor.obtainDataObjectFromCachedObject(this, webRequest, cachedObject);
 				} else {
 					ret.successful = false;
 				}
 			} else {
 				if (cachedObject != null) {
-					ret.payload = synchronousProcessor.obtainDataObjectFromCachedObject(this, cachedObject);
+					ret.payload = synchronousProcessor.obtainDataObjectFromCachedObject(this, webRequest, cachedObject);
 				} else {
 					ret.payload = synchronousProcessor.obtainDataObjectFromWebReply(this,
-							runSynchronousWebRequestFuture(webRequest, progressListener).get());
+					        runSynchronousWebRequestFuture(webRequest, progressListener).get());
 				}
 			}
 		} catch (Throwable tr) {
@@ -346,8 +345,8 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	/**
 	 * Runs multiple asynchronous {@link WebRequest}s and returns an array of
-	 * {@link Future}s so
-	 * that the caller can wait for the results. This is a convenience method,
+	 * {@link Future}s so that the caller can wait for the results. This is a
+	 * convenience method,
 	 * {@link HttpService#runSynchronousWebRequestsFuture(WebRequest[], DownloadProgressListener[])}
 	 * will be called with a <code>null</code> array of
 	 * {@link DownloadProgressListener}s
@@ -363,8 +362,8 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	/**
 	 * Runs multiple asynchronous {@link WebRequest}s and returns an array of
-	 * {@link Future}s so
-	 * that the caller can wait for the results. This is a convenience method,
+	 * {@link Future}s so that the caller can wait for the results. This is a
+	 * convenience method,
 	 * {@link HttpService#runSynchronousWebRequestsFuture(WebRequest[], DownloadProgressListener[])}
 	 * will be called with an array, containing a single
 	 * {@link DownloadProgressListener}
@@ -383,11 +382,10 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	/**
 	 * Runs multiple asynchronous {@link WebRequest}s and returns an array of
-	 * {@link Future}s so
-	 * that the caller can wait for the results. If the array of
-	 * {@link DownloadProgressListener} has a length of 0, no progress will be
-	 * published, if it has a length of 1, all {@link WebRequest}s will use the
-	 * same {@link DownloadProgressListener} to publish the progress, if the
+	 * {@link Future}s so that the caller can wait for the results. If the array
+	 * of {@link DownloadProgressListener} has a length of 0, no progress will
+	 * be published, if it has a length of 1, all {@link WebRequest}s will use
+	 * the same {@link DownloadProgressListener} to publish the progress, if the
 	 * {@link WebRequest} array and the {@link DownloadProgressListener} array
 	 * have the same size, each {@link WebRequest} uses the corresponding
 	 * {@link DownloadProgressListener} to report progress. If both arrays have
@@ -537,7 +535,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		if (isProcessorRegistered(processorId)) {
 			if (registeredProcessors.get(processorId).getClass() != processor.getClass()) {
 				throw new ProcessorExeception("Processor id collision, processorids for " + processor + " and "
-						+ registeredProcessors.get(processorId) + " are identical!");
+				        + registeredProcessors.get(processorId) + " are identical!");
 			} else {
 				throw new ProcessorExeception("A processor known by id " + processorId + " has already been registered.");
 			}
