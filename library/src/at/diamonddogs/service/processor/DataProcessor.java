@@ -109,7 +109,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 				handler.sendMessage(processData(r).returnMessage);
 				if (((WebRequest) r.getRequest()).getCacheTime() != CacheInformation.CACHE_NO) {
 					cacheObjectToFile(c, (WebRequest) r.getRequest(), ((WebReply) r.getReply()).getData(),
-							((WebRequest) r.getRequest()).isUseOfflineCache());
+					        ((WebRequest) r.getRequest()).isUseOfflineCache());
 				}
 			} else {
 				handler.sendMessage(createErrorMessage(r));
@@ -133,6 +133,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 
 	@Override
 	public OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply) {
+		cacheObjectToFile(c, reply);
 		return parse(createParsedObjectFromByteArray(((WebReply) reply.getReply()).getData()));
 	}
 
@@ -143,8 +144,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 	 *            a {@link Context}
 	 * @param object
 	 *            the {@link CachedObject}
-	 * @return
-	 *         always returns <code>null</code>
+	 * @return always returns <code>null</code>
 	 */
 	@Override
 	public OUTPUT obtainDataObjectFromCachedObject(Context c, CachedObject object) {
@@ -155,8 +155,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 	 * Writes {@link WebRequest} specific data to the cache. Ignores
 	 * {@link WebRequest} whose {@link WebRequest#getCacheTime()} is
 	 * {@link CacheInformation#CACHE_NO}. This method disables
-	 * {@link CacheInformation}s
-	 * offline caching feature.
+	 * {@link CacheInformation}s offline caching feature.
 	 * 
 	 * @param context
 	 *            a {@link Context}
