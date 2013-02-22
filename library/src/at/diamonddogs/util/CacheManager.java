@@ -183,7 +183,8 @@ public class CacheManager {
 			}
 			ci = cacheInformation[0];
 		} catch (Throwable tr) {
-			throw new CacheManagerException(tr);
+			LOGGER.warn("Problem querying database", tr);
+			return null;
 		}
 
 		long creationTimeStamp = ci.getCreationTimeStamp();
@@ -214,7 +215,8 @@ public class CacheManager {
 				fis.close();
 				return new CachedObject(buffer, CachedObject.From.FILE);
 			} catch (Throwable e) {
-				throw new CacheManagerException(e);
+				LOGGER.warn("Could not read cached file", e);
+				return null;
 			}
 		}
 	}
