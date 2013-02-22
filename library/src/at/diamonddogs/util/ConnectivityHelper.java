@@ -96,16 +96,15 @@ public class ConnectivityHelper {
 				// @formatter:on
 				return true;
 			}
-			// this part is sooooo m(
+
 			InetAddress addr;
 			try {
 				addr = InetAddress.getByName(wr.getUrl().getHost());
+				return addr.isReachable(5000);
 			} catch (Throwable tr) {
 				LOGGER.warn("Hostname could not be resolved and therefore not be pinged. Returning false", tr);
 				return false;
 			}
-			NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-			return networkInfo == null ? false : connectivityManager.requestRouteToHost(networkInfo.getType(), inetAddressToInt(addr));
 		} else {
 			LOGGER.info("WebRequest does not require connectivity check, returning true");
 			return true;
@@ -118,22 +117,5 @@ public class ConnectivityHelper {
 
 	private boolean hasChangeNetworkStatePermission() {
 		return context.checkCallingOrSelfPermission(android.Manifest.permission.CHANGE_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED;
-	}
-
-	/**
-	 * Taken from {@link NetworkUtils}
-	 * 
-	 * @param inetAddr
-	 *            the input address
-	 * @return an int usable by
-	 *         {@link ConnectivityManager#requestRouteToHost(int, int)}
-	 * @throws IllegalArgumentException
-	 */
-	private int inetAddressToInt(InetAddress inetAddr) throws IllegalArgumentException {
-		byte[] addr = inetAddr.getAddress();
-		if (addr.length != 4) {
-			throw new IllegalArgumentException("Not an IPv4 address");
-		}
-		return ((addr[3] & 0xff) << 24) | ((addr[2] & 0xff) << 16) | ((addr[1] & 0xff) << 8) | (addr[0] & 0xff);
 	}
 }
