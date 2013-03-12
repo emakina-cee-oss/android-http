@@ -497,7 +497,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	private void dispatchCachedObjectToProcessor(CachedObject cachedObject, Request webRequest) {
 		if (!workerQueue.isShutDown()) {
-			getProcessor(webRequest).processCachedObject(cachedObject, getHandler(webRequest), webRequest);
+			getProcessor(webRequest).processCachedObject(cachedObject, getHandler(webRequest), webRequest, this);
 		} else {
 			LOGGER.debug("service already shutdown, ignoring response from cache");
 		}

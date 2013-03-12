@@ -119,6 +119,25 @@ public abstract class ServiceProcessor<OUTPUT> {
 	public abstract void processCachedObject(CachedObject cachedObject, Handler handler, Request request);
 
 	/**
+	 * Called if there is a {@link CachedObject} available for the
+	 * {@link Request} that is being processed, defaults to the old
+	 * implementation.
+	 * 
+	 * @param cachedObject
+	 *            the {@link CachedObject} related to the {@link Request}
+	 * @param handler
+	 *            the {@link Handler} instance that posts the result of the
+	 *            {@link Request} to the UI thread
+	 * @param request
+	 *            the {@link Request} that is being processed
+	 * @param context
+	 *            the {@link Context} that is used
+	 */
+	public void processCachedObject(CachedObject cachedObject, Handler handler, Request request, Context context) {
+		processCachedObject(cachedObject, handler, request);
+	}
+
+	/**
 	 * Returns the ID of the processor
 	 * 
 	 * @return the id of the processor
