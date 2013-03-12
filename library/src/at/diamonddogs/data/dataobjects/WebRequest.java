@@ -178,7 +178,7 @@ public class WebRequest implements Request {
 		try {
 			this.url = new URL(url);
 		} catch (Throwable t) {
-			LOGGER.error("Invalid url:" + url);
+			LOGGER.error("Invalid url:" + url, t);
 			this.url = null;
 		}
 	}
@@ -188,7 +188,7 @@ public class WebRequest implements Request {
 		try {
 			this.url = uri.toURL();
 		} catch (Throwable t) {
-			LOGGER.error("Invalid url:" + url);
+			LOGGER.error("Invalid url:" + url, t);
 			this.url = null;
 		}
 	}
@@ -198,7 +198,7 @@ public class WebRequest implements Request {
 		try {
 			setUrl(uri.toString());
 		} catch (Throwable t) {
-			LOGGER.error("Invalid url:" + url);
+			LOGGER.error("Invalid url:" + url, t);
 			this.url = null;
 		}
 	}
@@ -261,6 +261,7 @@ public class WebRequest implements Request {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public long getCacheTime() {
 		return cacheTime;
 	}
