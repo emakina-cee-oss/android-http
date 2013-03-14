@@ -42,7 +42,7 @@ public class CacheService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		LOGGER.error("recived start command");
+		LOGGER.info("recived start command");
 		if (intent != null) {
 			handleIntent(intent);
 		}
@@ -56,12 +56,12 @@ public class CacheService extends Service {
 
 	private void handleIntent(Intent intent) {
 		int extra = intent.getIntExtra(INTENT_EXTRA_START_ARGUMENT, -1);
-		LOGGER.error("handling intent for extra: " + extra);
+		LOGGER.info("handling intent for extra: " + extra);
 		switch (extra) {
 		case INTENT_EXTRA_KILL_PROCESS:
-			LOGGER.error("trying to kill process");
+			LOGGER.debug("trying to kill process");
 			killProcess();
-			LOGGER.error("killing process unsuccessfull");
+			LOGGER.debug("killing process unsuccessfull");
 			break;
 		default:
 			break;
