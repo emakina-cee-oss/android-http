@@ -109,7 +109,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 				handler.sendMessage(processData(r).returnMessage);
 				if (((WebRequest) r.getRequest()).getCacheTime() != CacheInformation.CACHE_NO) {
 					cacheObjectToFile(c, (WebRequest) r.getRequest(), ((WebReply) r.getReply()).getData(),
-					        ((WebRequest) r.getRequest()).isUseOfflineCache());
+							((WebRequest) r.getRequest()).isUseOfflineCache());
 				}
 			} else {
 				handler.sendMessage(createErrorMessage(r));
@@ -156,6 +156,14 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 		default:
 			throw new RuntimeException("Invalid cache source");
 		}
+	}
+
+	/**
+	 * @deprecated don't use, only for backwards compatibility
+	 */
+	@Deprecated
+	protected void cacheObjectToFile(Context context, WebRequest request, byte[] data) {
+		cacheObjectToFile(context, request, data, false);
 	}
 
 	/**
