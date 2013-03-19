@@ -128,9 +128,15 @@ public class HttpService extends Service implements WebClientReplyListener {
 	@Override
 	public void onDestroy() {
 		LOGGER.debug("onDestroy");
-		workerQueue.shutDown();
-		webRequestHandlerMap.clear();
-		registeredProcessors.clear();
+		if (workerQueue != null) {
+			workerQueue.shutDown();
+		}
+		if (webRequestHandlerMap != null) {
+			webRequestHandlerMap.clear();
+		}
+		if (registeredProcessors != null) {
+			registeredProcessors.clear();
+		}
 		super.onDestroy();
 	}
 
@@ -164,7 +170,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @return the a {@link WebRequestReturnContainer}
 	 */
 	public WebRequestReturnContainer runWebRequest(final Handler handler, final WebRequest webRequest,
-	        final DownloadProgressListener progressListener) {
+			final DownloadProgressListener progressListener) {
 		WebRequestReturnContainer ret = new WebRequestReturnContainer();
 		if (webRequest == null) {
 			throw new IllegalArgumentException("webRequest may not be null");
@@ -320,7 +326,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 					ret.payload = synchronousProcessor.obtainDataObjectFromCachedObject(this, webRequest, cachedObject);
 				} else {
 					ret.payload = synchronousProcessor.obtainDataObjectFromWebReply(this,
-					        runSynchronousWebRequestFuture(webRequest, progressListener).get());
+							runSynchronousWebRequestFuture(webRequest, progressListener).get());
 				}
 			}
 		} catch (Throwable tr) {
@@ -535,7 +541,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		if (isProcessorRegistered(processorId)) {
 			if (registeredProcessors.get(processorId).getClass() != processor.getClass()) {
 				throw new ProcessorExeception("Processor id collision, processorids for " + processor + " and "
-				        + registeredProcessors.get(processorId) + " are identical!");
+						+ registeredProcessors.get(processorId) + " are identical!");
 			} else {
 				throw new ProcessorExeception("A processor known by id " + processorId + " has already been registered.");
 			}
