@@ -57,7 +57,7 @@ import at.diamonddogs.util.WorkerQueue;
  */
 public class HttpService extends Service implements WebClientReplyListener {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HttpService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpService.class.getSimpleName());
 
 	/**
 	 * The core thread pool size, refer to {@link ThreadPoolExecutor} for more
@@ -120,7 +120,6 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	@Override
 	public void onDestroy() {
-		LOGGER.debug("onDestroy");
 		workerQueue.shutDown();
 		webRequestHandlerMap.clear();
 		registeredProcessors.clear();

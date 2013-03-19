@@ -139,6 +139,7 @@ public class HttpServiceAssister {
 		if (activeServiceConnection != null) {
 			context.unbindService(activeServiceConnection);
 			activeServiceConnection = null;
+			httpService = null;
 			return true;
 		} else {
 			return false;
