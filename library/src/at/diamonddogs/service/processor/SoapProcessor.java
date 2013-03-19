@@ -104,6 +104,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		try {
 			result = getResult(replyAdapter);
 		} catch (Throwable tr) {
+			LOGGER.error("Error while obtaining result.", tr);
 			throw new ProcessorExeception(tr);
 		}
 		if (result == null) {
