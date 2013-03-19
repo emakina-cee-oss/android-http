@@ -31,6 +31,7 @@ import at.diamonddogs.data.adapter.soap.SoapReplyAdapter;
 import at.diamonddogs.data.dataobjects.SoapReply;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.exception.ProcessorExeception;
 import at.diamonddogs.util.SoapUtil;
 
 /**
@@ -52,12 +53,9 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
 		if (r.getStatus() == Status.OK) {
 			LOGGER.debug("processing SoapReply");
-			SoapReply soapReply = new SoapReplyAdapter((WebReply) r.getReply()).getReply();
-			SoapSerializationEnvelope e = soapReply.getEnvelope();
-			SoapUtil.printSoapEnvelopeToStdout(e);
-			Object result = null;
+			Object result;
 			try {
-				result = e.getResponse();
+				result = getResult(r);
 			} catch (Throwable tr) {
 				LOGGER.warn("Problem while getting soap result.", tr);
 				return;
@@ -89,13 +87,36 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		}
 	}
 
+	private Object getResult(ReplyAdapter r) throws Throwable {
+		SoapReply soapReply = new SoapReplyAdapter((WebReply) r.getReply()).getReply();
+		SoapSerializationEnvelope e = soapReply.getEnvelope();
+		SoapUtil.printSoapEnvelopeToStdout(e);
+		return e.getResponse();
+	}
+
 	/**
 	 * Will throw an {@link UnsupportedOperationException} if not overridden by
 	 * the subclass.
 	 */
 	@Override
 	public T obtainDataObjectFromWebReply(Context c, ReplyAdapter replyAdapter) {
-		throw new UnsupportedOperationException("Not Implemented");
+		Object result;
+		try {
+			result = getResult(replyAdapter);
+		} catch (Throwable tr) {
+			throw new ProcessorExeception(tr);
+		}
+		if (result == null) {
+			return null;
+		} else if (result instanceof SoapFault) {
+			throw new ProcessorExeception((SoapFault) result);
+		} else if (result instanceof SoapObject) {
+			return processSoapReply(c, replyAdapter, (SoapObject) result);
+		} else if (result instanceof SoapPrimitive) {
+			return processSoapReply(c, replyAdapter, (SoapPrimitive) result);
+		} else {
+			throw new ProcessorExeception("Unknown error");
+		}
 	}
 
 	/**
