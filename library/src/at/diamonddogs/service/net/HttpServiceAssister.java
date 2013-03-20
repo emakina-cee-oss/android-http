@@ -34,6 +34,7 @@ import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ServiceException;
 import at.diamonddogs.net.WebClient.DownloadProgressListener;
 import at.diamonddogs.service.net.HttpService.HttpServiceBinder;
+import at.diamonddogs.service.net.HttpService.WebRequestReturnContainer;
 import at.diamonddogs.service.processor.DataProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
 import at.diamonddogs.service.processor.SynchronousProcessor;
@@ -215,7 +216,7 @@ public class HttpServiceAssister {
 	 *         method of the {@link DataProcessor} registered for this request,
 	 *         or <code>null</code> if the request failed.
 	 */
-	public Object runSynchronousWebRequest(WebRequest webRequest, ServiceProcessor<?> serviceProcessor) {
+	public WebRequestReturnContainer runSynchronousWebRequest(WebRequest webRequest, ServiceProcessor<?> serviceProcessor) {
 		prepareForSyncRequest(serviceProcessor);
 		return httpService.runSynchronousWebRequest(webRequest);
 	}
@@ -245,7 +246,7 @@ public class HttpServiceAssister {
 	 *         method of the {@link DataProcessor} registered for this request,
 	 *         or <code>null</code> if the request failed.
 	 */
-	public Object runSynchronousWebRequest(WebRequest webRequest, ServiceProcessor<?> serviceProcessor,
+	public WebRequestReturnContainer runSynchronousWebRequest(WebRequest webRequest, ServiceProcessor<?> serviceProcessor,
 			DownloadProgressListener progressListener) {
 		prepareForSyncRequest(serviceProcessor);
 		return httpService.runSynchronousWebRequest(webRequest, progressListener);

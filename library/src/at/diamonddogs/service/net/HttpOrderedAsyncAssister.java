@@ -41,7 +41,7 @@ import at.diamonddogs.service.processor.ServiceProcessor;
  * to run and executes it.
  */
 //@formatter:on
-public class HttpOrderedAsyncAssisiter {
+public class HttpOrderedAsyncAssister {
 	/**
 	 * An instance of {@link HttpServiceAssister} to run the {@link WebRequest}s
 	 * in a safe manner.
@@ -54,7 +54,7 @@ public class HttpOrderedAsyncAssisiter {
 	 * @param context
 	 *            a {@link Context}
 	 */
-	public HttpOrderedAsyncAssisiter(Context context) {
+	public HttpOrderedAsyncAssister(Context context) {
 		this.assister = new HttpServiceAssister(context);
 	}
 
@@ -100,16 +100,16 @@ public class HttpOrderedAsyncAssisiter {
 	 */
 	public static class HttpOrderedAsyncHandler extends Handler {
 		private HttpOrderedAsyncRequest request;
-		private HttpOrderedAsyncAssisiter orderedSyncAssister;
+		private HttpOrderedAsyncAssister orderedSyncAssister;
 
 		/**
 		 * Constructor
 		 * 
 		 * @param orderedSyncAssister
-		 *            the {@link HttpOrderedAsyncAssisiter} running the
+		 *            the {@link HttpOrderedAsyncAssister} running the
 		 *            {@link WebRequest} that is handled by this {@link Handler}
 		 */
-		public HttpOrderedAsyncHandler(HttpOrderedAsyncAssisiter orderedSyncAssister) {
+		public HttpOrderedAsyncHandler(HttpOrderedAsyncAssister orderedSyncAssister) {
 			this.orderedSyncAssister = orderedSyncAssister;
 		}
 
