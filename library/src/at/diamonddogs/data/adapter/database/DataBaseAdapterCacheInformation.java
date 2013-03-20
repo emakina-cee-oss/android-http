@@ -114,10 +114,6 @@ public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInform
 		return dataObject;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public CacheInformation[] query(Context c, Object hash) {
 		Cursor cursor;
 		if (hash == null) {

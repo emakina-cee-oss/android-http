@@ -20,6 +20,7 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 
 /**
  * An interface for database adapters
@@ -81,11 +82,13 @@ public interface IDataBaseAdapter<T> {
 	 * 
 	 * @param c
 	 *            a context
-	 * @param input
-	 *            an abitrary filter
+	 * @param u
+	 *            the content uri to use
+	 * @param query
+	 *            a query object
 	 * @return an array containing the results of the query
 	 */
-	public T[] query(Context c, Object input);
+	public T[] query(Context c, Uri u, Query query);
 
 	/**
 	 * Commits the current bulk insert

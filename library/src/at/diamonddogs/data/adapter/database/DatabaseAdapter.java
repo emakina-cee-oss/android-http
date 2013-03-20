@@ -84,9 +84,35 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public T[] query(Context c, Object i) {
-		throw new UnsupportedOperationException("Query not implemented");
+	public final T[] query(Context c, Uri u, Query q) {
+		String selection = q.createSelection();
+		Cursor cur = c.getContentResolver().query(u, q.projection, selection, q.whereValues, q.sortOrder);
+		Object[] ret;
+		if (cur.moveToFirst()) {
+			ret = new Object[cur.getCount()];
+			for (int i = 0; i < cur.getCount(); i++) {
+				ret[i] = deserialize(cur);
+			}
+		} else {
+			ret = new Object[0];
+		}
+		cur.close();
+		return (T[]) ret;
+	}
+
+	/**
+	 * Executes a query and returns an array of results
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param q
+	 *            a {@link Query}
+	 * @return an array of T[]
+	 */
+	public T[] query(Context c, Query q) {
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
