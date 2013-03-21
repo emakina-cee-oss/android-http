@@ -15,6 +15,8 @@
  */
 package at.diamonddogs.service.processor;
 
+import java.util.Vector;
+
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
@@ -30,7 +32,6 @@ import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.adapter.soap.SoapReplyAdapter;
 import at.diamonddogs.data.dataobjects.SoapReply;
 import at.diamonddogs.data.dataobjects.WebReply;
-import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ProcessorExeception;
 import at.diamonddogs.util.SoapUtil;
 
@@ -90,6 +91,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	private Object getResult(ReplyAdapter r) throws Throwable {
 		SoapReply soapReply = new SoapReplyAdapter((WebReply) r.getReply()).getReply();
 		SoapSerializationEnvelope e = soapReply.getEnvelope();
+		LOGGER.info("PRINTING SOAP REPLY:");
 		SoapUtil.printSoapEnvelopeToStdout(e);
 		return e.getResponse();
 	}
@@ -115,6 +117,8 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 			return processSoapReply(c, replyAdapter, (SoapObject) result);
 		} else if (result instanceof SoapPrimitive) {
 			return processSoapReply(c, replyAdapter, (SoapPrimitive) result);
+		} else if (result instanceof Vector<?>) {
+			return processSoapReply(c, replyAdapter, (Vector<?>) result);
 		} else {
 			throw new ProcessorExeception("Unknown error");
 		}
@@ -137,7 +141,22 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @param c
 	 *            a {@link Context}
 	 * @param replyAdapter
-	 *            a {@link WebRequest}
+	 *            a {@link ReplyAdapter}
+	 * @param o
+	 *            the result vector
+	 * @return
+	 */
+	protected T processSoapReply(Context c, ReplyAdapter replyAdapter, Vector<?> o) {
+		throw new UnsupportedOperationException("Vector processing not implemented");
+	}
+
+	/**
+	 * Called when a SOAP result should be processed
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param replyAdapter
+	 *            a {@link ReplyAdapter}
 	 * @param o
 	 *            the {@link SoapObject} created by
 	 *            {@link SoapProcessor#processWebReply(Context, ReplyAdapter, Handler)}
@@ -151,7 +170,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @param c
 	 *            a {@link Context}
 	 * @param replyAdapter
-	 *            a {@link WebRequest}
+	 *            a {@link ReplyAdapter}
 	 * @param o
 	 *            the {@link SoapPrimitive} created by
 	 *            {@link SoapProcessor#processWebReply(Context, ReplyAdapter, Handler)}
@@ -163,7 +182,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * Called if the result is a {@link SoapFault}
 	 * 
 	 * @param replyAdapter
-	 *            the {@link WebRequest}
+	 *            a {@link ReplyAdapter}
 	 * @param fault
 	 *            the {@link SoapFault}
 	 * @return a {@link Message}
