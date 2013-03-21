@@ -35,8 +35,7 @@ import at.diamonddogs.exception.WebClientException;
 
 /**
  * This {@link WebClient} will be used on Gingerbread and above. Please do not
- * use
- * this class directly, use {@link WebClientFactory} instead.
+ * use this class directly, use {@link WebClientFactory} instead.
  */
 public class WebClientHttpURLConnection extends WebClient {
 
@@ -87,7 +86,7 @@ public class WebClientHttpURLConnection extends WebClient {
 
 				if (needsFollowRedirect(reply)) {
 					String url = getRedirectUrl(reply);
-					LOGGER.error("following redirect manually to new url: " + url);
+					LOGGER.debug("following redirect manually to new url: " + url);
 					connection = (HttpURLConnection) new URL(url).openConnection();
 					configureConnection();
 					reply = runRequest();
@@ -161,6 +160,7 @@ public class WebClientHttpURLConnection extends WebClient {
 		}
 	}
 
+	@Override
 	protected void buildHeader() {
 		Map<String, String> header = webRequest.getHeader();
 		if (header != null) {
