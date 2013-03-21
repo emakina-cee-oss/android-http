@@ -69,10 +69,14 @@ public class Query {
 			whereOperators = new String[whereFields.length];
 			Arrays.fill(whereOperators, 0, whereOperators.length, "=");
 		}
-		String ret = "";
-		for (int i = 0; i < whereFields.length; i++) {
-			ret += whereFields[0] + whereOperators[0] + "?";
+		if (whereFields == null && whereValues == null) {
+			return null;
+		} else {
+			String ret = "";
+			for (int i = 0; i < whereFields.length; i++) {
+				ret += whereFields[0] + whereOperators[0] + "?";
+			}
+			return ret;
 		}
-		return ret;
 	}
 }
