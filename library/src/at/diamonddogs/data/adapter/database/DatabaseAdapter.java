@@ -93,6 +93,7 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 		if (cur.moveToFirst()) {
 			ret = new Object[cur.getCount()];
 			for (int i = 0; i < cur.getCount(); i++) {
+				cur.move(i);
 				ret[i] = deserialize(cur);
 			}
 		} else {
