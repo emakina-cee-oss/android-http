@@ -65,18 +65,20 @@ public class Query {
 		if (!validate()) {
 			throw new RuntimeException("Query invalid");
 		}
+		if (whereFields == null && whereValues == null) {
+			return null;
+		}
+
 		if (whereOperators == null) {
 			whereOperators = new String[whereFields.length];
 			Arrays.fill(whereOperators, 0, whereOperators.length, "=");
 		}
-		if (whereFields == null && whereValues == null) {
-			return null;
-		} else {
-			String ret = "";
-			for (int i = 0; i < whereFields.length; i++) {
-				ret += whereFields[0] + whereOperators[0] + "?";
-			}
-			return ret;
+
+		String ret = "";
+		for (int i = 0; i < whereFields.length; i++) {
+			ret += whereFields[0] + whereOperators[0] + "?";
 		}
+		return ret;
+
 	}
 }
