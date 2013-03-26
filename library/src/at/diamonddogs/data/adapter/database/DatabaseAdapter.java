@@ -30,7 +30,7 @@ import android.net.Uri;
  * @param <T>
  *            The type of the entity this adapter provides access to
  */
-public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
+public abstract class DatabaseAdapter<T> {
 	protected T dataObject;
 
 	protected List<T> bulkList;
@@ -52,41 +52,64 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Serializes the dataObject (null check!) to ContentValues that can be used
+	 * in database queries
+	 * 
+	 * @return ContentValues representing the data object
 	 */
-	@Override
 	public abstract ContentValues serialize();
 
 	/**
-	 * {@inheritDoc}
+	 * Deserialize a dataobject from a cursor, uses the current cursor position
+	 * 
+	 * @param c
+	 *            the cursor
+	 * 
+	 * @return an object of type {@link T}
 	 */
-	@Override
 	public abstract T deserialize(Cursor c);
 
 	/**
-	 * {@inheritDoc}
+	 * Inserts the current dataObject into the database
+	 * 
+	 * @param c
+	 *            a context
+	 * @return the rowid (or pk, if a pk has been defined) of the new entry
 	 */
-	@Override
 	public abstract int insert(Context c);
 
 	/**
-	 * {@inheritDoc}
+	 * Updates the current dataObject in the database
+	 * 
+	 * @param c
+	 *            a context
+	 * @return the number of updates (i.e. when updating using a join all
+	 *         changes should be accounted for)
 	 */
-	@Override
 	public abstract int update(Context c);
 
 	/**
-	 * {@inheritDoc}
+	 * Deletes the current dataObject in the database
+	 * 
+	 * @param c
+	 *            a context
+	 * @return the number of deletes (i.e. when updating using a join all
+	 *         changes should be accounted for)
 	 */
-	@Override
 	public abstract int delete(Context c);
 
 	/**
-	 * {@inheritDoc}
+	 * Simple query method that returns an array of {@link Object}s
+	 * 
+	 * @param c
+	 *            a context
+	 * @param u
+	 *            the content uri to use
+	 * @param query
+	 *            a query object
+	 * @return an array containing the results of the query
 	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public final T[] query(Context c, Uri u, Query q) {
+	protected final Object[] query(Context c, Uri u, Query q) {
 		String selection = q.createSelection();
 		Cursor cur = c.getContentResolver().query(u, q.projection, selection, q.whereValues, q.sortOrder);
 		Object[] ret;
@@ -99,7 +122,7 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 			ret = new Object[0];
 		}
 		cur.close();
-		return (T[]) ret;
+		return ret;
 	}
 
 	/**
@@ -116,25 +139,29 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Commits the current bulk insert
+	 * 
+	 * @param c
+	 *            a contect object
+	 * @return the number of items that were inserted into the database
 	 */
-	@Override
 	public int commitBulkInsert(Context c) {
 		throw new UnsupportedOperationException("If you want to use bulkinsert, implement it.");
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Starts a transaction based bulk insert
+	 * 
+	 * @param itemsToInsert
+	 *            the number of items to insert
 	 */
-	@Override
 	public void startBulkInsert(int itemsToInsert) {
 		bulkList = new ArrayList<T>(itemsToInsert);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Starts a transaction based bulk insert
 	 */
-	@Override
 	public void startBulkInsert() {
 		if (bulkList != null) {
 			throw new IllegalStateException("Last bulkInsert has not been commited yet.");
@@ -143,9 +170,12 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Adds an object to the current bulk insert
+	 * 
+	 * @param dataObject
+	 *            an object of type {@link T} to be inserted when
+	 *            {@link IDataBaseAdapter#commitBulkInsert(Context)} is called
 	 */
-	@Override
 	public void addToBulkInsert(T dataObject) {
 		if (bulkList == null) {
 			throw new IllegalStateException("Trying to add items to a bulkInsert, but no bulkInsert has been started yet.");
@@ -154,9 +184,11 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Adds items in a {@link Cursor} to the bulk update
+	 * 
+	 * @param c
+	 *            the {@link Cursor} containing items to be bulk inserted
 	 */
-	@Override
 	public void addToBulkInsert(Cursor c) {
 		if (bulkList == null) {
 			throw new IllegalStateException("Trying to add items to a bulkInsert, but no bulkInsert has been started yet.");
@@ -165,9 +197,12 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Adds a list of objects to the current bulk insert
+	 * 
+	 * @param dataObjects
+	 *            a list of type {@link T} to be inserted when
+	 *            {@link IDataBaseAdapter#commitBulkInsert(Context)} is called
 	 */
-	@Override
 	public void addToBulkInsert(List<T> dataObjects) {
 		if (bulkList == null) {
 			throw new IllegalStateException("Trying to add items to a bulkInsert, but no bulkInsert has been started yet.");
@@ -176,9 +211,12 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Adds an array of objects to the current bulk insert
+	 * 
+	 * @param dataObjects
+	 *            an array of type {@link T} to be inserted when
+	 *            {@link IDataBaseAdapter#commitBulkInsert(Context)} is called
 	 */
-	@Override
 	public void addToBulkInsert(T[] dataObjects) {
 		if (bulkList == null) {
 			throw new IllegalStateException("Trying to add items to a bulkInsert, but no bulkInsert has been started yet.");
@@ -201,25 +239,30 @@ public abstract class DatabaseAdapter<T> implements IDataBaseAdapter<T> {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Returns the current dataObject
+	 * 
+	 * @return a dataObject of type {@link T}
 	 */
-	@Override
 	public T getDataObject() {
 		return dataObject;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Sets the dataObject
+	 * 
+	 * @param dataObject
+	 *            the dataObject to be set
 	 */
-	@Override
 	public void setDataObject(T dataObject) {
 		this.dataObject = dataObject;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Sets the dataObject from a cursor
+	 * 
+	 * @param c
+	 *            the cursor
 	 */
-	@Override
 	public void setDataObject(Cursor c) {
 		this.dataObject = deserialize(c);
 	}
