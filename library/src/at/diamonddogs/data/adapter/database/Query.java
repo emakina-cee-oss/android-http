@@ -18,11 +18,17 @@ package at.diamonddogs.data.adapter.database;
 import java.util.Arrays;
 
 import android.content.ContentResolver;
+import android.net.Uri;
 
 /**
  * A Query implementation to be used in conjunction with {@link DatabaseAdapter}
  */
 public class Query {
+
+	/**
+	 * Optional Content Uri
+	 */
+	public Uri uri;
 	/**
 	 * An array containing the field names of all where parameters
 	 */
@@ -75,7 +81,7 @@ public class Query {
 		}
 
 		String ret = "";
-		for (int i = 0; i < whereFields.length; i++) {
+		for (String whereField : whereFields) {
 			ret += whereFields[0] + whereOperators[0] + "?";
 		}
 		return ret;
