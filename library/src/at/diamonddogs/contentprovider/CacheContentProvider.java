@@ -70,7 +70,7 @@ public class CacheContentProvider extends ContentProvider {
 			// @formatter:off
 			if(oldVersion < 6){
 				try {
-					LOGGER.error("starting upgrade");
+					LOGGER.info("starting upgrade");
 					db.execSQL("ALTER TABLE " + DataBaseAdapterCacheInformation.TABLE + " RENAME TO old");
 					createTable(db);
 					db.execSQL("INSERT INTO " + DataBaseAdapterCacheInformation.TABLE + "(" + 
@@ -84,7 +84,7 @@ public class CacheContentProvider extends ContentProvider {
 							DataBaseAdapterCacheInformation.FILEPATH + " FROM old");
 					db.execSQL("UPDATE CACHE SET " + DataBaseAdapterCacheInformation.USEOFFLINECACHE + " = '0'");
 					db.execSQL("DROP TABLE old");
-					LOGGER.error("upgrade complete");
+					LOGGER.info("upgrade complete");
 				} catch (Exception e) {
 					LOGGER.error("upgrade failed",e);
 				}
