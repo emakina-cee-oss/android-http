@@ -110,7 +110,7 @@ public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInform
 		dataObject.setCacheTime(c.getLong(c.getColumnIndexOrThrow(CACHETIME)));
 		dataObject.setFileName(c.getString(c.getColumnIndexOrThrow(FILENAME)));
 		dataObject.setFilePath(c.getString(c.getColumnIndexOrThrow(FILEPATH)));
-		dataObject.setUseOfflineCache(c.getInt(c.getColumnIndexOrThrow(USEOFFLINECACHE)) == 1 ? true : false);
+		dataObject.setUseOfflineCache(c.getInt(c.getColumnIndexOrThrow(USEOFFLINECACHE)) == 1);
 		return dataObject;
 	}
 

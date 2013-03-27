@@ -15,7 +15,6 @@
  */
 package at.diamonddogs.contentprovider;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
@@ -46,7 +45,7 @@ public class CacheContentProvider extends ContentProvider {
 
 	private static final String DATABASE_NAME = "cache.db";
 
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 6;
 
 	/**
 	 * The content uri used by this provider
@@ -61,27 +60,36 @@ public class CacheContentProvider extends ContentProvider {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			createTable(db);
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			CacheInformation[] information = query(db, null);
-			for (CacheInformation i : information) {
-				File f = new File(i.getFilePath());
-				f.delete();
+			// @formatter:off
+			if(oldVersion < 6){
+				try {
+					LOGGER.error("starting upgrade");
+					db.execSQL("ALTER TABLE " + DataBaseAdapterCacheInformation.TABLE + " RENAME TO old");
+					createTable(db);
+					db.execSQL("INSERT INTO " + DataBaseAdapterCacheInformation.TABLE + "(" + 
+							DataBaseAdapterCacheInformation.CREATIONTIMESTAMP+ "," + 
+							DataBaseAdapterCacheInformation.CACHETIME + "," + 
+							DataBaseAdapterCacheInformation.FILENAME + ","+ 
+							DataBaseAdapterCacheInformation.FILEPATH + ") select "+
+							DataBaseAdapterCacheInformation.CREATIONTIMESTAMP+ "," + 
+							DataBaseAdapterCacheInformation.CACHETIME + "," + 
+							DataBaseAdapterCacheInformation.FILENAME + ","+ 
+							DataBaseAdapterCacheInformation.FILEPATH + " FROM old");
+					db.execSQL("UPDATE CACHE SET " + DataBaseAdapterCacheInformation.USEOFFLINECACHE + " = '0'");
+					db.execSQL("DROP TABLE old");
+					LOGGER.error("upgrade complete");
+				} catch (Exception e) {
+					LOGGER.error("upgrade failed",e);
+				}
 			}
-
-			db.execSQL("DROP TABLE " + DataBaseAdapterCacheInformation.TABLE);
-			createTable(db);
+			// @formatter:on
 		}
 
 		private void createTable(SQLiteDatabase db) {
@@ -96,6 +104,7 @@ public class CacheContentProvider extends ContentProvider {
 				DataBaseAdapterCacheInformation.USEOFFLINECACHE + " INTEGER);";
 			LOGGER.info("Creating cache: " + s);
 			db.execSQL(s);
+			LOGGER.info("cache created");
 			// @formatter:on
 		}
 
@@ -123,9 +132,6 @@ public class CacheContentProvider extends ContentProvider {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void attachInfo(Context context, ProviderInfo info) {
 		CACHECONTENTPROVIDER_AUTHORITY = info.authority;
@@ -173,6 +179,7 @@ public class CacheContentProvider extends ContentProvider {
 	 */
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
+		LOGGER.error("inserting: " + values);
 		SQLiteDatabase db = databaseHelper.getWritableDatabase();
 		long rowId = db.insertWithOnConflict(DataBaseAdapterCacheInformation.TABLE, DataBaseAdapterCacheInformation.TABLE, values,
 				SQLiteDatabase.CONFLICT_REPLACE);

@@ -175,4 +175,10 @@ public class CacheInformation {
 	public void setUseOfflineCache(boolean useOfflineCache) {
 		this.useOfflineCache = useOfflineCache;
 	}
+
+	@Override
+	public String toString() {
+		return "CacheInformation [_id=" + _id + ", creationTimeStamp=" + creationTimeStamp + ", cacheTime=" + cacheTime + ", fileName="
+				+ fileName + ", filePath=" + filePath + ", useOfflineCache=" + useOfflineCache + "]";
+	}
 }

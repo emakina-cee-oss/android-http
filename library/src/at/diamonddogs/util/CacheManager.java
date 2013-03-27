@@ -94,6 +94,7 @@ public class CacheManager {
 	 *            the information related to the object that gets cached
 	 */
 	public void addToCache(Context context, CacheInformation cacheInformation) {
+		LOGGER.error(cacheInformation.toString());
 		DataBaseAdapterCacheInformation dbaci = new DataBaseAdapterCacheInformation(cacheInformation);
 		dbaci.insert(context);
 	}
