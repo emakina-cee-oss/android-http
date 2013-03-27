@@ -130,7 +130,7 @@ public class HttpExampleActivity extends Activity {
 		// required for HEAD request (yahoo specific!)
 		syncWebRequest.addHeaderField("Accept-Encoding", "gzip, deflate");
 
-		Map<String, List<String>> headers = (Map<String, List<String>>) httpService.runSynchronousWebRequest(syncWebRequest);
+		Map<String, List<String>> headers = (Map<String, List<String>>) httpService.runSynchronousWebRequest(syncWebRequest).getPayload();
 		if (headers != null) {
 			for (String key : headers.keySet()) {
 				LOGGER.error("KEY -> " + key);

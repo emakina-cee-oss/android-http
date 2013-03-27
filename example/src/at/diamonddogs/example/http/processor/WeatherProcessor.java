@@ -21,20 +21,13 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import android.content.Context;
-import android.os.Handler;
-import at.diamonddogs.data.adapter.ReplyAdapter;
-import at.diamonddogs.data.adapter.ReplyAdapter.Status;
-import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.example.http.dataobject.Weather;
 import at.diamonddogs.service.processor.XMLProcessor;
-import at.diamonddogs.util.CacheManager.CachedObject;
 
 /**
  * All methods in this class, except getProcessorID(), will be executed in a
  * worker thread.
  * 
- * @author siyb
  * 
  */
 public class WeatherProcessor extends XMLProcessor<Weather> {
@@ -55,33 +48,6 @@ public class WeatherProcessor extends XMLProcessor<Weather> {
 		ret.setTemperature(Float.parseFloat(weatherAttributes.getNamedItem("temp").getNodeValue()));
 		ret.setText(weatherAttributes.getNamedItem("text").getNodeValue());
 		return ret;
-	}
-
-	/**
-	 * This method has to inform the callback handler
-	 */
-	@Override
-	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
-		try {
-			if (r.getStatus() == Status.FAILED) {
-				handler.sendMessage(createErrorMessage(r));
-			} else {
-				// processData uses parse(...) and createReturnMessage(...) to
-				// create pData
-				ProcessingData<Weather> pData = processData(r);
-				handler.sendMessage(pData.returnMessage);
-			}
-		} catch (Throwable tr) {
-			handler.sendMessage(createErrorMessage(tr, r));
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void processCachedObject(CachedObject cachedObject, Handler handler, Request request) {
-		// no caching!
 	}
 
 	/**

@@ -37,6 +37,7 @@ import at.diamonddogs.android.support.v4.util.LruCache;
 import at.diamonddogs.data.adapter.database.DataBaseAdapterCacheInformation;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.Request;
+import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.CacheManagerException;
 import at.diamonddogs.service.CacheService;
 
@@ -170,6 +171,7 @@ public class CacheManager {
 	}
 
 	private CachedObject getFromFileCache(Context c, Request request) {
+		ConnectivityHelper connectivityHelper = new ConnectivityHelper(c);
 		String fileName = Utils.getMD5Hash(request.getUrl().toString());
 		DataBaseAdapterCacheInformation daci = new DataBaseAdapterCacheInformation();
 		CacheInformation ci;
@@ -191,12 +193,20 @@ public class CacheManager {
 
 		File f = new File(filePath, fileName);
 
-		if (fileExpired(creationTimeStamp, cacheTime) || !f.exists()) {
+		boolean connected = connectivityHelper.checkConnectivityWebRequest((WebRequest) request);
+		// @formatter:off
+		if (
+				(fileExpired(creationTimeStamp, cacheTime) || !f.exists()) && 
+				(!ci.isUseOfflineCache() || connected)
+		) {
+		// @formatter:on
 			daci.setDataObject(ci);
 			daci.delete(c);
 			f.delete();
 			return null;
 		} else {
+			LOGGER.info("Obtaining file from Cache. Expired: " + fileExpired(creationTimeStamp, cacheTime) + " File Exists: " + f.exists()
+					+ " UseOfflineCache: " + ci.isUseOfflineCache() + " Connectivity: " + connected);
 			try {
 				byte[] buffer = new byte[(int) f.length()];
 				FileInputStream fis;

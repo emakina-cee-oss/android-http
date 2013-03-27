@@ -25,7 +25,9 @@ import at.diamonddogs.data.dataobjects.WebRequest.Type;
 
 /**
  * The {@link WebClientFactory} returns the appropriate {@link WebClient} for a
- * {@link WebRequest}, judgeing by parameters and Android Version
+ * {@link WebRequest}, judging by parameters and Android
+ * Version. http://android-developers
+ * .blogspot.co.at/2011/09/androids-http-clients.html
  */
 public class WebClientFactory {
 

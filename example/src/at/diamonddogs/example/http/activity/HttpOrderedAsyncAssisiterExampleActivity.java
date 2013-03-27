@@ -20,11 +20,11 @@ import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.example.http.R;
 import at.diamonddogs.example.http.dataobject.Weather;
 import at.diamonddogs.example.http.processor.WeatherProcessor;
-import at.diamonddogs.service.net.HttpOrderedAsyncAssisiter;
-import at.diamonddogs.service.net.HttpOrderedAsyncAssisiter.HttpOrderedAsyncHandler;
-import at.diamonddogs.service.net.HttpOrderedAsyncAssisiter.HttpOrderedAsyncRequest;
-import at.diamonddogs.service.net.HttpOrderedAsyncAssisiter.NextWebRequestDelegate;
-import at.diamonddogs.service.net.HttpOrderedAsyncAssisiter.NoNextWebRequestDelegate;
+import at.diamonddogs.service.net.HttpOrderedAsyncAssister;
+import at.diamonddogs.service.net.HttpOrderedAsyncAssister.HttpOrderedAsyncHandler;
+import at.diamonddogs.service.net.HttpOrderedAsyncAssister.HttpOrderedAsyncRequest;
+import at.diamonddogs.service.net.HttpOrderedAsyncAssister.NextWebRequestDelegate;
+import at.diamonddogs.service.net.HttpOrderedAsyncAssister.NoNextWebRequestDelegate;
 import at.diamonddogs.service.processor.HeadRequestProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
 
@@ -36,7 +36,7 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpServiceAssisterExampleActivity.class.getSimpleName());
 
-	private HttpOrderedAsyncAssisiter assister;
+	private HttpOrderedAsyncAssister assister;
 
 	/**
 	 * Text view to display a weather string
@@ -52,7 +52,7 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.httporderedasyncassisterexampleactivity);
-		assister = new HttpOrderedAsyncAssisiter(this);
+		assister = new HttpOrderedAsyncAssister(this);
 		text = (TextView) findViewById(R.id.httporderedasyncassisiterexampleactivity_text);
 		temperature = (TextView) findViewById(R.id.httporderedasyncassisiterexampleactivity_temperature);
 	}
@@ -164,7 +164,7 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 		/**
 		 * @param arg0
 		 */
-		public WeatherHandler(HttpOrderedAsyncAssisiter arg0) {
+		public WeatherHandler(HttpOrderedAsyncAssister arg0) {
 			super(arg0);
 		}
 

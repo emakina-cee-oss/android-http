@@ -55,7 +55,7 @@ public class SoapReplyAdapter {
 			parseResponse(envelope, reply.getData());
 			reply.setEnvelope(envelope);
 		} catch (Throwable tr) {
-			LOGGER.warn(".");
+			LOGGER.warn("Error parsing response", tr);
 		}
 	}
 

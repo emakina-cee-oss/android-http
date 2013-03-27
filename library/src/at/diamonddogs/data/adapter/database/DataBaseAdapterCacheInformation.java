@@ -49,6 +49,9 @@ public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInform
 	/** filepath colum */
 	public static final String FILEPATH = "filepath";
 
+	/** useofflinecache column */
+	public static final String USEOFFLINECACHE = "useofflinecache";
+
 	/**
 	 * Sets dataObject to the {@link CacheInformation} item currently selected
 	 * in c
@@ -92,6 +95,7 @@ public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInform
 		cv.put(CACHETIME, dataObject.getCacheTime());
 		cv.put(FILENAME, dataObject.getFileName());
 		cv.put(FILEPATH, dataObject.getFilePath());
+		cv.put(USEOFFLINECACHE, dataObject.isUseOfflineCache() ? 1 : 0);
 		return cv;
 	}
 
@@ -106,13 +110,10 @@ public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInform
 		dataObject.setCacheTime(c.getLong(c.getColumnIndexOrThrow(CACHETIME)));
 		dataObject.setFileName(c.getString(c.getColumnIndexOrThrow(FILENAME)));
 		dataObject.setFilePath(c.getString(c.getColumnIndexOrThrow(FILEPATH)));
+		dataObject.setUseOfflineCache(c.getInt(c.getColumnIndexOrThrow(USEOFFLINECACHE)) == 1 ? true : false);
 		return dataObject;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public CacheInformation[] query(Context c, Object hash) {
 		Cursor cursor;
 		if (hash == null) {

@@ -52,6 +52,7 @@ public class StartActivity extends Activity {
 				HttpServiceAssisterExampleActivity.class));
 		adapter.add(new Example("HttpOrderedAsyncAssisiterExampleActivity",
 				"Shows how to send ordered, conditional, asynchronous Webrequests", HttpOrderedAsyncAssisiterExampleActivity.class));
+		adapter.add(new Example("CachingExampleActivity", "Demonstrates cached Webrequests", CachingExampleActivity.class));
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new OnItemClickListener() {
 

@@ -25,8 +25,10 @@ import org.apache.http.HttpEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.util.Pair;
+import at.diamonddogs.service.net.HttpService;
 
 /**
  * Web request representation
@@ -100,9 +102,15 @@ public class WebRequest implements Request {
 	protected Map<String, String> header;
 
 	/**
-	 * 
+	 * The time the result of this {@link WebRequest} should be cached, default
+	 * is {@link CacheInformation#CACHE_NO} which turns of caching altogether
 	 */
 	protected long cacheTime = CacheInformation.CACHE_NO;
+
+	/**
+	 * Constrols {@link CacheInformation#useOfflineCache}
+	 */
+	protected boolean useOfflineCache = false;
 
 	/**
 	 * Retry attempts of this request
@@ -123,6 +131,20 @@ public class WebRequest implements Request {
 	 * A flag to indicate if this {@link WebRequest} has been cancelled
 	 */
 	protected boolean isCancelled = false;
+
+	/**
+	 * A flag to indicate if connectivity should be checked before running the
+	 * {@link WebRequest}. This flag will cause {@link HttpService} to use the
+	 * {@link ConnectivityManager} to check for connectivity using
+	 * {@link ConnectivityManager#getActiveNetworkInfo()}.
+	 */
+	protected boolean checkConnectivity = true;
+
+	/**
+	 * If set to <code>true</code>, {@link HttpService} will issue a ping to see
+	 * if the target host is reachable. This feature is turned off by default.
+	 */
+	protected boolean checkConnectivityPing = false;
 
 	@SuppressWarnings("javadoc")
 	public boolean isCancelled() {
@@ -272,6 +294,16 @@ public class WebRequest implements Request {
 	}
 
 	@SuppressWarnings("javadoc")
+	public boolean isUseOfflineCache() {
+		return useOfflineCache;
+	}
+
+	@SuppressWarnings("javadoc")
+	public void setUseOfflineCache(boolean useOfflineCache) {
+		this.useOfflineCache = useOfflineCache;
+	}
+
+	@SuppressWarnings("javadoc")
 	public int getNumberOfRetries() {
 		return numberOfRetries;
 	}
@@ -309,5 +341,25 @@ public class WebRequest implements Request {
 	@SuppressWarnings("javadoc")
 	public void setHttpEntity(HttpEntity httpEntity) {
 		this.httpEntity = httpEntity;
+	}
+
+	@SuppressWarnings("javadoc")
+	public boolean isCheckConnectivity() {
+		return checkConnectivity;
+	}
+
+	@SuppressWarnings("javadoc")
+	public void setCheckConnectivity(boolean checkConnectivity) {
+		this.checkConnectivity = checkConnectivity;
+	}
+
+	@SuppressWarnings("javadoc")
+	public boolean isCheckConnectivityPing() {
+		return checkConnectivityPing;
+	}
+
+	@SuppressWarnings("javadoc")
+	public void setCheckConnectivityPing(boolean checkConnectivityPing) {
+		this.checkConnectivityPing = checkConnectivityPing;
 	}
 }

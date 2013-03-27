@@ -46,7 +46,7 @@ public class CacheContentProvider extends ContentProvider {
 
 	private static final String DATABASE_NAME = "cache.db";
 
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 	/**
 	 * The content uri used by this provider
@@ -74,28 +74,28 @@ public class CacheContentProvider extends ContentProvider {
 		 */
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			if (oldVersion == 1 && newVersion == 2) {
-
-				CacheInformation[] information = query(db, null);
-				for (CacheInformation i : information) {
-					File f = new File(i.getFilePath());
-					f.delete();
-				}
-
-				db.execSQL("DROP TABLE " + DataBaseAdapterCacheInformation.TABLE);
-				createTable(db);
+			CacheInformation[] information = query(db, null);
+			for (CacheInformation i : information) {
+				File f = new File(i.getFilePath());
+				f.delete();
 			}
+
+			db.execSQL("DROP TABLE " + DataBaseAdapterCacheInformation.TABLE);
+			createTable(db);
 		}
 
 		private void createTable(SQLiteDatabase db) {
 			// @formatter:off
-			db.execSQL("CREATE TABLE " + 
-					DataBaseAdapterCacheInformation.TABLE + " (" + 
-					DataBaseAdapterCacheInformation._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
-					DataBaseAdapterCacheInformation.CREATIONTIMESTAMP + " INTEGER, " + 
-					DataBaseAdapterCacheInformation.CACHETIME + " INTEGER, " +
-					DataBaseAdapterCacheInformation.FILENAME + " TEXT UNIQUE, " +
-					DataBaseAdapterCacheInformation.FILEPATH + " TEXT);");
+			String s = "CREATE TABLE " + 
+				DataBaseAdapterCacheInformation.TABLE + " (" + 
+				DataBaseAdapterCacheInformation._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
+				DataBaseAdapterCacheInformation.CREATIONTIMESTAMP + " INTEGER, " + 
+				DataBaseAdapterCacheInformation.CACHETIME + " INTEGER, " +
+				DataBaseAdapterCacheInformation.FILENAME + " TEXT UNIQUE, " +
+				DataBaseAdapterCacheInformation.FILEPATH + " TEXT, " +
+				DataBaseAdapterCacheInformation.USEOFFLINECACHE + " INTEGER);";
+			LOGGER.info("Creating cache: " + s);
+			db.execSQL(s);
 			// @formatter:on
 		}
 
