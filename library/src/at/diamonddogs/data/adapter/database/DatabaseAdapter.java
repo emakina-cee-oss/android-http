@@ -140,6 +140,17 @@ public abstract class DatabaseAdapter<T> {
 	}
 
 	/**
+	 * Convenience query method that returns all available data
+	 * 
+	 * @param c
+	 *            a {@link Context} object
+	 * @return an array of T[]
+	 */
+	public T[] query(Context c) {
+		return query(c, new Query());
+	}
+
+	/**
 	 * Commits the current bulk insert
 	 * 
 	 * @param c
