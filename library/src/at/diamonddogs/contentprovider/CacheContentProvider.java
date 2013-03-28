@@ -179,7 +179,6 @@ public class CacheContentProvider extends ContentProvider {
 	 */
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		LOGGER.error("inserting: " + values);
 		SQLiteDatabase db = databaseHelper.getWritableDatabase();
 		long rowId = db.insertWithOnConflict(DataBaseAdapterCacheInformation.TABLE, DataBaseAdapterCacheInformation.TABLE, values,
 				SQLiteDatabase.CONFLICT_REPLACE);
