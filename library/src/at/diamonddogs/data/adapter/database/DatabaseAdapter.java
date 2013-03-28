@@ -113,10 +113,10 @@ public abstract class DatabaseAdapter<T> {
 		String selection = q.createSelection();
 		Cursor cur = c.getContentResolver().query(u, q.projection, selection, q.whereValues, q.sortOrder);
 		Object[] ret;
-		if (cur.moveToFirst()) {
+		if (cur.getCount() != 0) {
 			ret = new Object[cur.getCount()];
 			for (int i = 0; i < cur.getCount(); i++) {
-				cur.move(i);
+				cur.move(1);
 				ret[i] = deserialize(cur);
 			}
 		} else {
