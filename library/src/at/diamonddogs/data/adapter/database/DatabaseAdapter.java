@@ -113,10 +113,10 @@ public abstract class DatabaseAdapter<T> {
 		String selection = q.createSelection();
 		Cursor cur = c.getContentResolver().query(u, q.projection, selection, q.whereValues, q.sortOrder);
 		Object[] ret;
-		if (cur.moveToFirst()) {
+		if (cur.getCount() != 0) {
 			ret = new Object[cur.getCount()];
 			for (int i = 0; i < cur.getCount(); i++) {
-				cur.move(i);
+				cur.move(1);
 				ret[i] = deserialize(cur);
 			}
 		} else {
@@ -137,6 +137,17 @@ public abstract class DatabaseAdapter<T> {
 	 */
 	public T[] query(Context c, Query q) {
 		throw new UnsupportedOperationException("Not implemented");
+	}
+
+	/**
+	 * Convenience query method that returns all available data
+	 * 
+	 * @param c
+	 *            a {@link Context} object
+	 * @return an array of T[]
+	 */
+	public T[] query(Context c) {
+		return query(c, new Query());
 	}
 
 	/**
