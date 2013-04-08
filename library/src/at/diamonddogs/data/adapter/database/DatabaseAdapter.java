@@ -156,6 +156,17 @@ public abstract class DatabaseAdapter<T> {
 	}
 
 	/**
+	 * Convenience query method that returns all available data
+	 * 
+	 * @param c
+	 *            a {@link Context} object
+	 * @return a {@link Cursor}
+	 */
+	public Cursor queryCursor(Context c) {
+		return queryCursor(c, new Query());
+	}
+
+	/**
 	 * Executes a query and returns an array of results
 	 * 
 	 * @param c
