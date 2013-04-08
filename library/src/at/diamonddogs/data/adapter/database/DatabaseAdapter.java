@@ -107,7 +107,7 @@ public abstract class DatabaseAdapter<T> {
 	 *            the content uri to use
 	 * @param query
 	 *            a query object
-	 * @return an array containing the results of the query
+	 * @return an array containing the results of the {@link Query}
 	 */
 	protected final Object[] query(Context c, Uri u, Query q) {
 		String selection = q.createSelection();
@@ -124,6 +124,35 @@ public abstract class DatabaseAdapter<T> {
 		}
 		cur.close();
 		return ret;
+	}
+
+	/**
+	 * Simple query method that returns a {@link Cursor}
+	 * 
+	 * @param c
+	 *            a context
+	 * @param u
+	 *            the content uri to use
+	 * @param query
+	 *            a query object
+	 * @return a cursor containing the result of the {@link Query}
+	 */
+	protected final Cursor queryCursor(Context c, Uri u, Query q) {
+		String selection = q.createSelection();
+		return c.getContentResolver().query(u, q.projection, selection, q.whereValues, q.sortOrder);
+	}
+
+	/**
+	 * Simple query method that returns a {@link Cursor}
+	 * 
+	 * @param c
+	 *            a context
+	 * @param query
+	 *            a query object
+	 * @return a cursor containing the result of the {@link Query}
+	 */
+	public Cursor queryCursor(Context c, Query q) {
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
