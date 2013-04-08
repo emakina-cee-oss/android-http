@@ -81,8 +81,11 @@ public class Query {
 		}
 
 		String ret = "";
-		for (String whereField : whereFields) {
-			ret += whereFields[0] + whereOperators[0] + "?";
+		for (int i = 0; i < whereFields.length; i++) {
+			ret += whereFields[i] + whereOperators[i] + "?";
+			if ((i + 1) < whereFields.length) {
+				ret += " AND ";
+			}
 		}
 		return ret;
 
