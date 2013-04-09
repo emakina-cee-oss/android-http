@@ -19,6 +19,7 @@ The framework is designed to send, receive, process and publish webrequests and 
     * Ordered-conditional synchronous web request API
 
 ## Planned
+* REST assister
 * Chaining multiple processors
 * OAuth 2.0
 
