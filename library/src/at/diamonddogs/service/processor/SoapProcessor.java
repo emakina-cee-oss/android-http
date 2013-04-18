@@ -43,7 +43,7 @@ import at.diamonddogs.util.SoapUtil;
  */
 public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements SynchronousProcessor<T> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SoapProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SoapProcessor.class.getSimpleName());
 
 	/**
 	 * This method should not be overridden, will pre-process a SOAP reply and
