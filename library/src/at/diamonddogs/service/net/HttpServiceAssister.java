@@ -17,6 +17,7 @@ package at.diamonddogs.service.net;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +94,13 @@ public class HttpServiceAssister {
 	private final Queue<WebRequestInformation> pendingWebRequests;
 
 	/**
+	 * This flag is set by {@link HttpServiceAssister#savlyUnbindService()}. It
+	 * ensures that pending {@link WebRequest} will be executed prior to
+	 * unbinding the {@link HttpService}
+	 */
+	private final AtomicBoolean unbindServiceAfterWebRequestExecution = new AtomicBoolean(false);
+
+	/**
 	 * This monitor {@link Object} is used to wait for a connection to
 	 * {@link HttpService} when running a synchronous {@link WebRequest}.
 	 */
@@ -131,16 +139,39 @@ public class HttpServiceAssister {
 	}
 
 	/**
-	 * Unbinds the {@link HttpService}.
+	 * Unbinds the {@link HttpService}. All pending {@link WebRequest} will be
+	 * discarded!
 	 * 
 	 * @return <code>true</code> if {@link HttpService} was bound and therefore
 	 *         successfully unbound, <code>false</code> otherwise.
 	 */
 	public boolean unbindService() {
 		if (activeServiceConnection != null) {
+			unbindServiceAfterWebRequestExecution.set(false);
 			context.unbindService(activeServiceConnection);
 			activeServiceConnection = null;
 			httpService = null;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Unbinds the {@link HttpService}. Pending {@link WebRequest}s will be
+	 * executed before unbinding.
+	 * 
+	 * @return
+	 */
+	public boolean savlyUnbindService() {
+		if (activeServiceConnection != null) {
+			if (hasPendingAsyncWebRequests()) {
+				unbindServiceAfterWebRequestExecution.set(true);
+			} else {
+				context.unbindService(activeServiceConnection);
+				activeServiceConnection = null;
+				httpService = null;
+			}
 			return true;
 		} else {
 			return false;
@@ -254,6 +285,16 @@ public class HttpServiceAssister {
 	}
 
 	/**
+	 * Checks if there are still {@link WebRequest}s to be processed
+	 * 
+	 * @return <code>true</code> if there are still {@link WebRequest}s in the
+	 *         {@link Queue}, <code>false</code> otherwise.
+	 */
+	public boolean hasPendingAsyncWebRequests() {
+		return pendingWebRequests.size() != 0;
+	}
+
+	/**
 	 * Waits for {@link HttpService} to be bound. This method will NOT
 	 * initialize binding, use {@link HttpServiceAssister#bindService()} before
 	 * calling this method.
@@ -357,6 +398,9 @@ public class HttpServiceAssister {
 					LOGGER.debug("Running " + webRequestInformation.webRequest + " after service binding!");
 					httpService.runWebRequest(webRequestInformation.handler, webRequestInformation.webRequest,
 							webRequestInformation.progressListener);
+				}
+				if (unbindServiceAfterWebRequestExecution.get()) {
+					unbindService();
 				}
 			}
 		}
