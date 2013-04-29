@@ -234,6 +234,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		return m;
 	}
 
+	@Override
 	protected Message createReturnMessage(WebRequest webRequest, Bitmap payload) {
 		Message m = super.createReturnMessage(webRequest, payload);
 		m.getData().putParcelable(BUNDLE_EXTRA_BITMAP, payload);
@@ -337,33 +338,27 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 
 		@Override
 		public void handleMessage(Message msg) {
+			LOGGER.error("what: " + msg.what + " ID: " + ID);
+			if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
 
-			if (msg.what == ID) {
-				if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
-
-					if (imageView == null || imageView.getTag() == null) {
-						throw new ProcessorExeception("Tag for ImageView has not been set or ImageView was null");
-					}
-					LOGGER.info("adding image from url:" + url + " for tag: " + imageView.getTag());
-					if (imageView.getTag().equals(url)) {
-						Bundle b = msg.getData();
-						Bitmap bitmap = b.getParcelable(BUNDLE_EXTRA_BITMAP);
-
-						imageView.setImageBitmap(bitmap);
-						if (useDrawingCache) {
-							imageView.setDrawingCacheEnabled(true);
-							imageView.buildDrawingCache(true);
-						}
-						if (fadeInAnimation != null) {
-							imageView.startAnimation(fadeInAnimation);
-						}
-						imageView.invalidate();
-					}
+				if (imageView == null || imageView.getTag() == null) {
+					throw new ProcessorExeception("Tag for ImageView has not been set or ImageView was null");
 				}
-			} else {
-				ProcessorExeception e = new ProcessorExeception("Image request failed", (Throwable) msg.getData().getParcelable(
-				        ServiceProcessor.BUNDLE_EXTRA_MESSAGE_THROWABLE));
-				LOGGER.error("Image request failed", e);
+				LOGGER.info("adding image from url:" + url + " for tag: " + imageView.getTag());
+				if (imageView.getTag().equals(url)) {
+					Bundle b = msg.getData();
+					Bitmap bitmap = b.getParcelable(BUNDLE_EXTRA_BITMAP);
+
+					imageView.setImageBitmap(bitmap);
+					if (useDrawingCache) {
+						imageView.setDrawingCacheEnabled(true);
+						imageView.buildDrawingCache(true);
+					}
+					if (fadeInAnimation != null) {
+						imageView.startAnimation(fadeInAnimation);
+					}
+					imageView.invalidate();
+				}
 			}
 		}
 	}
