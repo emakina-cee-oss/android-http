@@ -338,7 +338,6 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 
 		@Override
 		public void handleMessage(Message msg) {
-			LOGGER.error("what: " + msg.what + " ID: " + ID);
 			if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
 
 				if (imageView == null || imageView.getTag() == null) {
