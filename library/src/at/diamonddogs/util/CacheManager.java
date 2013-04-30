@@ -32,8 +32,10 @@ import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Build;
 import at.diamonddogs.android.support.v4.util.LruCache;
+import at.diamonddogs.contentprovider.CacheContentProvider;
 import at.diamonddogs.data.adapter.database.DataBaseAdapterCacheInformation;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.Request;
@@ -229,25 +231,29 @@ public class CacheManager {
 	 * @return <code>true</code> if the file cache was cleaned successfully,
 	 *         <code>false</code> otherwise
 	 */
-	public boolean cleanExpired(Context c) {
-		DataBaseAdapterCacheInformation dbaci = new DataBaseAdapterCacheInformation();
-		CacheInformation[] cacheInformation = dbaci.query(c, null);
-		if (cacheInformation != null) {
-			for (CacheInformation ci : cacheInformation) {
-				long creationTimeStamp = ci.getCreationTimeStamp();
-				long cacheTime = ci.getCacheTime();
-				if (fileExpired(creationTimeStamp, cacheTime) && (cacheTime != CacheInformation.CACHE_FOREVER)) {
-					String fileName = ci.getFileName();
-					LOGGER.info("File " + fileName + " expired");
-					File f = new File(ci.getFilePath(), fileName);
-					f.delete();
-					dbaci.setDataObject(ci);
-					dbaci.delete(c);
-				}
-			}
-			return true;
+	public void cleanExpired(Context c) {
+		Cursor cursor = c.getContentResolver().query(CacheContentProvider.CONTENT_URI, null, null, null, null);
+
+		if (!Utils.checkCursor(cursor)) {
+			return;
 		}
-		return false;
+		cursor.moveToFirst();
+		DataBaseAdapterCacheInformation dbaci = new DataBaseAdapterCacheInformation();
+		do {
+			dbaci.setDataObject(cursor);
+			CacheInformation cacheInfo = dbaci.getDataObject();
+			long creationTimeStamp = cacheInfo.getCreationTimeStamp();
+			long cacheTime = cacheInfo.getCacheTime();
+
+			if (fileExpired(creationTimeStamp, cacheTime) && (cacheTime != CacheInformation.CACHE_FOREVER)) {
+				String fileName = cacheInfo.getFileName();
+				File f = new File(cacheInfo.getFilePath(), fileName);
+				f.delete();
+				dbaci.delete(c);
+			}
+		} while (cursor.moveToNext());
+
+		cursor.close();
 	}
 
 	private boolean fileExpired(long creationTime, long cacheTime) {
