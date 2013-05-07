@@ -163,7 +163,7 @@ public class HttpServiceAssister {
 	 * 
 	 * @return
 	 */
-	public boolean savlyUnbindService() {
+	public boolean safelyUnbindService() {
 		if (activeServiceConnection != null) {
 			if (hasPendingAsyncWebRequests()) {
 				unbindServiceAfterWebRequestExecution.set(true);
