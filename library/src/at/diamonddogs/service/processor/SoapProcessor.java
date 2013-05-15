@@ -32,7 +32,9 @@ import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.adapter.soap.SoapReplyAdapter;
 import at.diamonddogs.data.dataobjects.SoapReply;
 import at.diamonddogs.data.dataobjects.WebReply;
+import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ProcessorExeception;
+import at.diamonddogs.util.CacheManager.CachedObject;
 import at.diamonddogs.util.SoapUtil;
 
 /**
@@ -44,6 +46,15 @@ import at.diamonddogs.util.SoapUtil;
 public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements SynchronousProcessor<T> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SoapProcessor.class.getSimpleName());
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public T obtainDataObjectFromCachedObject(Context c, WebRequest webRequest, CachedObject object) {
+		return (T) object.getCachedObject();
+	}
 
 	/**
 	 * This method should not be overridden, will pre-process a SOAP reply and
