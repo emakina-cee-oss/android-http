@@ -131,6 +131,9 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply) {
 		cacheObjectToFile(c, reply);
@@ -146,6 +149,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 	 *            the {@link CachedObject}
 	 * @return always returns <code>null</code>
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public OUTPUT obtainDataObjectFromCachedObject(Context c, WebRequest wr, CachedObject object) {
 		switch (object.getFrom()) {
