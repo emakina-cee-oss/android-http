@@ -67,6 +67,7 @@ public abstract class SynchronousXmlProcessorNoDom<T> extends DataProcessor<Inpu
 		try {
 			reader.parse(inputObject);
 		} catch (Throwable tr) {
+			LOGGER.error("Failed to parse!", tr);
 			return null;
 		}
 		return xmlHandler.getData();
