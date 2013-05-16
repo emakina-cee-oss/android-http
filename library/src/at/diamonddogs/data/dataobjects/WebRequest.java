@@ -32,6 +32,11 @@ import at.diamonddogs.service.net.HttpService;
 
 /**
  * Web request representation
+ * 
+ * TODO: set processor instance instead of id, add a flag -> usePresentProcessor
+ * (uses an already registered processor, if set to false, the given processor
+ * instance will be used and delete from HttpService once the request has
+ * finished)
  */
 public class WebRequest implements Request {
 

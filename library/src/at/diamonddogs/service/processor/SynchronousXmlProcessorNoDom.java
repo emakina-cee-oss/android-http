@@ -65,7 +65,9 @@ public abstract class SynchronousXmlProcessorNoDom<T> extends DataProcessor<Inpu
 	@Override
 	protected T parse(InputSource inputObject) {
 		try {
+			LOGGER.info("Starting NoDom parsing");
 			reader.parse(inputObject);
+			LOGGER.info("NoDom parsing complete");
 		} catch (Throwable tr) {
 			LOGGER.error("Failed to parse!", tr);
 			return null;
