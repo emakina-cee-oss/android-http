@@ -44,6 +44,9 @@ public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
 	 */
 	public ParcelableAdapterWebRequest(Parcel in) {
 		super(in);
+		if (dataObject == null) {
+			dataObject = new WebRequest();
+		}
 		dataObject.setProcessorId(in.readInt());
 		dataObject.setRequestType((Type) in.readSerializable());
 		dataObject.setUrl((URL) in.readSerializable());
@@ -52,8 +55,10 @@ public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
 		dataObject.setFollowRedirects(in.readInt() == 1);
 
 		boolean first = (in.readInt() == 1);
-		ParcelableAdapterTempFile tmp = in.readParcelable(ClassLoader.getSystemClassLoader());
-		dataObject.setTmpFile(new Pair<Boolean, TempFile>(first, tmp.getDataObject()));
+		if (first) {
+			ParcelableAdapterTempFile tmp = in.readParcelable(ClassLoader.getSystemClassLoader());
+			dataObject.setTmpFile(new Pair<Boolean, TempFile>(first, tmp.getDataObject()));
+		}
 
 		dataObject.setHeader(readStringMap(in));
 		dataObject.setCacheTime(in.readLong());
@@ -95,7 +100,9 @@ public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
 		// workaround: http://code.google.com/p/android/issues/detail?id=5973
 		dest.writeInt(dataObject.isFollowRedirects() ? 1 : 0);
 		dest.writeInt(dataObject.getTmpFile().first ? 1 : 0);
-		dest.writeParcelable(new ParcelableAdapterTempFile(dataObject.getTmpFile().second), 0);
+		if (dataObject.getTmpFile().first) {
+			dest.writeParcelable(new ParcelableAdapterTempFile(dataObject.getTmpFile().second), 0);
+		}
 
 		writeStringMap(dest, dataObject.getHeader());
 		dest.writeLong(dataObject.getCacheTime());
@@ -112,10 +119,12 @@ public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
 	 * Required by Parcelable mechanism
 	 */
 	public static final Parcelable.Creator<ParcelableAdapterWebRequest> CREATOR = new Parcelable.Creator<ParcelableAdapterWebRequest>() {
+		@Override
 		public ParcelableAdapterWebRequest createFromParcel(Parcel in) {
 			return new ParcelableAdapterWebRequest(in);
 		}
 
+		@Override
 		public ParcelableAdapterWebRequest[] newArray(int size) {
 			return new ParcelableAdapterWebRequest[size];
 		}

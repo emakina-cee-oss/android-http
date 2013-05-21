@@ -33,6 +33,10 @@ public class ParcelableAdapterWebReply extends ParcelableAdapter<WebReply> {
 	 */
 	public ParcelableAdapterWebReply(Parcel in) {
 		super(in);
+		if (dataObject == null) {
+			dataObject = new WebReply();
+		}
+
 		dataObject.setHttpStatusCode(in.readInt());
 		byte[] data = new byte[in.readInt()];
 		in.readByteArray(data);
@@ -68,10 +72,12 @@ public class ParcelableAdapterWebReply extends ParcelableAdapter<WebReply> {
 	 * Required by Parcelable mechanism
 	 */
 	public static final Parcelable.Creator<ParcelableAdapterWebReply> CREATOR = new Parcelable.Creator<ParcelableAdapterWebReply>() {
+		@Override
 		public ParcelableAdapterWebReply createFromParcel(Parcel in) {
 			return new ParcelableAdapterWebReply(in);
 		}
 
+		@Override
 		public ParcelableAdapterWebReply[] newArray(int size) {
 			return new ParcelableAdapterWebReply[size];
 		}
