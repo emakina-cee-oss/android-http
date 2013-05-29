@@ -146,6 +146,8 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 
 			listenerReply = createListenerReply(webRequest, reply, null, Status.OK);
 		} catch (Throwable tr) {
+			// TODO: passing a null reply will cause an nullpointer when calling
+			// cacheObjectToFile
 			listenerReply = createListenerReply(webRequest, null, tr, Status.FAILED);
 			LOGGER.info("Error running webrequest", tr);
 		}
