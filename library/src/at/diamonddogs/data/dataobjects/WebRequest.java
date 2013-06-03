@@ -367,4 +367,9 @@ public class WebRequest implements Request {
 	public void setCheckConnectivityPing(boolean checkConnectivityPing) {
 		this.checkConnectivityPing = checkConnectivityPing;
 	}
+
+	@Override
+	public String toString() {
+		return url == null ? "" : url.toString();
+	}
 }
