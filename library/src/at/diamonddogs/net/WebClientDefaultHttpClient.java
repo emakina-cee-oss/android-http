@@ -149,7 +149,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			// TODO: passing a null reply will cause an nullpointer when calling
 			// cacheObjectToFile
 			listenerReply = createListenerReply(webRequest, null, tr, Status.FAILED);
-			LOGGER.info("Error running webrequest", tr);
+			LOGGER.info("Error running webrequest: " + webRequest, tr);
 		}
 		if (webClientReplyListener != null) {
 			webClientReplyListener.onWebReply(this, listenerReply);
@@ -219,6 +219,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 		buildHeader();
 	}
 
+	@Override
 	protected void buildHeader() {
 		Map<String, String> header = webRequest.getHeader();
 		if (header != null) {

@@ -104,7 +104,7 @@ public class WebClientHttpURLConnection extends WebClient {
 					try {
 						Thread.sleep(webRequest.getRetryInterval());
 					} catch (InterruptedException e) {
-						LOGGER.error("Error in WebRequest", e);
+						LOGGER.error("Error in WebRequest: " + webRequest, e);
 					}
 				}
 				listenerReply = createListenerReply(webRequest, null, tr, Status.FAILED);
