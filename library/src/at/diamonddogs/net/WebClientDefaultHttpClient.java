@@ -69,7 +69,7 @@ import at.diamonddogs.exception.WebClientException;
  */
 public class WebClientDefaultHttpClient extends WebClient implements HttpRequestRetryHandler, RedirectHandler {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WebClientDefaultHttpClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebClientDefaultHttpClient.class.getSimpleName());
 
 	/**
 	 * The instance of {@link DefaultHttpClient} handling the request
@@ -112,9 +112,9 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 	@Override
 	public ReplyAdapter call() {
 		ReplyAdapter listenerReply = null;
+		HttpResponse response = null;
 		try {
 			WebReply reply;
-			HttpResponse response;
 
 			if (webRequest == null) {
 				throw new WebClientException("WebRequest must not be null!");
@@ -149,7 +149,8 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			// TODO: passing a null reply will cause an nullpointer when calling
 			// cacheObjectToFile
 			listenerReply = createListenerReply(webRequest, null, tr, Status.FAILED);
-			LOGGER.info("Error running webrequest: " + webRequest, tr);
+			LOGGER.info("Error running webrequest: " + webRequest.getUrl() + " status: "
+					+ (response == null ? "" : response.getStatusLine().getStatusCode()), tr);
 		}
 		if (webClientReplyListener != null) {
 			webClientReplyListener.onWebReply(this, listenerReply);
@@ -177,7 +178,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			reply = handleResponseOk(response.getEntity().getContent(), statusCode, convertHeaders(response.getAllHeaders()));
 			break;
 		case HttpStatus.SC_NOT_MODIFIED:
-			LOGGER.debug("WebRequest OK: " + webRequest);
+			LOGGER.debug("WebRequest Not modified: " + webRequest);
 			reply = handleResponseNotModified(statusCode, convertHeaders(response.getAllHeaders()));
 			break;
 		default:

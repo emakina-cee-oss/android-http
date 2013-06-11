@@ -203,7 +203,15 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 			}
 		}
 		reply.setData(baos.toByteArray());
+		try {
+			baos.close();
+		} catch (Exception e) {
+		}
 
+		try {
+			toRead.close();
+		} catch (Exception e) {
+		}
 		return reply;
 	}
 

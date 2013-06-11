@@ -108,7 +108,7 @@ public class WebClientHttpURLConnection extends WebClient {
 					}
 				}
 				listenerReply = createListenerReply(webRequest, null, tr, Status.FAILED);
-				LOGGER.info("Error running webrequest " + tr.getMessage(), tr);
+				LOGGER.info("Error running webrequest: " + webRequest.getUrl(), tr);
 			} finally {
 				if (connection != null) {
 					connection.disconnect();
