@@ -264,6 +264,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		private String url;
 		private Animation fadeInAnimation;
 		private boolean useDrawingCache = false;
+		private int defaultImage = -1;
 
 		/**
 		 * Constructor
@@ -276,7 +277,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		 * @param fadeInAnimation
 		 *            an optional {@link Animation}
 		 */
-		public ImageProcessHandler(ImageView imageView, String url, Animation fadeInAnimation) {
+		public ImageProcessHandler(ImageView imageView, String url, Animation fadeInAnimation, int defaultImage) {
 			if (imageView == null) {
 				throw new IllegalArgumentException("ImageView must not be null");
 			}
@@ -284,6 +285,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 			this.imageView.setTag(url);
 			this.fadeInAnimation = fadeInAnimation;
 			this.url = url;
+			this.defaultImage = defaultImage;
 		}
 
 		/**
@@ -298,7 +300,24 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		 *            an optional {@link Animation}
 		 */
 		public ImageProcessHandler(ImageView imageView, URL url, Animation fadeInAnimation) {
-			this(imageView, url.toString(), fadeInAnimation);
+			this(imageView, url.toString(), fadeInAnimation, -1);
+		}
+
+		/**
+		 * 
+		 * @param imageView
+		 *            the {@link ImageView} the image should be displayed on
+		 * @param url
+		 *            the of the image, will be set as {@link ImageView} tag in
+		 *            order to identify the correct {@link ImageView}
+		 * @param fadeInAnimation
+		 *            an optional {@link Animation}
+		 * @param defaultImage
+		 *            a default image to display if the image returned by the
+		 *            {@link WebRequest} is null
+		 */
+		public ImageProcessHandler(ImageView imageView, URL url, Animation fadeInAnimation, int defaultImage) {
+			this(imageView, url.toString(), fadeInAnimation, defaultImage);
 		}
 
 		/**
@@ -312,7 +331,22 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		 *            order to identify the correct {@link ImageView}
 		 */
 		public ImageProcessHandler(ImageView imageView, URL url) {
-			this(imageView, url.toString(), AnimationUtils.loadAnimation(imageView.getContext(), android.R.anim.fade_in));
+			this(imageView, url.toString(), AnimationUtils.loadAnimation(imageView.getContext(), android.R.anim.fade_in), -1);
+		}
+
+		/**
+		 * 
+		 * @param imageView
+		 *            the {@link ImageView} the image should be displayed on
+		 * @param url
+		 *            the of the image, will be set as {@link ImageView} tag in
+		 *            order to identify the correct {@link ImageView}
+		 * @param defaultImage
+		 *            a default image to display if the image returned by the
+		 *            {@link WebRequest} is null
+		 */
+		public ImageProcessHandler(ImageView imageView, URL url, int defaultImage) {
+			this(imageView, url, AnimationUtils.loadAnimation(imageView.getContext(), android.R.anim.fade_in), defaultImage);
 		}
 
 		/**
@@ -326,7 +360,22 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		 *            order to identify the correct {@link ImageView}
 		 */
 		public ImageProcessHandler(ImageView imageView, String url) {
-			this(imageView, url, AnimationUtils.loadAnimation(imageView.getContext(), android.R.anim.fade_in));
+			this(imageView, url, AnimationUtils.loadAnimation(imageView.getContext(), android.R.anim.fade_in), -1);
+		}
+
+		/**
+		 * 
+		 * @param imageView
+		 *            the {@link ImageView} the image should be displayed on
+		 * @param url
+		 *            the of the image, will be set as {@link ImageView} tag in
+		 *            order to identify the correct {@link ImageView}
+		 * @param defaultImage
+		 *            a default image to display if the image returned by the
+		 *            {@link WebRequest} is null
+		 */
+		public ImageProcessHandler(ImageView imageView, String url, int defaultImage) {
+			this(imageView, url, AnimationUtils.loadAnimation(imageView.getContext(), android.R.anim.fade_in), defaultImage);
 		}
 
 		/**
@@ -348,7 +397,11 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 					Bundle b = msg.getData();
 					Bitmap bitmap = b.getParcelable(BUNDLE_EXTRA_BITMAP);
 
-					imageView.setImageBitmap(bitmap);
+					if (bitmap == null && defaultImage != -1) {
+						imageView.setImageResource(defaultImage);
+					} else {
+						imageView.setImageBitmap(bitmap);
+					}
 					if (useDrawingCache) {
 						imageView.setDrawingCacheEnabled(true);
 						imageView.buildDrawingCache(true);
