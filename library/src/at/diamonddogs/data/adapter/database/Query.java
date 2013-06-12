@@ -52,6 +52,10 @@ public class Query {
 	 */
 	public String[] projection = null;
 	/**
+	 * An array of like expressions (only applicable if LIKE is used)
+	 */
+	public String[] likeExpressions = null;
+	/**
 	 * A sortorder
 	 */
 	public String sortOrder = null;
@@ -68,6 +72,17 @@ public class Query {
 		}
 		if (whereConditionOperators != null && whereConditionOperators.length != (whereFields.length - 1)) {
 			return new Pair<String, Boolean>("whereConditionOperators / whereFields mismatch", false);
+		}
+		if (whereOperators != null) {
+			int likeCount = 0;
+			for (String whereOperator : whereOperators) {
+				if (whereOperator.equalsIgnoreCase("like")) {
+					likeCount++;
+				}
+			}
+			if ((likeCount != 0 && likeExpressions == null) || likeExpressions.length != likeCount) {
+				return new Pair<String, Boolean>("likeCount / likeExpressions mismatch", false);
+			}
 		}
 		return new Pair<String, Boolean>("", true);
 	}
@@ -93,9 +108,11 @@ public class Query {
 		}
 
 		String ret = "";
+		int likeCount = 0;
 		for (int i = 0; i < whereFields.length; i++) {
 			if (whereOperators[i].equalsIgnoreCase("like")) {
-				ret += whereFields[i] + " " + whereOperators[i] + "'%' || ? || '%'";
+				ret += whereFields[i] + " " + whereOperators[i] + likeExpressions[likeCount];
+				likeCount++;
 			} else {
 				ret += whereFields[i] + whereOperators[i] + "?";
 			}
