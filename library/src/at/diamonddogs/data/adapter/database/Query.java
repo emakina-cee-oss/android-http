@@ -15,6 +15,7 @@
  */
 package at.diamonddogs.data.adapter.database;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import android.content.ContentResolver;
@@ -24,7 +25,7 @@ import android.util.Pair;
 /**
  * A Query implementation to be used in conjunction with {@link DatabaseAdapter}
  */
-public class Query {
+public class Query implements Serializable {
 
 	/**
 	 * Optional Content Uri
@@ -80,7 +81,10 @@ public class Query {
 					likeCount++;
 				}
 			}
-			if ((likeCount != 0 && likeExpressions == null) || likeExpressions.length != likeCount) {
+			if (likeCount == 0 && likeExpressions == null) {
+				return new Pair<String, Boolean>("", true);
+			}
+			if ((likeCount != 0 && likeExpressions == null) || (likeExpressions.length != likeCount)) {
 				return new Pair<String, Boolean>("likeCount / likeExpressions mismatch", false);
 			}
 		}
