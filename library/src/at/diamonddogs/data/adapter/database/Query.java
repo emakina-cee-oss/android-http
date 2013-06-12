@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import android.content.ContentResolver;
 import android.net.Uri;
+import android.util.Pair;
 
 /**
  * A Query implementation to be used in conjunction with {@link DatabaseAdapter}
@@ -43,6 +44,10 @@ public class Query {
 	 */
 	public String[] whereOperators;
 	/**
+	 * An array containing AND or OR operators.
+	 */
+	public String[] whereConditionOperators;
+	/**
 	 * Projection array
 	 */
 	public String[] projection = null;
@@ -51,14 +56,20 @@ public class Query {
 	 */
 	public String sortOrder = null;
 
-	private boolean validate() {
+	private Pair<String, Boolean> validate() {
+		// TODO: not entirly corrent -> what if one of the two is null and the
+		// other isn't
+
 		if ((whereFields != null && whereFields != null) && (whereFields.length != whereValues.length)) {
-			return false;
+			return new Pair<String, Boolean>("whereFields / whereValues length mismatch", false);
 		}
 		if (whereOperators != null && whereOperators.length != whereFields.length) {
-			return false;
+			return new Pair<String, Boolean>("whereField / whereOperators length mismatch", false);
 		}
-		return true;
+		if (whereConditionOperators != null && whereConditionOperators.length != (whereFields.length - 1)) {
+			return new Pair<String, Boolean>("whereConditionOperators / whereFields mismatch", false);
+		}
+		return new Pair<String, Boolean>("", true);
 	}
 
 	/**
@@ -68,8 +79,9 @@ public class Query {
 	 * @return a {@link String} containing the where clause
 	 */
 	public String createSelection() {
-		if (!validate()) {
-			throw new RuntimeException("Query invalid");
+		Pair<String, Boolean> valid = validate();
+		if (!valid.second) {
+			throw new RuntimeException("Query invalid: " + valid.first);
 		}
 		if (whereFields == null && whereValues == null) {
 			return null;
@@ -82,9 +94,17 @@ public class Query {
 
 		String ret = "";
 		for (int i = 0; i < whereFields.length; i++) {
-			ret += whereFields[i] + whereOperators[i] + "?";
+			if (whereOperators[i].equalsIgnoreCase("like")) {
+				ret += whereFields[i] + " " + whereOperators[i] + "'%' || ? || '%'";
+			} else {
+				ret += whereFields[i] + whereOperators[i] + "?";
+			}
 			if ((i + 1) < whereFields.length) {
-				ret += " AND ";
+				if (whereConditionOperators == null) {
+					ret += " AND ";
+				} else {
+					ret += " " + whereConditionOperators[i] + " ";
+				}
 			}
 		}
 		return ret;
