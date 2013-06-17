@@ -16,6 +16,7 @@
 package at.diamonddogs.util;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -49,6 +50,19 @@ import at.diamonddogs.data.adapter.database.DatabaseAdapter;
 public class Utils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getSimpleName());
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] asArray(Class<T> clazz, T... values) {
+		T[] array = (T[]) Array.newInstance(clazz, values.length);
+		for (int i = 0; i < values.length; i++) {
+			array[i] = values[i];
+		}
+		return array;
+	}
+
+	public static <T> boolean isEmptyArray(T[] array) {
+		return array == null || array.length == 0;
+	}
 
 	/**
 	 * Creates a {@link List} from a {@link Cursor}

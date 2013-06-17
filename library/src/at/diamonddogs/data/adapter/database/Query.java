@@ -129,6 +129,13 @@ public class Query implements Serializable {
 			}
 		}
 		return ret;
+	}
 
+	@Override
+	public String toString() {
+		return "Query [uri=" + uri + ", whereFields=" + Arrays.toString(whereFields) + ", whereValues=" + Arrays.toString(whereValues)
+				+ ", whereOperators=" + Arrays.toString(whereOperators) + ", whereConditionOperators="
+				+ Arrays.toString(whereConditionOperators) + ", projection=" + Arrays.toString(projection) + ", likeExpressions="
+				+ Arrays.toString(likeExpressions) + ", sortOrder=" + sortOrder + "]";
 	}
 }
