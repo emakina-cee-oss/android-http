@@ -115,9 +115,10 @@ public abstract class DatabaseAdapter<T> {
 		Object[] ret;
 		if (cur.getCount() != 0) {
 			ret = new Object[cur.getCount()];
+			cur.moveToFirst();
 			for (int i = 0; i < cur.getCount(); i++) {
-				cur.move(1);
 				ret[i] = deserialize(cur);
+				cur.move(1);
 			}
 		} else {
 			ret = new Object[0];
