@@ -115,7 +115,7 @@ public class Query implements Serializable {
 		int likeCount = 0;
 		for (int i = 0; i < whereFields.length; i++) {
 			if (whereOperators[i].equalsIgnoreCase("like")) {
-				ret += whereFields[i] + " " + whereOperators[i] + likeExpressions[likeCount];
+				ret += whereFields[i] + " " + whereOperators[i] + " " + likeExpressions[likeCount];
 				likeCount++;
 			} else {
 				ret += whereFields[i] + whereOperators[i] + "?";
