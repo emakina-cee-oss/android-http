@@ -15,11 +15,6 @@
  */
 package at.diamonddogs.service.processor;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -29,9 +24,7 @@ import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
-import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.CacheManager.CachedObject;
-import at.diamonddogs.util.Utils;
 
 /**
  * Base class for data processing
@@ -162,106 +155,9 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 		}
 	}
 
-	/**
-	 * @deprecated don't use, only for backwards compatibility
-	 */
-	@Deprecated
-	protected void cacheObjectToFile(Context context, WebRequest request, byte[] data) {
-		cacheObjectToFile(context, request, data, false);
-	}
-
-	/**
-	 * Writes {@link WebRequest} specific data to the cache. Ignores
-	 * {@link WebRequest} whose {@link WebRequest#getCacheTime()} is
-	 * {@link CacheInformation#CACHE_NO}. This method disables
-	 * {@link CacheInformation}s offline caching feature.
-	 * 
-	 * @param context
-	 *            a {@link Context}
-	 * @param r
-	 *            a {@link ReplyAdapter}
-	 * @see CacheInformation#useOfflineCache
-	 */
-	protected void cacheObjectToFile(Context context, ReplyAdapter r) {
-		cacheObjectToFile(context, (WebRequest) r.getRequest(), ((WebReply) r.getReply()).getData(), false);
-	}
-
-	/**
-	 * Writes {@link WebRequest} specific data to the cache. Ignores
-	 * {@link WebRequest} whose {@link WebRequest#getCacheTime()} is
-	 * {@link CacheInformation#CACHE_NO}
-	 * 
-	 * @param context
-	 *            a {@link Context}
-	 * @param r
-	 *            a {@link ReplyAdapter}
-	 * @param useOfflineCache
-	 *            controls {@link CacheInformation}s useOfflineCache parameter
-	 * 
-	 * @see CacheInformation#useOfflineCache
-	 */
-	protected void cacheObjectToFile(Context context, ReplyAdapter r, boolean useOfflineCache) {
-		cacheObjectToFile(context, (WebRequest) r.getRequest(), ((WebReply) r.getReply()).getData(), useOfflineCache);
-	}
-
-	/**
-	 * Writes {@link WebRequest} specific data to the cache. Ignores
-	 * {@link WebRequest} whose {@link WebRequest#getCacheTime()} is
-	 * {@link CacheInformation#CACHE_NO}
-	 * 
-	 * @param context
-	 *            a {@link Context}
-	 * @param request
-	 *            the {@link WebRequest} whose data will be saved to the cache
-	 * @param data
-	 *            the actual data
-	 * @param useOfflineCache
-	 *            controls {@link CacheInformation}s useOfflineCache parameter
-	 * 
-	 * @see CacheInformation#useOfflineCache
-	 */
-	protected void cacheObjectToFile(Context context, WebRequest request, byte[] data, boolean useOfflineCache) {
-		String filename = Utils.getMD5Hash(request.getUrl().toString());
-		BufferedOutputStream bos = null;
-		try {
-			if (filename != null && data != null) {
-				if (request.getCacheTime() != CacheInformation.CACHE_NO) {
-					File path = context.getExternalCacheDir();
-					FileOutputStream fos = new FileOutputStream(new File(path, filename));
-					bos = new BufferedOutputStream(fos);
-					bos.write(data);
-
-					CacheInformation ci = createCachingInformation(request.getCacheTime(), path.toString(), filename, useOfflineCache);
-
-					CacheManager cm = CacheManager.getInstance();
-					cm.addToCache(context, ci);
-				}
-			}
-		} catch (Throwable th) {
-		} finally {
-			if (bos != null) {
-				try {
-					bos.close();
-				} catch (IOException e) {
-					bos = null;
-				}
-			}
-		}
-	}
-
 	@Override
 	protected Message createReturnMessage(ReplyAdapter replyAdapter, OUTPUT payload) {
 		return super.createReturnMessage(replyAdapter, payload);
-	}
-
-	private CacheInformation createCachingInformation(long chacheTime, String filePath, String fileName, boolean useOfflineCache) {
-		CacheInformation c = new CacheInformation();
-		c.setCacheTime(chacheTime);
-		c.setCreationTimeStamp(System.currentTimeMillis());
-		c.setFileName(fileName);
-		c.setFilePath(filePath);
-		c.setUseOfflineCache(useOfflineCache);
-		return c;
 	}
 
 	protected final static class ProcessingData<OUTPUT> {
