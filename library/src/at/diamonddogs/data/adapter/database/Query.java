@@ -77,7 +77,7 @@ public class Query implements Serializable {
 		if (whereOperators != null) {
 			int likeCount = 0;
 			for (String whereOperator : whereOperators) {
-				if (whereOperator.equalsIgnoreCase("like")) {
+				if (whereOperator != null && whereOperator.equalsIgnoreCase("like")) {
 					likeCount++;
 				}
 			}
