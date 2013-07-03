@@ -25,9 +25,8 @@ import at.diamonddogs.data.dataobjects.WebRequest.Type;
 
 /**
  * The {@link WebClientFactory} returns the appropriate {@link WebClient} for a
- * {@link WebRequest}, judging by parameters and Android
- * Version. http://android-developers
- * .blogspot.co.at/2011/09/androids-http-clients.html
+ * {@link WebRequest}, judging by parameters and Android Version.
+ * http://android-developers .blogspot.co.at/2011/09/androids-http-clients.html
  */
 public class WebClientFactory {
 
@@ -64,7 +63,7 @@ public class WebClientFactory {
 		// HttpUrlConnection, that should be used starting from FROYO, cuts off
 		// POST data ... we need to force the obsolete client implementation!!!
 		if (isPostWithData(webRequest)) {
-			LOGGER.warn("!!!WARNING!!! FORCE USING WebClientDefaultHttpClient DUE TO BUGGY IMPLEMENTATION OF HttpUrlConnection (POST DATA WOULD OTHERWISE BE CUT OFF)!!!");
+			LOGGER.info("!!!WARNING!!! FORCE USING WebClientDefaultHttpClient DUE TO BUGGY IMPLEMENTATION OF HttpUrlConnection (POST DATA WOULD OTHERWISE BE CUT OFF)!!!");
 			client = new WebClientDefaultHttpClient(context);
 		} else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
 			LOGGER.debug("Using WebClientHttpURLConnection, since SDK bigger than Froyo: " + Build.VERSION.SDK_INT);
