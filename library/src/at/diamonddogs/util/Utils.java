@@ -21,6 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -58,6 +59,10 @@ public class Utils {
 			array[i] = values[i];
 		}
 		return array;
+	}
+
+	public static boolean isEmpty(Collection<?> list) {
+		return (list == null || list.size() == 0);
 	}
 
 	public static <T> boolean isEmptyArray(T[] array) {
