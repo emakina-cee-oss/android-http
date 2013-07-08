@@ -37,7 +37,6 @@ import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ProcessorExeception;
 import at.diamonddogs.util.CacheManager.CachedObject;
-import at.diamonddogs.util.SoapUtil;
 
 /**
  * Abstract base class for SOAP requests
@@ -142,8 +141,6 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	private Object getResult(ReplyAdapter r) throws Throwable {
 		SoapReply soapReply = new SoapReplyAdapter((WebReply) r.getReply()).getReply();
 		SoapSerializationEnvelope e = soapReply.getEnvelope();
-		LOGGER.info("PRINTING SOAP REPLY:");
-		SoapUtil.printSoapEnvelopeToStdout(e);
 		return e.getResponse();
 	}
 
