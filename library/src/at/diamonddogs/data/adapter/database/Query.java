@@ -20,17 +20,19 @@ import java.util.Arrays;
 
 import android.content.ContentResolver;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Pair;
 
 /**
  * A Query implementation to be used in conjunction with {@link DatabaseAdapter}
  */
+
 public class Query implements Serializable {
 
 	/**
 	 * Optional Content Uri
 	 */
-	public Uri uri;
+	private String uri;
 	/**
 	 * An array containing the field names of all where parameters
 	 */
@@ -59,6 +61,7 @@ public class Query implements Serializable {
 	/**
 	 * A sortorder
 	 */
+
 	public String sortOrder = null;
 
 	private Pair<String, Boolean> validate() {
@@ -133,9 +136,18 @@ public class Query implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Query [uri=" + uri + ", whereFields=" + Arrays.toString(whereFields) + ", whereValues=" + Arrays.toString(whereValues)
+		return "Query [uri=" + getUri() + ", whereFields=" + Arrays.toString(whereFields) + ", whereValues=" + Arrays.toString(whereValues)
 				+ ", whereOperators=" + Arrays.toString(whereOperators) + ", whereConditionOperators="
 				+ Arrays.toString(whereConditionOperators) + ", projection=" + Arrays.toString(projection) + ", likeExpressions="
 				+ Arrays.toString(likeExpressions) + ", sortOrder=" + sortOrder + "]";
 	}
+
+	public Uri getUri() {
+		return TextUtils.isEmpty(uri) ? null : Uri.parse(uri);
+	}
+
+	public void setUri(Uri uri) {
+		this.uri = uri.toString();
+	}
+
 }
