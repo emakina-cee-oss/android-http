@@ -181,6 +181,42 @@ public class HttpServiceAssister {
 	/**
 	 * Runs a {@link WebRequest} asynchronously
 	 * 
+	 * @param callback
+	 *            the {@link Handler.Callback} that will be informed once the
+	 *            {@link WebRequest} has been completed
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @param serviceProcessor
+	 *            the {@link ServiceProcessor} that should be used to process
+	 *            the {@link WebRequest}
+	 */
+	public void runWebRequest(Handler.Callback callback, WebRequest webRequest, ServiceProcessor<?> serviceProcessor) {
+		runWebRequest(new Handler(callback), webRequest, serviceProcessor, null);
+	}
+
+	/**
+	 * Runs a {@link WebRequest} asynchronously
+	 * 
+	 * @param callback
+	 *            the {@link Handler.Callback} that will be informed once the
+	 *            {@link WebRequest} has been completed
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @param serviceProcessor
+	 *            the {@link ServiceProcessor} that should be used to process
+	 *            the {@link WebRequest}
+	 * @param progressListener
+	 *            a {@link ProgressListener} that will be informed of download
+	 *            progress
+	 */
+	public void runWebRequest(Handler.Callback callback, WebRequest webRequest, ServiceProcessor<?> serviceProcessor,
+			DownloadProgressListener progressListener) {
+		runWebRequest(new Handler(callback), webRequest, serviceProcessor, progressListener);
+	}
+
+	/**
+	 * Runs a {@link WebRequest} asynchronously
+	 * 
 	 * @param handler
 	 *            the handler that will be informed once the {@link WebRequest}
 	 *            has been completed
@@ -189,7 +225,6 @@ public class HttpServiceAssister {
 	 * @param serviceProcessor
 	 *            the {@link ServiceProcessor} that should be used to process
 	 *            the {@link WebRequest}
-	 * @return the {@link WebRequest} id as {@link String}
 	 */
 	public void runWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor<?> serviceProcessor) {
 		runWebRequest(handler, webRequest, serviceProcessor, null);
@@ -209,7 +244,6 @@ public class HttpServiceAssister {
 	 * @param progressListener
 	 *            a {@link ProgressListener} that will be informed of download
 	 *            progress
-	 * @return the {@link WebRequest} id as {@link String}
 	 */
 	public void runWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor<?> serviceProcessor,
 			DownloadProgressListener progressListener) {
