@@ -37,7 +37,9 @@ import android.os.IBinder;
 import android.os.RecoverySystem.ProgressListener;
 import android.util.SparseArray;
 import at.diamonddogs.data.adapter.ReplyAdapter;
+import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.Request;
+import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ProcessorExeception;
 import at.diamonddogs.exception.ServiceException;
@@ -587,9 +589,21 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	@Override
 	public void onWebReply(WebClient webClient, ReplyAdapter reply) {
-		LOGGER.debug("onWebReply: " + reply.getStatus() + " from: " + reply.getRequest().getUrl());
+		logReply(reply);
 		webRequests.remove(webClient.getWebRequest().getId());
 		dispatchWebReplyProcessor(reply, getHandler(reply.getRequest()));
+	}
+
+	private void logReply(ReplyAdapter reply) {
+		WebReply repl = (WebReply) reply.getReply();
+		Throwable t = reply.getThrowable();
+		if (reply.getStatus() == Status.OK) {
+			LOGGER.debug("onWebReply: " + reply.getStatus() + "httpStatus: " + repl.getHttpStatusCode() + " from: "
+					+ reply.getRequest().getUrl());
+		} else {
+			LOGGER.debug("onWebReply: " + reply.getStatus() + " from: " + reply.getRequest().getUrl(), t);
+		}
+
 	}
 
 	private void dispatchCachedObjectToProcessor(CachedObject cachedObject, Request webRequest) {

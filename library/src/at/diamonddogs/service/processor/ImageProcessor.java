@@ -62,6 +62,18 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessor.class);
 
+	private BitmapFactory.Options bitmapOptions;
+
+	public ImageProcessor() {
+		super();
+		this.bitmapOptions = new BitmapFactory.Options();
+	}
+
+	public ImageProcessor(BitmapFactory.Options bitmapOptions) {
+		super();
+		this.bitmapOptions = bitmapOptions;
+	}
+
 	/**
 	 * Determines if the request should be stored in memory, might cause OOM
 	 * errors if the image is very large
@@ -138,7 +150,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 			return (Bitmap) object.getCachedObject();
 		case FILE:
 			byte[] data = (byte[]) object.getCachedObject();
-			return BitmapFactory.decodeByteArray(data, 0, data.length);
+			return BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions);
 		default:
 			return null;
 		}
@@ -160,7 +172,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 	}
 
 	private void processFileCache(byte[] data, Handler handler, WebRequest webRequest) throws IllegalArgumentException {
-		Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
+		Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions);
 		if (b == null) {
 			handler.sendMessage(createErrorMessage(new IllegalArgumentException("Couldn't decode Bitmap from data"), webRequest));
 			return;
@@ -218,7 +230,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		if (data == null) {
 			return null;
 		}
-		return BitmapFactory.decodeByteArray(data, 0, data.length);
+		return BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions);
 
 	}
 
