@@ -42,6 +42,16 @@ public class WebRequest implements Request {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequest.class.getSimpleName());
 
+	public WebRequest() {
+		origin = new Throwable();
+	}
+
+	/**
+	 * An instance of {@link Throwable} that records where the
+	 * {@link WebRequest} was created from.
+	 */
+	private final Throwable origin;
+
 	protected String id = UUID.randomUUID().toString();
 
 	/**
@@ -366,6 +376,11 @@ public class WebRequest implements Request {
 	@SuppressWarnings("javadoc")
 	public void setCheckConnectivityPing(boolean checkConnectivityPing) {
 		this.checkConnectivityPing = checkConnectivityPing;
+	}
+
+	@SuppressWarnings("javadoc")
+	public Throwable getOrigin() {
+		return origin;
 	}
 
 	@Override

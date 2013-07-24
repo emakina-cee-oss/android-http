@@ -199,7 +199,8 @@ public class HttpService extends Service implements WebClientReplyListener {
 			if (id == -1) {
 				throw new ServiceException("processor id == -1 looks like you forgot to set a Processor ID for the WebRequest");
 			}
-			throw new ServiceException("No processor with id '" + id + "' has been registered!");
+			throw new ServiceException("No processor with id '" + id + "' has been registered! WebRequest originally created: ",
+					webRequest.getOrigin());
 		}
 		addRequestToHandlerMap(handler, webRequest);
 		Runnable r = new Runnable() {
