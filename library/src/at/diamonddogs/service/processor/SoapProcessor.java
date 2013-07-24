@@ -87,7 +87,8 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 				result = getResult(r);
 			} catch (Throwable tr) {
 				LOGGER.warn("Problem while getting soap result.", tr);
-				createErrorMessage(tr, r);
+				handler.sendMessage(createErrorMessage(tr, r));
+
 				return;
 			}
 			LOGGER.debug("processing SoapReply");
