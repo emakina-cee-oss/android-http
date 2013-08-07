@@ -101,6 +101,14 @@ public class HttpServiceAssister {
 	private final AtomicBoolean unbindServiceAfterWebRequestExecution = new AtomicBoolean(false);
 
 	/**
+	 * This flag indicates if synchronous {@link WebRequest}s can currently be
+	 * processed. Is false when {@link HttpServiceAssister#bindService()} has
+	 * not been called or if {@link HttpServiceAssister#unbindService()} has
+	 * been called.
+	 */
+	private final AtomicBoolean synchronousWebRequestPossible = new AtomicBoolean(false);
+
+	/**
 	 * This monitor {@link Object} is used to wait for a connection to
 	 * {@link HttpService} when running a synchronous {@link WebRequest}.
 	 */
@@ -131,6 +139,7 @@ public class HttpServiceAssister {
 			standardServiceConnection = new HttpServiceAssisterConnection();
 		}
 		if (activeServiceConnection == null) {
+			synchronousWebRequestPossible.set(true);
 			return context.bindService(new Intent(context, HttpService.class), activeServiceConnection = standardServiceConnection,
 					Context.BIND_AUTO_CREATE);
 		} else {
@@ -147,6 +156,7 @@ public class HttpServiceAssister {
 	 */
 	public boolean unbindService() {
 		if (activeServiceConnection != null) {
+			synchronousWebRequestPossible.set(false);
 			unbindServiceAfterWebRequestExecution.set(false);
 			context.unbindService(activeServiceConnection);
 			activeServiceConnection = null;
@@ -168,6 +178,7 @@ public class HttpServiceAssister {
 			if (hasPendingAsyncWebRequests()) {
 				unbindServiceAfterWebRequestExecution.set(true);
 			} else {
+				synchronousWebRequestPossible.set(false);
 				context.unbindService(activeServiceConnection);
 				activeServiceConnection = null;
 				httpService = null;
@@ -316,6 +327,29 @@ public class HttpServiceAssister {
 			DownloadProgressListener progressListener) {
 		prepareForSyncRequest(serviceProcessor);
 		return httpService.runSynchronousWebRequest(webRequest, progressListener);
+	}
+
+	/**
+	 * This method should be used to check if synchronous {@link WebRequest} can
+	 * be executed without causing a service binding timeout. Calls to
+	 * {@link HttpServiceAssister#runSynchronousWebRequest(WebRequest, ServiceProcessor)}
+	 * and
+	 * {@link HttpServiceAssister#runSynchronousWebRequest(WebRequest, ServiceProcessor, DownloadProgressListener)}
+	 * can result in service binding timeouts when
+	 * {@link HttpServiceAssister#bindService()} has not been called yet or if
+	 * {@link HttpServiceAssister#unbindService()} was called before the
+	 * synchronous {@link WebRequest} is issued. While this method will protect
+	 * against service binding timeout exceptions, it does not indicate whether
+	 * a service binding to {@link HttpService} is active.
+	 * 
+	 * @return <code>true</code> if
+	 *         {@link HttpServiceAssister#runSynchronousWebRequest(WebRequest, ServiceProcessor)}
+	 *         or
+	 *         {@link HttpServiceAssister#runSynchronousWebRequest(WebRequest, ServiceProcessor, DownloadProgressListener)}
+	 *         can be called without causing service binding timeouts
+	 */
+	public boolean synchronousWebRequestPossible() {
+		return synchronousWebRequestPossible.get();
 	}
 
 	/**
