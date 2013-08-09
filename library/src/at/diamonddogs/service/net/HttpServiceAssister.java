@@ -135,11 +135,11 @@ public class HttpServiceAssister {
 	 *         been bound or if binding is impossible.
 	 */
 	public boolean bindService() {
+		synchronousWebRequestPossible.set(true);
 		if (standardServiceConnection == null) {
 			standardServiceConnection = new HttpServiceAssisterConnection();
 		}
 		if (activeServiceConnection == null) {
-			synchronousWebRequestPossible.set(true);
 			return context.bindService(new Intent(context, HttpService.class), activeServiceConnection = standardServiceConnection,
 					Context.BIND_AUTO_CREATE);
 		} else {
@@ -155,8 +155,8 @@ public class HttpServiceAssister {
 	 *         successfully unbound, <code>false</code> otherwise.
 	 */
 	public boolean unbindService() {
+		synchronousWebRequestPossible.set(false);
 		if (activeServiceConnection != null) {
-			synchronousWebRequestPossible.set(false);
 			unbindServiceAfterWebRequestExecution.set(false);
 			context.unbindService(activeServiceConnection);
 			activeServiceConnection = null;
@@ -174,11 +174,11 @@ public class HttpServiceAssister {
 	 * @return
 	 */
 	public boolean safelyUnbindService() {
+		synchronousWebRequestPossible.set(false);
 		if (activeServiceConnection != null) {
 			if (hasPendingAsyncWebRequests()) {
 				unbindServiceAfterWebRequestExecution.set(true);
 			} else {
-				synchronousWebRequestPossible.set(false);
 				context.unbindService(activeServiceConnection);
 				activeServiceConnection = null;
 				httpService = null;
