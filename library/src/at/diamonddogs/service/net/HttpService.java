@@ -333,9 +333,11 @@ public class HttpService extends Service implements WebClientReplyListener {
 				}
 			}
 		} catch (InterruptedException ie) {
+			ret.successful = false;
 			LOGGER.debug("WebRequest interrupted " + webRequest);
 		} catch (Throwable tr) {
-			LOGGER.error("Error getting result for " + webRequest, tr);
+			ret.successful = false;
+			LOGGER.warn("Error getting result for " + webRequest, tr);
 		}
 		return ret;
 	}
