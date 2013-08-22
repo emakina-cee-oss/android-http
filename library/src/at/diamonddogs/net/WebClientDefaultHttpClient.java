@@ -263,6 +263,9 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 
 	@Override
 	public boolean isRedirectRequested(HttpResponse response, HttpContext context) {
+		if (!webRequest.isFollowRedirects()) {
+			return false;
+		}
 		int status = response.getStatusLine().getStatusCode();
 		LOGGER.debug("isRedirectRequested: " + status);
 		if (status == HttpStatus.SC_MOVED_PERMANENTLY || status == HttpStatus.SC_MOVED_TEMPORARILY) {

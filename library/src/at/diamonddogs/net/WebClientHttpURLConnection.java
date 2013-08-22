@@ -127,7 +127,7 @@ public class WebClientHttpURLConnection extends WebClient {
 	}
 
 	private boolean needsFollowRedirect(WebReply wr) {
-		if (!followProtocolRedirect) {
+		if (!followProtocolRedirect || !webRequest.isFollowRedirects()) {
 			return false;
 		}
 		if (wr.getHttpStatusCode() == HTTPStatus.HTTP_MOVED_TEMP || wr.getHttpStatusCode() == HTTPStatus.HTTP_MOVED_PERM) {
