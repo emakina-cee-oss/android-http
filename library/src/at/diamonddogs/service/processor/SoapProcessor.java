@@ -317,18 +317,6 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getBoolean(s);
 	}
 
-	protected boolean getBoolean(String s) {
-		if (isStringEmpty(s)) {
-			return false;
-		}
-		try {
-			return Boolean.parseBoolean(s);
-		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
-			return false;
-		}
-	}
-
 	/**
 	 * Gets a byte from a {@link SoapObject} using the property identified by
 	 * name
@@ -374,18 +362,6 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	protected byte getByteFromAttribute(AttributeContainer c, String name) {
 		String s = getStringFromAttributeContainer(c, name);
 		return getByte(s);
-	}
-
-	protected byte getByte(String s) {
-		if (isStringEmpty(s)) {
-			return 0;
-		}
-		try {
-			return Byte.parseByte(s);
-		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
-			return 0;
-		}
 	}
 
 	/**
@@ -436,18 +412,6 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getShort(s);
 	}
 
-	protected short getShort(String s) {
-		if (isStringEmpty(s)) {
-			return 0;
-		}
-		try {
-			return Short.parseShort(s);
-		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
-			return 0;
-		}
-	}
-
 	/**
 	 * Gets a char from a {@link SoapObject} using the property identified by
 	 * name
@@ -493,18 +457,6 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	protected char getCharFromAttribute(AttributeContainer c, String name) {
 		String s = getStringFromAttributeContainer(c, name);
 		return getChar(s);
-	}
-
-	protected char getChar(String s) {
-		if (isStringEmpty(s) || s.length() != 1) {
-			return '\0';
-		}
-		try {
-			return s.charAt(0);
-		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
-			return '\0';
-		}
 	}
 
 	/**
@@ -554,18 +506,6 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getInt(s);
 	}
 
-	protected int getInt(String s) {
-		if (isStringEmpty(s)) {
-			return 0;
-		}
-		try {
-			return Integer.parseInt(s);
-		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
-			return 0;
-		}
-	}
-
 	/**
 	 * Gets a long from a {@link SoapObject} using the property identified by
 	 * name
@@ -613,18 +553,6 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	protected long getLongFromAttribute(AttributeContainer c, String name) {
 		String s = getStringFromAttributeContainer(c, name);
 		return getLong(s);
-	}
-
-	protected long getLong(String s) {
-		if (isStringEmpty(s)) {
-			return 0;
-		}
-		try {
-			return Long.parseLong(s);
-		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
-			return 0;
-		}
 	}
 
 	/**
@@ -677,18 +605,6 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getFloat(s);
 	}
 
-	protected float getFloat(String s) {
-		if (isStringEmpty(s)) {
-			return 0.0f;
-		}
-		try {
-			return Float.parseFloat(s);
-		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
-			return 0.0f;
-		}
-	}
-
 	/**
 	 * Gets a double from a {@link SoapObject} using the property identified by
 	 * name
@@ -739,16 +655,63 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getDouble(s);
 	}
 
-	protected double getDouble(String s) {
-		if (isStringEmpty(s)) {
-			return 0.0d;
-		}
-		try {
-			return Double.parseDouble(s);
-		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
-			return 0.0d;
-		}
+	/**
+	 * Gets an enum from a {@link SoapObject} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapObject}
+	 * @param name
+	 *            the name of a property
+	 * @param cls
+	 *            the {@link Class} {@link Object} of the {@link Enum}
+	 * @return the {@link Enum} or <code>null</code> if the enum could not be
+	 *         parsed
+	 */
+	protected <T extends Enum<T>> T getEnum(SoapObject o, String name, Class<T> cls) {
+		String s = getStringFromSoapObject(o, name);
+		return getEnum(s, cls);
+	}
+
+	/**
+	 * 
+	 * Gets an {@link Enum} from a {@link SoapPrimitive} using the property
+	 * identified
+	 * by name
+	 * 
+	 * @param <T>
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @param cls
+	 *            the {@link Class} {@link Object} of the {@link Enum}
+	 * @return the {@link Enum} or <code>null</code> if the enum could not be
+	 *         parsed
+	 */
+	protected <T extends Enum<T>> T getEnum(SoapPrimitive o, String name, Class<T> cls) {
+		String s = getStringFromSoapPrimitive(o);
+		return getEnum(s, cls);
+	}
+
+	/**
+	 * Gets an enum from {@link AttributeContainer} attribute using the
+	 * attributes
+	 * name
+	 * identified by name
+	 * 
+	 * @param c
+	 *            the {@link AttributeContainer} whose attribute to get
+	 * @param name
+	 *            the name of a attribute
+	 * @param cls
+	 *            the {@link Class} {@link Object} of the {@link Enum}
+	 * @return the {@link Enum} or <code>null</code> if the enum could not be
+	 *         parsed
+	 */
+	protected <T extends Enum<T>> T getEnumFromAttribute(AttributeContainer c, String name, Class<T> cls) {
+		String s = getStringFromAttributeContainer(c, name);
+		return getEnum(s, cls);
 	}
 
 	/**
@@ -801,7 +764,4 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return (String) c.getAttributeSafelyAsString(attribute);
 	}
 
-	private boolean isStringEmpty(String string) {
-		return string == null || string.length() == 0;
-	}
 }

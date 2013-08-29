@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -61,6 +64,8 @@ import at.diamonddogs.util.Utils;
  */
 // @formatter:on
 public abstract class ServiceProcessor<OUTPUT> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceProcessor.class.getSimpleName());
 
 	/**
 	 * Constant that indicates failure
@@ -382,5 +387,114 @@ public abstract class ServiceProcessor<OUTPUT> {
 		b.putSerializable(BUNDLE_EXTRA_MESSAGE_FROMCACHE, true);
 		m.setData(b);
 		return m;
+	}
+
+	protected boolean getBoolean(String s) {
+		if (isStringEmpty(s)) {
+			return false;
+		}
+		try {
+			return Boolean.parseBoolean(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return false;
+		}
+	}
+
+	protected byte getByte(String s) {
+		if (isStringEmpty(s)) {
+			return 0;
+		}
+		try {
+			return Byte.parseByte(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0;
+		}
+	}
+
+	protected short getShort(String s) {
+		if (isStringEmpty(s)) {
+			return 0;
+		}
+		try {
+			return Short.parseShort(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0;
+		}
+	}
+
+	protected char getChar(String s) {
+		if (isStringEmpty(s) || s.length() != 1) {
+			return '\0';
+		}
+		try {
+			return s.charAt(0);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return '\0';
+		}
+	}
+
+	protected int getInt(String s) {
+		if (isStringEmpty(s)) {
+			return 0;
+		}
+		try {
+			return Integer.parseInt(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0;
+		}
+	}
+
+	protected long getLong(String s) {
+		if (isStringEmpty(s)) {
+			return 0;
+		}
+		try {
+			return Long.parseLong(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0;
+		}
+	}
+
+	protected float getFloat(String s) {
+		if (isStringEmpty(s)) {
+			return 0.0f;
+		}
+		try {
+			return Float.parseFloat(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0.0f;
+		}
+	}
+
+	protected double getDouble(String s) {
+		if (isStringEmpty(s)) {
+			return 0.0d;
+		}
+		try {
+			return Double.parseDouble(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0.0d;
+		}
+	}
+
+	protected <T extends Enum<T>> T getEnum(String s, Class<T> cls) {
+		try {
+			return Enum.valueOf(cls, s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return null;
+		}
+	}
+
+	protected boolean isStringEmpty(String string) {
+		return string == null || string.length() == 0;
 	}
 }
