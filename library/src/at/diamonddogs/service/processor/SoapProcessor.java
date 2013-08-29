@@ -267,4 +267,388 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	protected Message processSoapFault(ReplyAdapter replyAdapter, SoapFault fault) {
 		return createErrorMessage(fault, replyAdapter);
 	}
+
+	/**
+	 * Gets a boolean from a {@link SoapObject} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapObject}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>false</code> if the boolean could not be parsed or if the
+	 *         boolean was <code>false</code>, <code>true</code> otherwise
+	 */
+	protected boolean getBoolean(SoapObject o, String name) {
+		String s = getStringFromSoapObject(o, name);
+		return getBoolean(s);
+	}
+
+	/**
+	 * Gets a boolean from a {@link SoapPrimitive} using the property identified
+	 * by name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>false</code> if the boolean could not be parsed or if the
+	 *         boolean was <code>false</code>, <code>true</code> otherwise
+	 */
+	protected boolean getBoolean(SoapPrimitive o, String name) {
+		String s = getStringFromSoapPrimitive(o, name);
+		return getBoolean(s);
+	}
+
+	private boolean getBoolean(String s) {
+		if (isStringEmpty(s)) {
+			return false;
+		}
+		try {
+			return Boolean.parseBoolean(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return false;
+		}
+	}
+
+	/**
+	 * Gets a byte from a {@link SoapObject} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapObject}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0</code> if the byte could not be parsed or if the byte was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected byte getByte(SoapObject o, String name) {
+		String s = getStringFromSoapObject(o, name);
+		return getByte(s);
+	}
+
+	/**
+	 * Gets a byte from a {@link SoapPrimitive} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0</code> if the byte could not be parsed or if the byte was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected byte getByte(SoapPrimitive o, String name) {
+		String s = getStringFromSoapPrimitive(o, name);
+		return getByte(s);
+	}
+
+	protected byte getByte(String s) {
+		if (isStringEmpty(s)) {
+			return 0;
+		}
+		try {
+			return Byte.parseByte(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0;
+		}
+	}
+
+	/**
+	 * Gets a short from a {@link SoapObject} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapObject}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0</code> if the short could not be parsed or if the short
+	 *         was <code>0</code>, the value otherwise
+	 */
+	protected short getShort(SoapObject o, String name) {
+		String s = getStringFromSoapObject(o, name);
+		return getShort(s);
+	}
+
+	/**
+	 * Gets a byte from a {@link SoapPrimitive} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0</code> if the byte could not be parsed or if the byte was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected short getShort(SoapPrimitive o, String name) {
+		String s = getStringFromSoapPrimitive(o, name);
+		return getShort(s);
+	}
+
+	protected short getShort(String s) {
+		if (isStringEmpty(s)) {
+			return 0;
+		}
+		try {
+			return Short.parseShort(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0;
+		}
+	}
+
+	/**
+	 * Gets a char from a {@link SoapObject} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapObject}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>\0</code> if the char could not be parsed or if the char
+	 *         was <code>\0</code>, the value otherwise
+	 */
+	protected char getChar(SoapObject o, String name) {
+		String s = getStringFromSoapObject(o, name);
+		return getChar(s);
+	}
+
+	/**
+	 * Gets a byte from a {@link SoapPrimitive} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0</code> if the byte could not be parsed or if the byte was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected char getChar(SoapPrimitive o, String name) {
+		String s = getStringFromSoapPrimitive(o, name);
+		return getChar(s);
+	}
+
+	protected char getChar(String s) {
+		if (isStringEmpty(s) || s.length() != 1) {
+			return '\0';
+		}
+		try {
+			return s.charAt(0);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return '\0';
+		}
+	}
+
+	/**
+	 * Gets a int from a {@link SoapObject} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapObject}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0</code> if the int could not be parsed or if the int was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected int getInt(SoapObject o, String name) {
+		String s = getStringFromSoapObject(o, name);
+		return getInt(s);
+	}
+
+	/**
+	 * Gets a int from a {@link SoapPrimitive} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0</code> if the int could not be parsed or if the int was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected int getInt(SoapPrimitive o, String name) {
+		String s = getStringFromSoapPrimitive(o, name);
+		return getInt(s);
+	}
+
+	protected int getInt(String s) {
+		if (isStringEmpty(s)) {
+			return 0;
+		}
+		try {
+			return Integer.parseInt(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0;
+		}
+	}
+
+	/**
+	 * Gets a long from a {@link SoapObject} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapObject}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0</code> if the long could not be parsed or if the long was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected long getLong(SoapObject o, String name) {
+		String s = getStringFromSoapObject(o, name);
+		return getLong(s);
+	}
+
+	/**
+	 * Gets a long from a {@link SoapPrimitive} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0</code> if the long could not be parsed or if the long was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected long getLong(SoapPrimitive o, String name) {
+		String s = getStringFromSoapPrimitive(o, name);
+		return getLong(s);
+	}
+
+	protected long getLong(String s) {
+		if (isStringEmpty(s)) {
+			return 0;
+		}
+		try {
+			return Long.parseLong(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0;
+		}
+	}
+
+	/**
+	 * Gets a float from a {@link SoapObject} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapObject}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0.0f</code> if the float could not be parsed or if the
+	 *         float was <code>0.0f</code>, the value otherwise
+	 */
+	protected float getFloat(SoapObject o, String name) {
+		String s = getStringFromSoapObject(o, name);
+		return getFloat(s);
+	}
+
+	/**
+	 * Gets a float from a {@link SoapPrimitive} using the property identified
+	 * by name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0.0f</code> if the float could not be parsed or if the
+	 *         float was <code>0.0f</code>, the value otherwise
+	 */
+	protected float getFloat(SoapPrimitive o, String name) {
+		String s = getStringFromSoapPrimitive(o, name);
+		return getFloat(s);
+	}
+
+	protected float getFloat(String s) {
+		if (isStringEmpty(s)) {
+			return 0.0f;
+		}
+		try {
+			return Float.parseFloat(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0.0f;
+		}
+	}
+
+	/**
+	 * Gets a double from a {@link SoapObject} using the property identified by
+	 * name
+	 * 
+	 * @param o
+	 *            the {@link SoapObject}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0.0d</code> if the double could not be parsed or if the
+	 *         double was <code>0.0d</code>, the value otherwise
+	 */
+	protected double getDouble(SoapObject o, String name) {
+		String s = getStringFromSoapObject(o, name);
+		return getDouble(s);
+	}
+
+	/**
+	 * Gets a double from a {@link SoapPrimitive} using the property identified
+	 * by name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return <code>0.0d</code> if the double could not be parsed or if the
+	 *         double was <code>0.0d</code>, the value otherwise
+	 */
+	protected double getDouble(SoapPrimitive o, String name) {
+		String s = getStringFromSoapPrimitive(o, name);
+		return getDouble(s);
+	}
+
+	protected double getDouble(String s) {
+		if (isStringEmpty(s)) {
+			return 0.0d;
+		}
+		try {
+			return Double.parseDouble(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return 0.0d;
+		}
+	}
+
+	/**
+	 * Gets the {@link String} from a {@link SoapObject} using the property
+	 * identified by name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return a {@link String}
+	 */
+	protected String getStringFromSoapObject(SoapObject o, String name) {
+		return o.getPropertyAsString(name);
+	}
+
+	/**
+	 * Gets the {@link String} from a {@link SoapPrimitive} using the property
+	 * identified by name
+	 * 
+	 * @param o
+	 *            the {@link SoapPrimitive}
+	 * @param name
+	 *            the name of a property
+	 * @return a {@link String}
+	 */
+	protected String getStringFromSoapPrimitive(SoapPrimitive o, String name) {
+		return o.toString();
+	}
+
+	private boolean isStringEmpty(String string) {
+		return string == null || string.length() == 0;
+	}
 }
