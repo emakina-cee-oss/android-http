@@ -290,13 +290,12 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @param name
-	 *            the name of a property
+	 * 
 	 * @return <code>false</code> if the boolean could not be parsed or if the
 	 *         boolean was <code>false</code>, <code>true</code> otherwise
 	 */
-	protected boolean getBoolean(SoapPrimitive o, String name) {
-		String s = getStringFromSoapPrimitive(o, name);
+	protected boolean getBoolean(SoapPrimitive o) {
+		String s = getStringFromSoapPrimitive(o);
 		return getBoolean(s);
 	}
 
@@ -334,13 +333,11 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @param name
-	 *            the name of a property
 	 * @return <code>0</code> if the byte could not be parsed or if the byte was
 	 *         <code>0</code>, the value otherwise
 	 */
-	protected byte getByte(SoapPrimitive o, String name) {
-		String s = getStringFromSoapPrimitive(o, name);
+	protected byte getByte(SoapPrimitive o) {
+		String s = getStringFromSoapPrimitive(o);
 		return getByte(s);
 	}
 
@@ -378,13 +375,11 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @param name
-	 *            the name of a property
 	 * @return <code>0</code> if the byte could not be parsed or if the byte was
 	 *         <code>0</code>, the value otherwise
 	 */
 	protected short getShort(SoapPrimitive o, String name) {
-		String s = getStringFromSoapPrimitive(o, name);
+		String s = getStringFromSoapPrimitive(o);
 		return getShort(s);
 	}
 
@@ -422,13 +417,11 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @param name
-	 *            the name of a property
 	 * @return <code>0</code> if the byte could not be parsed or if the byte was
 	 *         <code>0</code>, the value otherwise
 	 */
-	protected char getChar(SoapPrimitive o, String name) {
-		String s = getStringFromSoapPrimitive(o, name);
+	protected char getChar(SoapPrimitive o) {
+		String s = getStringFromSoapPrimitive(o);
 		return getChar(s);
 	}
 
@@ -466,13 +459,11 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @param name
-	 *            the name of a property
 	 * @return <code>0</code> if the int could not be parsed or if the int was
 	 *         <code>0</code>, the value otherwise
 	 */
 	protected int getInt(SoapPrimitive o, String name) {
-		String s = getStringFromSoapPrimitive(o, name);
+		String s = getStringFromSoapPrimitive(o);
 		return getInt(s);
 	}
 
@@ -510,13 +501,12 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @param name
-	 *            the name of a property
+	 * 
 	 * @return <code>0</code> if the long could not be parsed or if the long was
 	 *         <code>0</code>, the value otherwise
 	 */
-	protected long getLong(SoapPrimitive o, String name) {
-		String s = getStringFromSoapPrimitive(o, name);
+	protected long getLong(SoapPrimitive o) {
+		String s = getStringFromSoapPrimitive(o);
 		return getLong(s);
 	}
 
@@ -554,13 +544,11 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @param name
-	 *            the name of a property
 	 * @return <code>0.0f</code> if the float could not be parsed or if the
 	 *         float was <code>0.0f</code>, the value otherwise
 	 */
-	protected float getFloat(SoapPrimitive o, String name) {
-		String s = getStringFromSoapPrimitive(o, name);
+	protected float getFloat(SoapPrimitive o) {
+		String s = getStringFromSoapPrimitive(o);
 		return getFloat(s);
 	}
 
@@ -598,13 +586,11 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @param name
-	 *            the name of a property
 	 * @return <code>0.0d</code> if the double could not be parsed or if the
 	 *         double was <code>0.0d</code>, the value otherwise
 	 */
-	protected double getDouble(SoapPrimitive o, String name) {
-		String s = getStringFromSoapPrimitive(o, name);
+	protected double getDouble(SoapPrimitive o) {
+		String s = getStringFromSoapPrimitive(o);
 		return getDouble(s);
 	}
 
@@ -640,11 +626,9 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @param name
-	 *            the name of a property
 	 * @return a {@link String}
 	 */
-	protected String getStringFromSoapPrimitive(SoapPrimitive o, String name) {
+	protected String getStringFromSoapPrimitive(SoapPrimitive o) {
 		return o.toString();
 	}
 
