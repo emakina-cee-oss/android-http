@@ -18,12 +18,14 @@ package at.diamonddogs.service.processor;
 import java.util.Vector;
 
 import org.ksoap2.SoapFault;
+import org.ksoap2.serialization.AttributeContainer;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.R.string;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -298,6 +300,23 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getBoolean(s);
 	}
 
+	/**
+	 * Gets a boolean from {@link AttributeContainer} attribute using the
+	 * attributes name
+	 * identified by name
+	 * 
+	 * @param c
+	 *            the {@link AttributeContainer} whose attribute to get
+	 * @param name
+	 *            the name of the attribute
+	 * @return <code>false</code> if the boolean could not be parsed or if the
+	 *         boolean was <code>false</code>, <code>true</code> otherwise
+	 */
+	protected boolean getBooleanFromAttribute(AttributeContainer c, String name) {
+		String s = getStringFromAttributeContainer(c, name);
+		return getBoolean(s);
+	}
+
 	protected boolean getBoolean(String s) {
 		if (isStringEmpty(s)) {
 			return false;
@@ -340,6 +359,23 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getByte(s);
 	}
 
+	/**
+	 * Gets a byte from {@link AttributeContainer} attribute using the
+	 * attributes name
+	 * identified by name
+	 * 
+	 * @param c
+	 *            the {@link AttributeContainer} whose attribute to get
+	 * @param name
+	 *            the name of the attribute
+	 * @return <code>0</code> if the byte could not be parsed or if the byte was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected byte getByteFromAttribute(AttributeContainer c, String name) {
+		String s = getStringFromAttributeContainer(c, name);
+		return getByte(s);
+	}
+
 	protected byte getByte(String s) {
 		if (isStringEmpty(s)) {
 			return 0;
@@ -369,16 +405,34 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	}
 
 	/**
-	 * Gets a byte from a {@link SoapPrimitive} using the property identified by
+	 * Gets a short from a {@link SoapPrimitive} using the property identified
+	 * by
 	 * name
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @return <code>0</code> if the byte could not be parsed or if the byte was
-	 *         <code>0</code>, the value otherwise
+	 * @return <code>0</code> if the short could not be parsed or if the short
+	 *         was <code>0</code>, the value otherwise
 	 */
 	protected short getShort(SoapPrimitive o, String name) {
 		String s = getStringFromSoapPrimitive(o);
+		return getShort(s);
+	}
+
+	/**
+	 * Gets a short from {@link AttributeContainer} attribute using the
+	 * attributes name
+	 * identified by name
+	 * 
+	 * @param c
+	 *            the {@link AttributeContainer} whose attribute to get
+	 * @param name
+	 *            the name of the attribute
+	 * @return <code>0</code> if the short could not be parsed or if the short
+	 *         was <code>0</code>, the value otherwise
+	 */
+	protected short getShortFromAttribute(AttributeContainer c, String name) {
+		String s = getStringFromAttributeContainer(c, name);
 		return getShort(s);
 	}
 
@@ -411,16 +465,33 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	}
 
 	/**
-	 * Gets a byte from a {@link SoapPrimitive} using the property identified by
+	 * Gets a char from a {@link SoapPrimitive} using the property identified by
 	 * name
 	 * 
 	 * @param o
 	 *            the {@link SoapPrimitive}
-	 * @return <code>0</code> if the byte could not be parsed or if the byte was
-	 *         <code>0</code>, the value otherwise
+	 * @return <code>\0</code> if the char could not be parsed or if the char
+	 *         was <code>\0</code>, the value otherwise
 	 */
 	protected char getChar(SoapPrimitive o) {
 		String s = getStringFromSoapPrimitive(o);
+		return getChar(s);
+	}
+
+	/**
+	 * Gets a char from {@link AttributeContainer} attribute using the
+	 * attributes name
+	 * identified by name
+	 * 
+	 * @param c
+	 *            the {@link AttributeContainer} whose attribute to get
+	 * @param name
+	 *            the name of the attribute
+	 * @return <code>\0</code> if the char could not be parsed or if the char
+	 *         was <code>\0</code>, the value otherwise
+	 */
+	protected char getCharFromAttribute(AttributeContainer c, String name) {
+		String s = getStringFromAttributeContainer(c, name);
 		return getChar(s);
 	}
 
@@ -463,6 +534,23 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 */
 	protected int getInt(SoapPrimitive o, String name) {
 		String s = getStringFromSoapPrimitive(o);
+		return getInt(s);
+	}
+
+	/**
+	 * Gets a int from {@link AttributeContainer} attribute using the attributes
+	 * name
+	 * identified by name
+	 * 
+	 * @param c
+	 *            the {@link AttributeContainer} whose attribute to get
+	 * @param name
+	 *            the name of the attribute
+	 * @return <code>0</code> if the int could not be parsed or if the int was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected int getIntFromAttribute(AttributeContainer c, String name) {
+		String s = getStringFromAttributeContainer(c, name);
 		return getInt(s);
 	}
 
@@ -509,6 +597,24 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getLong(s);
 	}
 
+	/**
+	 * Gets a long from {@link AttributeContainer} attribute using the
+	 * attributes
+	 * name
+	 * identified by name
+	 * 
+	 * @param c
+	 *            the {@link AttributeContainer} whose attribute to get
+	 * @param name
+	 *            the name of the attribute
+	 * @return <code>0</code> if the long could not be parsed or if the long was
+	 *         <code>0</code>, the value otherwise
+	 */
+	protected long getLongFromAttribute(AttributeContainer c, String name) {
+		String s = getStringFromAttributeContainer(c, name);
+		return getLong(s);
+	}
+
 	protected long getLong(String s) {
 		if (isStringEmpty(s)) {
 			return 0;
@@ -551,6 +657,26 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getFloat(s);
 	}
 
+	/**
+	 * Gets a long from {@link AttributeContainer} attribute using the
+	 * attributes
+	 * name
+	 * identified by name
+	 * 
+	 * @param c
+	 *            the {@link AttributeContainer} whose attribute to get
+	 * 
+	 * @param name
+	 *            the name of the attribute
+	 * 
+	 * @return <code>0.0f</code> if the float could not be parsed or if the
+	 *         float was <code>0.0f</code>, the value otherwise
+	 */
+	protected float getFloatFromAttribute(AttributeContainer c, String name) {
+		String s = getStringFromAttributeContainer(c, name);
+		return getFloat(s);
+	}
+
 	protected float getFloat(String s) {
 		if (isStringEmpty(s)) {
 			return 0.0f;
@@ -590,6 +716,26 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 */
 	protected double getDouble(SoapPrimitive o) {
 		String s = getStringFromSoapPrimitive(o);
+		return getDouble(s);
+	}
+
+	/**
+	 * Gets a long from {@link AttributeContainer} attribute using the
+	 * attributes
+	 * name
+	 * identified by name
+	 * 
+	 * @param c
+	 *            the {@link AttributeContainer} whose attribute to get
+	 * 
+	 * @param name
+	 *            the name of the attribute
+	 * 
+	 * @return <code>0.0d</code> if the double could not be parsed or if the
+	 *         double was <code>0.0d</code>, the value otherwise
+	 */
+	protected double getDoubleFromAttribute(AttributeContainer c, String name) {
+		String s = getStringFromAttributeContainer(c, name);
 		return getDouble(s);
 	}
 
@@ -639,6 +785,20 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		} else {
 			return s;
 		}
+	}
+
+	/**
+	 * Gets the {@link String} value of the attribute identified by attribute of
+	 * the {@link AttributeContainer} c
+	 * 
+	 * @param c
+	 *            the container that holds the attribute
+	 * @param attribute
+	 *            the name of the attribute
+	 * @return the attribute as a {@link string}
+	 */
+	protected String getStringFromAttributeContainer(AttributeContainer c, String attribute) {
+		return (String) c.getAttributeSafelyAsString(attribute);
 	}
 
 	private boolean isStringEmpty(String string) {
