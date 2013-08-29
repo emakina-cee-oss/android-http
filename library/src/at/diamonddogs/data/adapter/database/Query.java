@@ -64,6 +64,14 @@ public class Query implements Serializable {
 
 	public String sortOrder = null;
 
+	public Query() {
+
+	}
+
+	public Query(Uri uri) {
+		setUri(uri);
+	}
+
 	private Pair<String, Boolean> validate() {
 		// TODO: not entirly corrent -> what if one of the two is null and the
 		// other isn't
