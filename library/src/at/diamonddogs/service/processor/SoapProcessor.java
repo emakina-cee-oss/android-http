@@ -51,7 +51,6 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public T obtainDataObjectFromCachedObject(Context c, WebRequest webRequest, CachedObject object) {
 		try {
@@ -299,7 +298,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		return getBoolean(s);
 	}
 
-	private boolean getBoolean(String s) {
+	protected boolean getBoolean(String s) {
 		if (isStringEmpty(s)) {
 			return false;
 		}
@@ -617,7 +616,12 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @return a {@link String}
 	 */
 	protected String getStringFromSoapObject(SoapObject o, String name) {
-		return o.getPropertyAsString(name);
+		String s = o.getPropertyAsString(name);
+		if (isStringEmpty(s) || s.equals("anyType{}")) {
+			return "";
+		} else {
+			return s;
+		}
 	}
 
 	/**
@@ -629,7 +633,12 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @return a {@link String}
 	 */
 	protected String getStringFromSoapPrimitive(SoapPrimitive o) {
-		return o.toString();
+		String s = o.toString();
+		if (isStringEmpty(s) || s.equals("anyType{}")) {
+			return "";
+		} else {
+			return s;
+		}
 	}
 
 	private boolean isStringEmpty(String string) {
