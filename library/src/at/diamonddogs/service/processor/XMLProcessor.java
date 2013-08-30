@@ -33,6 +33,8 @@ import at.diamonddogs.exception.ProcessorExeception;
  * 
  * @param <OUTPUT>
  *            the type of the output object
+ *            TODO: create parser methods for primitive types (attributes /
+ *            elements alike)
  */
 public abstract class XMLProcessor<OUTPUT> extends DataProcessor<Document, OUTPUT> {
 
