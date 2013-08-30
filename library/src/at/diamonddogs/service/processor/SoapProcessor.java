@@ -668,6 +668,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @return the {@link Enum} or <code>null</code> if the enum could not be
 	 *         parsed
 	 */
+	@SuppressWarnings("hiding")
 	protected <T extends Enum<T>> T getEnum(SoapObject o, String name, Class<T> cls) {
 		String s = getStringFromSoapObject(o, name);
 		return getEnum(s, cls);
@@ -689,6 +690,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @return the {@link Enum} or <code>null</code> if the enum could not be
 	 *         parsed
 	 */
+	@SuppressWarnings("hiding")
 	protected <T extends Enum<T>> T getEnum(SoapPrimitive o, String name, Class<T> cls) {
 		String s = getStringFromSoapPrimitive(o);
 		return getEnum(s, cls);
@@ -709,6 +711,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @return the {@link Enum} or <code>null</code> if the enum could not be
 	 *         parsed
 	 */
+	@SuppressWarnings("hiding")
 	protected <T extends Enum<T>> T getEnumFromAttribute(AttributeContainer c, String name, Class<T> cls) {
 		String s = getStringFromAttributeContainer(c, name);
 		return getEnum(s, cls);
@@ -725,6 +728,9 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @return a {@link String}
 	 */
 	protected String getStringFromSoapObject(SoapObject o, String name) {
+		if (!o.hasProperty(name)) {
+			return "";
+		}
 		String s = o.getPropertyAsString(name);
 		if (isStringEmpty(s) || s.equals("anyType{}")) {
 			return "";
@@ -761,6 +767,9 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	 * @return the attribute as a {@link string}
 	 */
 	protected String getStringFromAttributeContainer(AttributeContainer c, String attribute) {
+		if (!c.hasAttribute(attribute)) {
+			return "";
+		}
 		return (String) c.getAttributeSafelyAsString(attribute);
 	}
 
