@@ -487,6 +487,9 @@ public abstract class ServiceProcessor<OUTPUT> {
 
 	protected <T extends Enum<T>> T getEnum(String s, Class<T> cls) {
 		try {
+			if (s.equals("")) {
+				return null;
+			}
 			return Enum.valueOf(cls, s);
 		} catch (Throwable tr) {
 			LOGGER.warn("Could not parse: ", tr);
