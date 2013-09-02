@@ -44,13 +44,16 @@ public class WebRequest implements Request {
 
 	public WebRequest() {
 		origin = new Throwable();
+		timeCritical = true;
 	}
 
 	/**
 	 * An instance of {@link Throwable} that records where the
 	 * {@link WebRequest} was created from.
 	 */
-	private final Throwable origin;
+	protected final Throwable origin;
+
+	protected boolean timeCritical;
 
 	protected String id = UUID.randomUUID().toString();
 
@@ -383,8 +386,14 @@ public class WebRequest implements Request {
 		return origin;
 	}
 
+	@SuppressWarnings("javadoc")
+	public boolean isTimeCritical() {
+		return timeCritical;
+	}
+
 	@Override
 	public String toString() {
 		return url == null ? "" : url.toString();
 	}
+
 }

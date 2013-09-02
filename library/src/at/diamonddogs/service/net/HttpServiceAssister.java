@@ -31,9 +31,14 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RecoverySystem.ProgressListener;
 import at.diamonddogs.data.adapter.ReplyAdapter;
+import at.diamonddogs.data.dataobjects.NonTimeCriticalTask;
+import at.diamonddogs.data.dataobjects.NonTimeCriticalTaskQueueDefaultConfiguration;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ServiceException;
 import at.diamonddogs.net.WebClient.DownloadProgressListener;
+import at.diamonddogs.nontimecritical.NonTimeCriticalTaskManager;
+import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskQueueConfigurationFactory;
+import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueueConfigurationDefaultFactory;
 import at.diamonddogs.service.net.HttpService.HttpServiceBinder;
 import at.diamonddogs.service.net.HttpService.WebRequestReturnContainer;
 import at.diamonddogs.service.processor.DataProcessor;
@@ -114,8 +119,12 @@ public class HttpServiceAssister {
 	 */
 	private final Object monitor = new Object();
 
+	private final NonTimeCriticalTaskManager nonTimeCriticalTaskManager;
+
 	/**
-	 * Default constructor
+	 * Default constructor. Will use
+	 * {@link NonTimeCriticalTaskQueueDefaultConfiguration} to configure the
+	 * behaviour of {@link NonTimeCriticalTask} processing.
 	 * 
 	 * @param context
 	 *            a {@link Context} object.
@@ -123,6 +132,23 @@ public class HttpServiceAssister {
 	public HttpServiceAssister(Context context) {
 		this.context = context;
 		this.pendingWebRequests = new LinkedList<WebRequestInformation>();
+		this.nonTimeCriticalTaskManager = new NonTimeCriticalTaskManager(
+				new NonTimeCriticalTaskQueueConfigurationDefaultFactory().newInstance(), this);
+	}
+
+	/**
+	 * Alternative constructor
+	 * 
+	 * @param context
+	 *            a {@link Context} object.
+	 * @param factory
+	 *            the factory used to construct a configuration for
+	 *            {@link NonTimeCriticalTask} processing.
+	 */
+	public HttpServiceAssister(Context context, NonTimeCriticalTaskQueueConfigurationFactory factory) {
+		this.context = context;
+		this.pendingWebRequests = new LinkedList<WebRequestInformation>();
+		this.nonTimeCriticalTaskManager = new NonTimeCriticalTaskManager(factory.newInstance(), this);
 	}
 
 	/**
