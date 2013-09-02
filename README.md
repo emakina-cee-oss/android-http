@@ -24,6 +24,7 @@ The framework is designed to send, receive, process and publish webrequests and 
 * OAuth 2.0
 * Dynamically generated processor ids, deprecate getProcessorId()
 * Collecting non time critical webrequests and sending them when a time critical task is performed
+* Automatic cookie handling
 
 ## License
 Apache License, Version 2.0. Please refer to LICENSE and NOTICE for additional information.
