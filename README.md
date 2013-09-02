@@ -6,7 +6,7 @@ The framework is designed to send, receive, process and publish webrequests and 
 
 ## Features
 * WebRequest / WebReply API: enables developers to conveniently send web requests and handle their replies concurrently
-* Blocking WebRequests
+* Supports Asynchronous and Synchronous web requests
 * Processor: allows post processing of web replies
 * Several abstract processors that facilitate development of JSON and XML (SOAP) processors
 * Processors that ease every day development (Image processing)
