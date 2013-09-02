@@ -37,6 +37,7 @@ import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ServiceException;
 import at.diamonddogs.net.WebClient.DownloadProgressListener;
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskManager;
+import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskQueueConfiguration;
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskQueueConfigurationFactory;
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueueConfigurationDefaultFactory;
 import at.diamonddogs.service.net.HttpService.HttpServiceBinder;
@@ -288,12 +289,51 @@ public class HttpServiceAssister {
 			LOGGER.info("httpService is null, appending WebRequest to queue for later processing: " + webRequest);
 			addWebRequestToQueue(handler, webRequest, progressListener, serviceProcessor);
 		} else {
-			LOGGER.info("httpService is ready, running WebRequest directly");
-			if (!httpService.isProcessorRegistered(serviceProcessor.getProcessorID())) {
-				httpService.registerProcessor(serviceProcessor);
+			if (webRequest.isTimeCritical()) {
+				runTimeCriticalAsynchronousWebRequest(handler, webRequest, serviceProcessor, progressListener);
+				runNonTimeCriticalTasksIfRequired();
+			} else {
+				if (webRequest instanceof NonTimeCriticalTask) {
+					nonTimeCriticalTaskManager.put((NonTimeCriticalTask) webRequest);
+				} else {
+					throw new IllegalArgumentException(
+							"Trying to run a non time critical WebRequest that is not an instance of NonTimeCriticalTask");
+				}
 			}
-			httpService.runWebRequest(handler, webRequest, progressListener);
 		}
+	}
+
+	/**
+	 * Runs a time critical {@link WebRequest}
+	 * 
+	 * @param handler
+	 *            the handler that will be informed once the {@link WebRequest}
+	 *            has been completed
+	 * @param webRequest
+	 *            the {@link WebRequest} to run
+	 * @param serviceProcessor
+	 *            the {@link ServiceProcessor} that should be used to process
+	 *            the {@link WebRequest}
+	 * @param progressListener
+	 *            a {@link ProgressListener} that will be informed of download
+	 *            progress
+	 */
+	private void runTimeCriticalAsynchronousWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor<?> serviceProcessor,
+			DownloadProgressListener progressListener) {
+		LOGGER.info("httpService is ready, running WebRequest directly");
+		if (!httpService.isProcessorRegistered(serviceProcessor.getProcessorID())) {
+			httpService.registerProcessor(serviceProcessor);
+		}
+		httpService.runWebRequest(handler, webRequest, progressListener);
+	}
+
+	/**
+	 * Runs all {@link NonTimeCriticalTask}s, if the provided
+	 * {@link NonTimeCriticalTaskQueueConfiguration} matches the state of the
+	 * queue
+	 */
+	private void runNonTimeCriticalTasksIfRequired() {
+		nonTimeCriticalTaskManager.runTasksIfNecessary(context);
 	}
 
 	/**
