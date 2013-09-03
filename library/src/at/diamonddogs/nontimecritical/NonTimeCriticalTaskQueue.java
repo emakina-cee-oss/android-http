@@ -181,7 +181,7 @@ public class NonTimeCriticalTaskQueue {
 	 *             if the configuration has already been provided
 	 */
 	protected void setConfiguration(NonTimeCriticalTaskQueueConfiguration configuration) {
-		if (configuration != null) {
+		if (this.configuration != null) {
 			throw new IllegalStateException("NonTimeCriticalTaskQueue may only be configured once");
 		}
 		this.configuration = configuration;

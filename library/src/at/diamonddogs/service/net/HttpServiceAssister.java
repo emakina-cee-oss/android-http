@@ -293,14 +293,26 @@ public class HttpServiceAssister {
 				runTimeCriticalAsynchronousWebRequest(handler, webRequest, serviceProcessor, progressListener);
 				runNonTimeCriticalTasksIfRequired();
 			} else {
-				if (webRequest instanceof NonTimeCriticalTask) {
-					nonTimeCriticalTaskManager.put((NonTimeCriticalTask) webRequest);
-				} else {
-					throw new IllegalArgumentException(
-							"Trying to run a non time critical WebRequest that is not an instance of NonTimeCriticalTask");
-				}
+				throw new IllegalArgumentException("Trying to run a non time critical WebRequest using runWebRequest(...)");
 			}
 		}
+	}
+
+	/**
+	 * Runs a non time critical {@link WebRequest}. Make sure that the
+	 * {@link WebRequest} you are trying to run using this method implements
+	 * {@link NonTimeCriticalTask} and that {@link WebRequest#isTimeCritical()}
+	 * returns <code>false</code>
+	 * 
+	 * @param wr
+	 *            the {@link WebRequest} to queue
+	 */
+	public void runNonTimeCriticalWebRequest(WebRequest wr) {
+		if (wr.isTimeCritical() || !(wr instanceof NonTimeCriticalTask)) {
+			throw new IllegalArgumentException("WebRequest is time critical or not an instance of NonTimeCriticalTask");
+		}
+		nonTimeCriticalTaskManager.put((NonTimeCriticalTask) wr);
+		runNonTimeCriticalTasksIfRequired();
 	}
 
 	/**
