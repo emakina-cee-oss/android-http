@@ -18,6 +18,7 @@ package at.diamonddogs.nontimecritical;
 import android.content.Context;
 import at.diamonddogs.data.dataobjects.NonTimeCriticalTask;
 import at.diamonddogs.data.dataobjects.NonTimeCriticalTask.PRIORITY;
+import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskProcessingListener;
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskQueueConfiguration;
 import at.diamonddogs.service.net.HttpServiceAssister;
 
@@ -75,6 +76,26 @@ public class NonTimeCriticalTaskManager {
 	}
 
 	/**
+	 * Adds a listener that will be notified once a task is being processed
+	 * 
+	 * @param nonTimeCriticalTaskProcessingListener
+	 *            the listener
+	 */
+	public void addNonTimeCriticalTaskProcessingListener(NonTimeCriticalTaskProcessingListener nonTimeCriticalTaskProcessingListener) {
+		queue.addNonTimeCriticalTaskProcessingListener(nonTimeCriticalTaskProcessingListener);
+	}
+
+	/**
+	 * Removes a listener
+	 * 
+	 * @param nonTimeCriticalTaskProcessingListener
+	 *            the listener
+	 */
+	public void removeNonTimeCriticalTaskProcessingListener(NonTimeCriticalTaskProcessingListener nonTimeCriticalTaskProcessingListener) {
+		queue.removeNonTimeCriticalTaskProcessingListener(nonTimeCriticalTaskProcessingListener);
+	}
+
+	/**
 	 * Runs all pending {@link NonTimeCriticalTask}s.
 	 * 
 	 * @param context
@@ -83,8 +104,10 @@ public class NonTimeCriticalTaskManager {
 	public void runTasksIfNecessary(Context context) {
 		if (queue.shouldQueueBeProcessed()) {
 			for (NonTimeCriticalTask task : queue.createProcessableTaskList()) {
+				queue.informListeners(task);
 				task.process(context.getApplicationContext(), assister);
 			}
 		}
 	}
+
 }

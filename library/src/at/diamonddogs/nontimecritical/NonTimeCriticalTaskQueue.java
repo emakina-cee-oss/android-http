@@ -16,6 +16,7 @@
 package at.diamonddogs.nontimecritical;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +42,13 @@ public class NonTimeCriticalTaskQueue {
 	 * configure the queuing behaviour
 	 */
 	private NonTimeCriticalTaskQueueConfiguration configuration;
+
+	/**
+	 * A list of listeners that will receive callbacks when a
+	 * {@link NonTimeCriticalTask} has been started
+	 */
+	private List<NonTimeCriticalTaskProcessingListener> listeners = Collections
+			.synchronizedList(new ArrayList<NonTimeCriticalTaskProcessingListener>());
 
 	private NonTimeCriticalTaskQueue() {
 	}
@@ -213,6 +221,53 @@ public class NonTimeCriticalTaskQueue {
 		 */
 		public int getProcessAtSize();
 
+	}
+
+	/**
+	 * Method to inform listeners of started tasks
+	 * 
+	 * @param task
+	 *            the {@link NonTimeCriticalTask} that has been started
+	 */
+	protected void informListeners(NonTimeCriticalTask task) {
+		for (NonTimeCriticalTaskProcessingListener listener : listeners) {
+			listener.onProcessingStarted(task);
+		}
+	}
+
+	/**
+	 * Adds a listener that will be notified once a task is being processed
+	 * 
+	 * @param nonTimeCriticalTaskProcessingListener
+	 *            the listener
+	 */
+	protected void addNonTimeCriticalTaskProcessingListener(NonTimeCriticalTaskProcessingListener nonTimeCriticalTaskProcessingListener) {
+		listeners.add(nonTimeCriticalTaskProcessingListener);
+	}
+
+	/**
+	 * Removes a listener
+	 * 
+	 * @param nonTimeCriticalTaskProcessingListener
+	 *            the listener
+	 */
+	protected void removeNonTimeCriticalTaskProcessingListener(NonTimeCriticalTaskProcessingListener nonTimeCriticalTaskProcessingListener) {
+		listeners.remove(nonTimeCriticalTaskProcessingListener);
+	}
+
+	/**
+	 * An interface describing a listener for {@link NonTimeCriticalTask}
+	 * related events
+	 */
+	public interface NonTimeCriticalTaskProcessingListener {
+		/**
+		 * Gets called whenever the given {@link NonTimeCriticalTask} has been
+		 * started
+		 * 
+		 * @param task
+		 *            the task that was started
+		 */
+		public void onProcessingStarted(NonTimeCriticalTask task);
 	}
 
 	/**

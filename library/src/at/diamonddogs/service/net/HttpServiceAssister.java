@@ -37,6 +37,7 @@ import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ServiceException;
 import at.diamonddogs.net.WebClient.DownloadProgressListener;
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskManager;
+import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskProcessingListener;
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskQueueConfiguration;
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskQueueConfigurationFactory;
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueueConfigurationDefaultFactory;
@@ -553,6 +554,42 @@ public class HttpServiceAssister {
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 		}
+	}
+
+	/**
+	 * Adds a listener that will be notified once a {@link NonTimeCriticalTask}
+	 * is being processed. ATTENTION: Make sure to call
+	 * {@link HttpServiceAssister#removeNonTimeCriticalTaskProcessingListener(NonTimeCriticalTaskProcessingListener)}
+	 * when the listener is no longer needed!
+	 * 
+	 * @param nonTimeCriticalTaskProcessingListener
+	 *            a listener that receives updates when a task has been started.
+	 *            This listener is not intrinsic to this instance of
+	 *            {@link HttpServiceAssister} or
+	 *            {@link NonTimeCriticalTaskManager} for that matter. It will
+	 *            receive notifications whenever a task is started, even if the
+	 *            task was not started using this instance of
+	 *            {@link HttpServiceAssister}. In addition, make sure that the
+	 *            listener does not hold a reference to a {@link Context}, as
+	 *            this can cause memory leaks (you can have references to
+	 *            {@link Context} {@link Object}s if you remove the listener as
+	 *            soon as the {@link Context} is invalidated!).
+	 */
+	public void addNonTimeCriticalTaskProcessingListener(NonTimeCriticalTaskProcessingListener nonTimeCriticalTaskProcessingListener) {
+		nonTimeCriticalTaskManager.addNonTimeCriticalTaskProcessingListener(nonTimeCriticalTaskProcessingListener);
+	}
+
+	/**
+	 * Removes the provided listener. ATTENTION: Make sure to call
+	 * {@link HttpServiceAssister#removeNonTimeCriticalTaskProcessingListener(NonTimeCriticalTaskProcessingListener)}
+	 * when the listener is no longer needed!
+	 * 
+	 * 
+	 * @param nonTimeCriticalTaskProcessingListener
+	 *            the listener
+	 */
+	public void removeNonTimeCriticalTaskProcessingListener(NonTimeCriticalTaskProcessingListener nonTimeCriticalTaskProcessingListener) {
+		nonTimeCriticalTaskManager.removeNonTimeCriticalTaskProcessingListener(nonTimeCriticalTaskProcessingListener);
 	}
 
 	/**
