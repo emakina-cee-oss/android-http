@@ -32,20 +32,16 @@ public class NonTimeCriticalTaskManager {
 	private NonTimeCriticalTaskQueue queue = NonTimeCriticalTaskQueue.getInstance();
 
 	/**
-	 * This configuration controls various aspects of the queues behaviour
-	 */
-	private NonTimeCriticalTaskQueueConfiguration queueConfiguration;
-
-	/**
 	 * The instance of {@link HttpServiceAssister} that was used to construct
 	 * this manager
 	 */
-	private HttpServiceAssister assister;
+	private final HttpServiceAssister assister;
 
 	public NonTimeCriticalTaskManager(NonTimeCriticalTaskQueueConfiguration queueConfiguration, HttpServiceAssister assister) {
 		if (queue.requiresConfiguration()) {
 			queue.setConfiguration(queueConfiguration);
 		}
+		this.assister = assister;
 	}
 
 	/**

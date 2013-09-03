@@ -137,10 +137,8 @@ public class NonTimeCriticalTaskQueue {
 				throw new IllegalStateException(
 						"NonTimeCriticalTaskQueue has not been configured yet! Configuration must happen before calling any other method. Call setConfiguration(...) to do so!");
 			}
-			synchronized (tasks) {
-				tasks = new PriorityBlockingQueue<NonTimeCriticalTask>(configuration.getInitialQueueSize(),
-						new NonTimeCriticalTaskComperator());
-			}
+			tasks = new PriorityBlockingQueue<NonTimeCriticalTask>(configuration.getInitialQueueSize(), new NonTimeCriticalTaskComperator());
+
 		}
 	}
 

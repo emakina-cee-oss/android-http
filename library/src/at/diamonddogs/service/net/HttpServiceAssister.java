@@ -289,12 +289,8 @@ public class HttpServiceAssister {
 			LOGGER.info("httpService is null, appending WebRequest to queue for later processing: " + webRequest);
 			addWebRequestToQueue(handler, webRequest, progressListener, serviceProcessor);
 		} else {
-			if (webRequest.isTimeCritical()) {
-				runTimeCriticalAsynchronousWebRequest(handler, webRequest, serviceProcessor, progressListener);
-				runNonTimeCriticalTasksIfRequired();
-			} else {
-				throw new IllegalArgumentException("Trying to run a non time critical WebRequest using runWebRequest(...)");
-			}
+			runTimeCriticalAsynchronousWebRequest(handler, webRequest, serviceProcessor, progressListener);
+			runNonTimeCriticalTasksIfRequired();
 		}
 	}
 
