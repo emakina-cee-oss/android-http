@@ -38,6 +38,14 @@ public class NonTimeCriticalTaskManager {
 	 */
 	private final HttpServiceAssister assister;
 
+	/**
+	 * Default constructor
+	 * 
+	 * @param queueConfiguration
+	 *            the queue configuration
+	 * @param assister
+	 *            the assister that will be used to process requests
+	 */
 	public NonTimeCriticalTaskManager(NonTimeCriticalTaskQueueConfiguration queueConfiguration, HttpServiceAssister assister) {
 		if (queue.requiresConfiguration()) {
 			queue.setConfiguration(queueConfiguration);
