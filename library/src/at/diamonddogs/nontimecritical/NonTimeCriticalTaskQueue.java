@@ -68,7 +68,6 @@ public class NonTimeCriticalTaskQueue {
 	 *            the task to be put into the queue
 	 */
 	protected void putNonTimeCriticalTask(NonTimeCriticalTask task) {
-		initializePriorityQueueIfRequired();
 		synchronized (tasks) {
 			tasks.put(task);
 		}
@@ -81,7 +80,6 @@ public class NonTimeCriticalTaskQueue {
 	 * @return the next {@link NonTimeCriticalTask}
 	 */
 	protected NonTimeCriticalTask pollNonTimeCriticalTask() {
-		initializePriorityQueueIfRequired();
 		synchronized (tasks) {
 			return tasks.poll();
 		}
@@ -95,7 +93,6 @@ public class NonTimeCriticalTaskQueue {
 	 *            the task to be removed
 	 */
 	protected void removeNonTimeCriticalTask(NonTimeCriticalTask task) {
-		initializePriorityQueueIfRequired();
 		synchronized (tasks) {
 			tasks.remove(task);
 		}
@@ -109,7 +106,6 @@ public class NonTimeCriticalTaskQueue {
 	 *            the priority of the tasks to be removed
 	 */
 	protected void removeNonTimeCriticalTasksByPriority(PRIORITY priority) {
-		initializePriorityQueueIfRequired();
 		synchronized (tasks) {
 			Iterator<NonTimeCriticalTask> taskIterator = tasks.iterator();
 			while (taskIterator.hasNext()) {
@@ -126,7 +122,6 @@ public class NonTimeCriticalTaskQueue {
 	 * {@link PriorityBlockingQueue}
 	 */
 	protected void removeAllNonTimeCriticalTasks() {
-		initializePriorityQueueIfRequired();
 		synchronized (tasks) {
 			tasks.clear();
 		}
@@ -146,7 +141,6 @@ public class NonTimeCriticalTaskQueue {
 						"NonTimeCriticalTaskQueue has not been configured yet! Configuration must happen before calling any other method. Call setConfiguration(...) to do so!");
 			}
 			tasks = new PriorityBlockingQueue<NonTimeCriticalTask>(configuration.getInitialQueueSize(), new NonTimeCriticalTaskComperator());
-
 		}
 	}
 
@@ -159,12 +153,15 @@ public class NonTimeCriticalTaskQueue {
 	 * @return a {@link List} of {@link NonTimeCriticalTask}s
 	 */
 	protected List<NonTimeCriticalTask> createProcessableTaskList() {
-		ArrayList<NonTimeCriticalTask> processableTasks = new ArrayList<NonTimeCriticalTask>(tasks.size());
-		NonTimeCriticalTask task;
-		while ((task = tasks.poll()) != null) {
-			processableTasks.add(task);
+		synchronized (tasks) {
+
+			ArrayList<NonTimeCriticalTask> processableTasks = new ArrayList<NonTimeCriticalTask>(tasks.size());
+			NonTimeCriticalTask task;
+			while ((task = tasks.poll()) != null) {
+				processableTasks.add(task);
+			}
+			return processableTasks;
 		}
-		return processableTasks;
 	}
 
 	/**
@@ -175,7 +172,9 @@ public class NonTimeCriticalTaskQueue {
 	 *         <code>false</code> otherwise
 	 */
 	protected boolean shouldQueueBeProcessed() {
-		return tasks.size() >= configuration.getProcessAtSize();
+		synchronized (tasks) {
+			return tasks.size() >= configuration.getProcessAtSize();
+		}
 	}
 
 	/**
@@ -191,6 +190,7 @@ public class NonTimeCriticalTaskQueue {
 			throw new IllegalStateException("NonTimeCriticalTaskQueue may only be configured once");
 		}
 		this.configuration = configuration;
+		initializePriorityQueueIfRequired();
 	}
 
 	/**

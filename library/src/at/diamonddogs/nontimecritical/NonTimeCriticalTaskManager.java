@@ -99,14 +99,25 @@ public class NonTimeCriticalTaskManager {
 	 * Runs all pending {@link NonTimeCriticalTask}s.
 	 * 
 	 * @param context
-	 *            a {@link Context} object
+	 *            a {@link Context} {@link Object}
 	 */
 	public void runTasksIfNecessary(Context context) {
 		if (queue.shouldQueueBeProcessed()) {
-			for (NonTimeCriticalTask task : queue.createProcessableTaskList()) {
-				queue.informListeners(task);
-				task.process(context.getApplicationContext(), assister);
-			}
+			runTasks(context);
+		}
+	}
+
+	/**
+	 * Run all tasks in the queue, even if the configuration threshold has not
+	 * been hit
+	 * 
+	 * @param context
+	 *            a {@link Context} {@link Object}
+	 */
+	public void runTasks(Context context) {
+		for (NonTimeCriticalTask task : queue.createProcessableTaskList()) {
+			queue.informListeners(task);
+			task.process(context.getApplicationContext(), assister);
 		}
 	}
 

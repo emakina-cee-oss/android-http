@@ -309,7 +309,14 @@ public class HttpServiceAssister {
 			throw new IllegalArgumentException("WebRequest is time critical or not an instance of NonTimeCriticalTask");
 		}
 		nonTimeCriticalTaskManager.put((NonTimeCriticalTask) wr);
-		runNonTimeCriticalTasksIfRequired();
+	}
+
+	/**
+	 * Execute all {@link NonTimeCriticalTask}s even if the configuration
+	 * treshold has not been hit
+	 */
+	public void forceProcessAllNonTimeCriticalWebRequests() {
+		nonTimeCriticalTaskManager.runTasks(context);
 	}
 
 	/**
