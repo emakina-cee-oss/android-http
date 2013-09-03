@@ -17,13 +17,13 @@ The framework is designed to send, receive, process and publish webrequests and 
 * Convenient assisting API:
     * "fire-and-forget" API that enques web requests for later execution when service is not available
     * Ordered-conditional synchronous web request API
+* Bundling and prioritization of non time critical web requests in order to save battery life
 
 ## Planned
 * REST assister
 * Chaining multiple processors
 * OAuth 2.0
 * Dynamically generated processor ids, deprecate getProcessorId()
-* Collecting non time critical webrequests and sending them when a time critical task is performed
 * Automatic cookie handling
 
 ## License
