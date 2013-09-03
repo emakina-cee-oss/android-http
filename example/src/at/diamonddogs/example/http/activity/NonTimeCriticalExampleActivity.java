@@ -95,7 +95,7 @@ public class NonTimeCriticalExampleActivity extends Activity implements OnClickL
 		// creating some webrequests with different priorities
 		Tripple<WebRequest, ServiceProcessor<?>, Handler.Callback> tmp;
 
-		tmp = createNonTimeCriticalWebRequest(PRIORITY.LOWEST);
+		tmp = createNonTimeCriticalWebRequest(PRIORITY.LOWER);
 		assister.runNonTimeCriticalWebRequest(tmp.first);
 
 		tmp = createNonTimeCriticalWebRequest(PRIORITY.HIGHEST);
@@ -125,19 +125,10 @@ public class NonTimeCriticalExampleActivity extends Activity implements OnClickL
 	@Override
 	public void onClick(View v) {
 		addNonTimeCriticalWebRequestsToQueue();
-
-		// This code illustrates that running runWebRequest and
-		// runNonTimeCriticalWebRequest both trigger non time critical web
-		// requests if the queue's max fill size is reaches. Beware that
-		// sendSynchronousWebRequest will NOT trigger processing of non time
-		// critical web requests!
-
 		if (cb.isChecked()) {
 			assister.runWebRequest(new Handler(), createTimeCriticalWebRequest(), new DummyProcessor());
 		} else {
-			// TODO: causes a BUG, after 3rd button press, twice the amount of
-			// requests will be issued
-			assister.runNonTimeCriticalWebRequest(createNonTimeCriticalWebRequest(PRIORITY.HIGHEST).first);
+			assister.forceProcessAllNonTimeCriticalWebRequests();
 		}
 	}
 

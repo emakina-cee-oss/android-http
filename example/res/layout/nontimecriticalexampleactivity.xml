@@ -8,7 +8,7 @@
         android:id="@+id/nontimecriticalexampleactivity_trigger"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Trigger with asyn request" />
+        android:text="Use force instead of an async webrequest" />
 
     <Button
         android:id="@+id/nontimecriticalexampleactivity_runwebrequests"
