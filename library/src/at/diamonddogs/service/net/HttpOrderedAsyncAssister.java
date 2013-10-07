@@ -97,10 +97,14 @@ public class HttpOrderedAsyncAssister {
 	 * Base {@link Handler} for ordered asynchronous {@link WebRequest}s. Uses
 	 * {@link NextWebRequestDelegate} to run the next {@link WebRequest} in
 	 * line.
+	 * 
+	 * @deprecated use {@link HttpOrderedAsyncHandler2} instead, offers a more
+	 *             clean interface
 	 */
+	@Deprecated
 	public static class HttpOrderedAsyncHandler extends Handler {
-		private HttpOrderedAsyncRequest request;
-		private HttpOrderedAsyncAssister orderedSyncAssister;
+		protected HttpOrderedAsyncRequest request;
+		protected HttpOrderedAsyncAssister orderedSyncAssister;
 
 		/**
 		 * Constructor
@@ -126,6 +130,73 @@ public class HttpOrderedAsyncAssister {
 						nextWebRequest.serviceProcessor);
 			}
 		}
+
+		@SuppressWarnings("javadoc")
+		public void setRequest(HttpOrderedAsyncRequest request) {
+			this.request = request;
+		}
+	}
+
+	/**
+	 * Base {@link Handler} for ordered asynchronous {@link WebRequest}s. Uses
+	 * {@link NextWebRequestDelegate} to run the next {@link WebRequest} in
+	 * line.
+	 */
+	public abstract static class HttpOrderedAsyncHandler2 extends HttpOrderedAsyncHandler {
+		/**
+		 * Constructor
+		 * 
+		 * @param orderedSyncAssister
+		 *            the {@link HttpOrderedAsyncAssister} running the
+		 *            {@link WebRequest} that is handled by this {@link Handler}
+		 */
+		public HttpOrderedAsyncHandler2(HttpOrderedAsyncAssister orderedSyncAssister) {
+			super(orderedSyncAssister);
+		}
+
+		/**
+		 * You cannot override this method, please use
+		 * {@link HttpOrderedAsyncHandler2#onNextWebRequestComplete(Message)}
+		 * and
+		 * {@link HttpOrderedAsyncHandler2#onWebRequestChainCompleted(Message)}
+		 * to process the messages
+		 */
+		@Override
+		public final void handleMessage(Message msg) {
+			HttpOrderedAsyncRequest nextWebRequest = request.nextWebRequestDelegate.getNextWebRequest(msg);
+			if (nextWebRequest == null) {
+				onWebRequestChainCompleted(msg);
+			} else {
+				if (onNextWebRequestComplete(msg)) {
+					orderedSyncAssister.assister.runWebRequest(nextWebRequest.handler, nextWebRequest.webRequest,
+							nextWebRequest.serviceProcessor);
+				}
+			}
+		}
+
+		/**
+		 * This method will be called once right before the next
+		 * {@link WebRequest} in the {@link WebRequest} chain is started
+		 * 
+		 * @param msg
+		 *            the {@link Message} object created by the processor that
+		 *            handled this {@link WebRequest}
+		 * @return <code>true</code> if you want the next {@link WebRequest} to
+		 *         run, <code>false</code> otherwise. Returning
+		 *         <code>false</code> here will stop the whole
+		 *         {@link WebRequest} chain.
+		 */
+		public abstract boolean onNextWebRequestComplete(Message msg);
+
+		/**
+		 * Called when the last {@link WebRequest} of the ordered
+		 * {@link WebRequest} chain has been processed.
+		 * 
+		 * @param msg
+		 *            the {@link Message} object created by the processor that
+		 *            handled this {@link WebRequest}
+		 */
+		public abstract void onWebRequestChainCompleted(Message msg);
 
 		@SuppressWarnings("javadoc")
 		public void setRequest(HttpOrderedAsyncRequest request) {
