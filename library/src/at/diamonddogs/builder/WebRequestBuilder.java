@@ -46,18 +46,30 @@ public class WebRequestBuilder {
 	 * duration is controlled by the provided
 	 * {@link WebRequestBuilderConfiguration}
 	 */
+	// @formatter:off
+	@SuppressWarnings("javadoc")
 	public enum ReadTimeout {
-		SHORT, MEDIUM, LONG, VERYLONG
+		SHORT, 
+		MEDIUM, 
+		LONG, 
+		VERYLONG
 	}
+	// @formatter:on
 
 	/**
 	 * This enum is an abstraction for connection timeout durations. The exact
 	 * duration is controlled by the provided
 	 * {@link WebRequestBuilderConfiguration}
 	 */
+	// @formatter:off
+	@SuppressWarnings("javadoc")
 	public enum ConnectionTimeout {
-		SHORT, MEDIUM, LONG, VERYLONG
+		SHORT, 
+		MEDIUM, 
+		LONG, 
+		VERYLONG
 	}
+	// @formatter:on
 
 	/**
 	 * Constructor with configuration option

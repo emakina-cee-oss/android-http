@@ -42,6 +42,9 @@ public class WebRequest implements Request {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequest.class.getSimpleName());
 
+	/**
+	 * Default constructor
+	 */
 	public WebRequest() {
 		origin = new Throwable();
 		timeCritical = true;

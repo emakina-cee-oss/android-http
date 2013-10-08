@@ -211,7 +211,6 @@ public class HttpOrderedAsyncAssister {
 		 */
 		public abstract void onWebRequestChainCompleted(Message msg);
 
-		@SuppressWarnings("javadoc")
 		public void setRequest(HttpOrderedAsyncRequest request) {
 			this.request = request;
 		}

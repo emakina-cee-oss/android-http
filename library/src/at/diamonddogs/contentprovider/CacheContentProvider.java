@@ -38,7 +38,6 @@ import at.diamonddogs.data.dataobjects.CacheInformation;
  */
 public class CacheContentProvider extends ContentProvider {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(CacheContentProvider.class.getSimpleName());
 
 	private static String CACHECONTENTPROVIDER_AUTHORITY;
@@ -108,6 +107,7 @@ public class CacheContentProvider extends ContentProvider {
 			// @formatter:on
 		}
 
+		@SuppressWarnings("unused")
 		private CacheInformation[] query(SQLiteDatabase db, Object hash) {
 			DataBaseAdapterCacheInformation dbaci = new DataBaseAdapterCacheInformation();
 			Cursor cursor;

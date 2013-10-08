@@ -114,6 +114,15 @@ public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInform
 		return dataObject;
 	}
 
+	/**
+	 * Get a {@link CacheInformation} array identified by the provided hash
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param hash
+	 *            the hash used to lookup the {@link CacheInformation}
+	 * @return a {@link CacheInformation} array
+	 */
 	public CacheInformation[] query(Context c, Object hash) {
 		Cursor cursor;
 		if (hash == null) {

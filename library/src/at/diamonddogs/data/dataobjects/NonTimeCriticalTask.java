@@ -31,9 +31,17 @@ public interface NonTimeCriticalTask {
 	/**
 	 * Different priorities
 	 */
+	// @formatter:off
+	@SuppressWarnings("javadoc")
 	public enum PRIORITY {
-		HIGHEST, HIGHER, HIGH, NORMAL, LOWER, LOWEST,
+		HIGHEST,
+		HIGHER,
+		HIGH,
+		NORMAL,
+		LOWER,
+		LOWEST,
 	}
+	// @formatter:on
 
 	/**
 	 * Gets the {@link PRIORITY} of the current task

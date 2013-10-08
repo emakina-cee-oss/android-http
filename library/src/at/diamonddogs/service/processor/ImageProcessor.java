@@ -64,11 +64,20 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 
 	private BitmapFactory.Options bitmapOptions;
 
+	/**
+	 * Default constructor using default {@link BitmapFactory.Options}
+	 */
 	public ImageProcessor() {
 		super();
 		this.bitmapOptions = new BitmapFactory.Options();
 	}
 
+	/**
+	 * Constructor for providing {@link BitmapFactory.Options}
+	 * 
+	 * @param bitmapOptions
+	 *            custom {@link BitmapFactory.Options}
+	 */
 	public ImageProcessor(BitmapFactory.Options bitmapOptions) {
 		super();
 		this.bitmapOptions = bitmapOptions;
@@ -288,6 +297,9 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		 *            order to identify the correct {@link ImageView}
 		 * @param fadeInAnimation
 		 *            an optional {@link Animation}
+		 * @param defaultImage
+		 *            a default image to be displayed if the real image cannot
+		 *            be displayed
 		 */
 		public ImageProcessHandler(ImageView imageView, String url, Animation fadeInAnimation, int defaultImage) {
 			if (imageView == null) {

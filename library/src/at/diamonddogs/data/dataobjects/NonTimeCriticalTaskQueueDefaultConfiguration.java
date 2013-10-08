@@ -17,6 +17,9 @@ package at.diamonddogs.data.dataobjects;
 
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskQueueConfiguration;
 
+/**
+ * A default implementation for {@link NonTimeCriticalTaskQueueConfiguration}
+ */
 public class NonTimeCriticalTaskQueueDefaultConfiguration implements NonTimeCriticalTaskQueueConfiguration {
 
 	/**

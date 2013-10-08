@@ -148,7 +148,7 @@ public abstract class DatabaseAdapter<T> {
 	 * 
 	 * @param c
 	 *            a context
-	 * @param query
+	 * @param q
 	 *            a query object
 	 * @return a cursor containing the result of the {@link Query}
 	 */
