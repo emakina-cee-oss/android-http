@@ -15,6 +15,10 @@
  */
 package at.diamonddogs.builder;
 
+import java.net.URI;
+import java.net.URL;
+
+import android.net.Uri;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.service.processor.ServiceProcessor;
@@ -93,6 +97,58 @@ public class WebRequestBuilder {
 	}
 
 	/**
+	 * Sets the target url of the {@link WebRequest}
+	 * 
+	 * @param url
+	 *            the url
+	 * @return the {@link WebRequestBuilder} instance (allows chaining)
+	 */
+	public WebRequestBuilder setUrl(String url) {
+		throwOnError();
+		webRequest.setUrl(url);
+		return this;
+	}
+
+	/**
+	 * Sets the target url of the {@link WebRequest}
+	 * 
+	 * @param url
+	 *            the url
+	 * @return the {@link WebRequestBuilder} instance (allows chaining)
+	 */
+	public WebRequestBuilder setUrl(URL url) {
+		throwOnError();
+		webRequest.setUrl(url);
+		return this;
+	}
+
+	/**
+	 * Sets the target url of the {@link WebRequest}
+	 * 
+	 * @param url
+	 *            the url
+	 * @return the {@link WebRequestBuilder} instance (allows chaining)
+	 */
+	public WebRequestBuilder setUrl(URI url) {
+		throwOnError();
+		webRequest.setUrl(url);
+		return this;
+	}
+
+	/**
+	 * Sets the target url of the {@link WebRequest}
+	 * 
+	 * @param url
+	 *            the url
+	 * @return the {@link WebRequestBuilder} instance (allows chaining)
+	 */
+	public WebRequestBuilder setUrl(Uri url) {
+		throwOnError();
+		webRequest.setUrl(url);
+		return this;
+	}
+
+	/**
 	 * Set the type of {@link WebRequest}
 	 * 
 	 * @param type
@@ -141,6 +197,7 @@ public class WebRequestBuilder {
 	 * @return the {@link WebRequestBuilder} instance (allows chaining)
 	 */
 	public WebRequestBuilder setConnectionTimeout(ConnectionTimeout timeout) {
+		throwOnError();
 		webRequest.setConnectionTimeout(getConnectionTimeout(timeout));
 		return this;
 	}
@@ -195,6 +252,7 @@ public class WebRequestBuilder {
 	 * @return a {@link WebRequest}
 	 */
 	public WebRequest getWebRequest() {
+		throwOnError();
 		return webRequest;
 	}
 
