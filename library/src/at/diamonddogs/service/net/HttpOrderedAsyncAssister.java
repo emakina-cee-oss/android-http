@@ -94,6 +94,19 @@ public class HttpOrderedAsyncAssister {
 	}
 
 	/**
+	 * Dispatches the safly unbind call to the {@link HttpServiceAssister} used
+	 * to
+	 * issue {@link WebRequest}s
+	 * 
+	 * @return <code>true</code> if {@link HttpService} was bound and therefore
+	 *         successfully unbound, <code>false</code> otherwise.
+	 * @see HttpServiceAssister#unbindService()
+	 */
+	public boolean safelyUnbindService() {
+		return assister.safelyUnbindService();
+	}
+
+	/**
 	 * Base {@link Handler} for ordered asynchronous {@link WebRequest}s. Uses
 	 * {@link NextWebRequestDelegate} to run the next {@link WebRequest} in
 	 * line.
