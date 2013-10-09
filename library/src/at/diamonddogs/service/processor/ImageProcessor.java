@@ -409,6 +409,20 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 			useDrawingCache = true;
 		}
 
+		/**
+		 * This method allows {@link Bitmap} processing before the
+		 * {@link Bitmap} is placed into the {@link ImageView}. This method does
+		 * not affect the default image to be displayed if not {@link Bitmap} is
+		 * present.
+		 * 
+		 * @param bitmap
+		 *            the {@link Bitmap} to be processed
+		 * @return the processed {@link Bitmap}
+		 */
+		public Bitmap postProcessBitmap(Bitmap bitmap) {
+			return bitmap;
+		}
+
 		@Override
 		public void handleMessage(Message msg) {
 			if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
@@ -424,8 +438,10 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 					if (bitmap == null && defaultImage != -1) {
 						imageView.setImageResource(defaultImage);
 					} else {
+						bitmap = postProcessBitmap(bitmap);
 						imageView.setImageBitmap(bitmap);
 					}
+
 					if (useDrawingCache) {
 						imageView.setDrawingCacheEnabled(true);
 						imageView.buildDrawingCache(true);
