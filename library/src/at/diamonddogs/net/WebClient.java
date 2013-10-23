@@ -114,6 +114,9 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 	}
 
 	private void saveData(InputStream i) throws IOException {
+		if (i == null) {
+			return;
+		}
 		TempFile tmp = webRequest.getTmpFile().second;
 		FileOutputStream fos = null;
 		try {
@@ -174,6 +177,9 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 	}
 
 	private WebReply getData(InputStream i, WebReply reply) throws IOException {
+		if (i == null) {
+			return reply;
+		}
 		byte buffer[] = new byte[READ_BUFFER_SIZE];
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
