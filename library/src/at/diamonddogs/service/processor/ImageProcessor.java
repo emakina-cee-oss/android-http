@@ -438,7 +438,9 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 					if (bitmap == null && defaultImage != -1) {
 						imageView.setImageResource(defaultImage);
 					} else {
-						bitmap = postProcessBitmap(bitmap);
+						if (bitmap != null) {
+							bitmap = postProcessBitmap(bitmap);
+						}
 						imageView.setImageBitmap(bitmap);
 					}
 
