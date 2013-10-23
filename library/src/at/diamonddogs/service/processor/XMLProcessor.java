@@ -44,7 +44,8 @@ public abstract class XMLProcessor<OUTPUT> extends DataProcessor<Document, OUTPU
 	protected DocumentBuilder builder;
 
 	/**
-	 * Creates an instance of XMLProcessor using a custom DocumentBuilderFactory
+	 * Creates an instance of XMLProcessor using a custom
+	 * {@link DocumentBuilderFactory}
 	 * 
 	 * @param factory
 	 */
@@ -54,7 +55,7 @@ public abstract class XMLProcessor<OUTPUT> extends DataProcessor<Document, OUTPU
 
 	/**
 	 * Creates an instance of XMLProcessor using a predefined
-	 * DocumentBuilderFactory
+	 * {@link DocumentBuilderFactory}
 	 */
 	public XMLProcessor() {
 		factory = DocumentBuilderFactory.newInstance();
