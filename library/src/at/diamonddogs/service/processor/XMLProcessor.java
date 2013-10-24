@@ -17,6 +17,8 @@ package at.diamonddogs.service.processor;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,6 +26,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import at.diamonddogs.exception.ProcessorExeception;
@@ -89,4 +93,192 @@ public abstract class XMLProcessor<OUTPUT> extends DataProcessor<Document, OUTPU
 		return dom;
 	}
 
+	/**
+	 * Gets the {@link String} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @return a {@link String}
+	 */
+	protected String getStringFromNode(Node node) {
+		return node.getTextContent();
+	}
+
+	/**
+	 * Gets the {@link boolean} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @return a {@link boolean}
+	 */
+	protected boolean getBooleanFromNode(Node node) {
+		return getBoolean(node.getTextContent());
+	}
+
+	/**
+	 * Gets the {@link byte} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @return a {@link byte}
+	 */
+	protected byte getByteFromNode(Node node) {
+		return getByte(node.getTextContent());
+	}
+
+	/**
+	 * Gets the {@link short} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @return a {@link short}
+	 */
+	protected short getShortFromNode(Node node) {
+		return getShort(node.getTextContent());
+	}
+
+	/**
+	 * Gets the {@link char} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @return a {@link char}
+	 */
+	protected char getCharFromNode(Node node) {
+		return getChar(node.getTextContent());
+	}
+
+	/**
+	 * Gets the {@link int} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @return a {@link int}
+	 */
+	protected int getIntFromNode(Node node) {
+		return getInt(node.getTextContent());
+	}
+
+	/**
+	 * Gets the {@link long} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @return a {@link long}
+	 */
+	protected long getLongFromNode(Node node) {
+		return getLong(node.getTextContent());
+	}
+
+	/**
+	 * Gets the {@link float} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @return a {@link float}
+	 */
+	protected float getFloatFromNode(Node node) {
+		return getFloat(node.getTextContent());
+	}
+
+	/**
+	 * Gets the {@link double} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @return a {@link double}
+	 */
+	protected double getDouble(Node node) {
+		return getDouble(node.getTextContent());
+	}
+
+	/**
+	 * Gets the {@link Enum} value of a {@link Node}
+	 * 
+	 * @param <T>
+	 *            the generic type of the {@link Enum} to obtain from the
+	 *            {@link Node}
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @param cls
+	 *            the {@link Class} instance of the {@link Enum} to obtain
+	 * @return an {@link Enum} of the provided type <T>
+	 */
+	protected <T extends Enum<T>> T getEnumFromNode(Node node, Class<T> cls) {
+		return getEnum(node.getTextContent(), cls);
+	}
+
+	/**
+	 * Gets the {@link Date} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @param formatter
+	 *            the {@link DateFormat} instance to parse the {@link Date}
+	 * @return a {@link Date} or <code>null</code> if parsing the date failed
+	 */
+	protected Date getDateFromNode(Node node, DateFormat formatter) {
+		return getDate(node.getTextContent(), formatter);
+	}
+
+	/**
+	 * Gets the {@link Date} value of a {@link Node}
+	 * 
+	 * @param node
+	 *            the {@link Node} whose value to get
+	 * @param format
+	 *            the {@link String} containing a valid date format
+	 * @return a {@link Date} or <code>null</code> if parsing the date failed
+	 */
+	protected Date getDateFromNode(Node node, String format) {
+		return getDate(node.getTextContent(), format);
+	}
+
+	/**
+	 * Checks if the node name equals the provided value using
+	 * {@link String#equals(String)}
+	 * 
+	 * @param node
+	 *            the node to check
+	 * @param nodeName
+	 *            the {@link String} that will be compared
+	 *            {@link Node#getNodeName()}
+	 * @return <code>true</code> if the {@link Node}'s name equals nodeName,
+	 *         <code>false</code> otherwise
+	 */
+	protected boolean nodeNameEquals(Node node, String nodeName) {
+		return node.getNodeName().equals(nodeName);
+	}
+
+	/**
+	 * Checks if the node name equals the provided value using
+	 * {@link String#equalsIgnoreCase(String)}
+	 * 
+	 * @param node
+	 *            the node to check
+	 * @param nodeName
+	 *            the {@link String} that will be compared
+	 *            {@link Node#getNodeName()}
+	 * @return <code>true</code> if the {@link Node}'s name equals nodeName,
+	 *         <code>false</code> otherwise
+	 */
+	protected boolean nodeNameEqualsIgnoreCase(Node node, String nodeName) {
+		return node.getNodeName().equalsIgnoreCase(nodeName);
+	}
+
+	/**
+	 * Casts the {@link Element} instance of a given {@link Node} if and only if
+	 * {@link Node} is in fact an {@link Element}
+	 * 
+	 * @param node
+	 *            the {@link Node} to cast
+	 * @return the {@link Element} casted node
+	 */
+	protected Element getNodeElement(Node node) {
+		if (node instanceof Element) {
+			return (Element) node;
+		} else {
+			return null;
+		}
+	}
 }
