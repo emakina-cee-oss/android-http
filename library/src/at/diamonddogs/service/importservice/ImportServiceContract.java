@@ -127,7 +127,10 @@ public abstract class ImportServiceContract<T extends Serializable> {
 	 *            the {@link Intent} that was used to start the service
 	 * @return an {@link IntentFilter}
 	 */
-	protected abstract IntentFilter getIntentFilter(Intent i);
+	protected IntentFilter getIntentFilter(Intent i) {
+		IntentFilter intentFilter = new IntentFilter(INTENT_ACTION_IMPORTCOMPLETED);
+		return intentFilter;
+	}
 
 	/**
 	 * Sends the import failed broadcast

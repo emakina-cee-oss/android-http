@@ -169,7 +169,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * @param progressListener
 	 *            a {@link ProgressListener} that will be informed of download
 	 *            progress
-	 * @return the a {@link WebRequestReturnContainer}
+	 * @return a {@link WebRequestReturnContainer}
 	 */
 	public WebRequestReturnContainer runWebRequest(final Handler handler, final WebRequest webRequest,
 			final DownloadProgressListener progressListener) {
@@ -328,15 +328,21 @@ public class HttpService extends Service implements WebClientReplyListener {
 				if (cachedObject != null) {
 					ret.payload = synchronousProcessor.obtainDataObjectFromCachedObject(this, webRequest, cachedObject);
 				} else {
-					ret.payload = synchronousProcessor.obtainDataObjectFromWebReply(this,
-							runSynchronousWebRequestFuture(webRequest, progressListener).get());
+					ReplyAdapter replyAdapter = runSynchronousWebRequestFuture(webRequest, progressListener).get();
+					ret.payload = synchronousProcessor.obtainDataObjectFromWebReply(this, replyAdapter);
+
+					WebReply reply = (WebReply) replyAdapter.getReply();
+					ret.httpStatusCode = reply.getHttpStatusCode();
+					ret.replyHeader = reply.getReplyHeader();
 				}
 			}
 		} catch (InterruptedException ie) {
 			ret.successful = false;
+			ret.throwable = ie;
 			LOGGER.debug("WebRequest interrupted " + webRequest);
 		} catch (Throwable tr) {
 			ret.successful = false;
+			ret.throwable = tr;
 			LOGGER.warn("Error getting result for " + webRequest, tr);
 		}
 		return ret;
@@ -735,16 +741,40 @@ public class HttpService extends Service implements WebClientReplyListener {
 		 * A flag indiciating the success of an operation
 		 */
 		private boolean successful;
+
 		/**
 		 * The id of the {@link WebRequest}
 		 */
 		private String id;
+
 		/**
 		 * The payload of the {@link WebRequest}. For synchronous
 		 * {@link WebRequest}s, this is the result of the webrequest, for
 		 * asynchronous {@link WebRequest} payload will always be null
 		 */
 		private Object payload;
+
+		/**
+		 * May contain the {@link Throwable} object that caused this
+		 * {@link WebRequest} not to be successful (if
+		 * {@link WebRequestReturnContainer#isSuccessful()} returns
+		 * <code>false</code>)
+		 */
+		private Throwable throwable;
+
+		/**
+		 * The HTTP status code returned by the webserver
+		 */
+		private int httpStatusCode;
+
+		/**
+		 * The reply header
+		 */
+		private Map<String, List<String>> replyHeader;
+
+		private WebRequestReturnContainer() {
+
+		}
 
 		@SuppressWarnings("javadoc")
 		public boolean isSuccessful() {
@@ -775,5 +805,36 @@ public class HttpService extends Service implements WebClientReplyListener {
 		public void setPayload(Object payload) {
 			this.payload = payload;
 		}
+
+		@SuppressWarnings("javadoc")
+		public Throwable getThrowable() {
+			return throwable;
+		}
+
+		@SuppressWarnings("javadoc")
+		public void setThrowable(Throwable throwable) {
+			this.throwable = throwable;
+		}
+
+		@SuppressWarnings("javadoc")
+		public int getHttpStatusCode() {
+			return httpStatusCode;
+		}
+
+		@SuppressWarnings("javadoc")
+		public void setHttpStatusCode(int httpStatusCode) {
+			this.httpStatusCode = httpStatusCode;
+		}
+
+		@SuppressWarnings("javadoc")
+		public Map<String, List<String>> getReplyHeader() {
+			return replyHeader;
+		}
+
+		@SuppressWarnings("javadoc")
+		public void setReplyHeader(Map<String, List<String>> replyHeader) {
+			this.replyHeader = replyHeader;
+		}
+
 	}
 }
