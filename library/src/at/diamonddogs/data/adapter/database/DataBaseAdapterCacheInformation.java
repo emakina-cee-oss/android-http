@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 the diamond:dogs|group
+ * Copyright (C) 2012, 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,6 +114,15 @@ public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInform
 		return dataObject;
 	}
 
+	/**
+	 * Get a {@link CacheInformation} array identified by the provided hash
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param hash
+	 *            the hash used to lookup the {@link CacheInformation}
+	 * @return a {@link CacheInformation} array
+	 */
 	public CacheInformation[] query(Context c, Object hash) {
 		Cursor cursor;
 		if (hash == null) {

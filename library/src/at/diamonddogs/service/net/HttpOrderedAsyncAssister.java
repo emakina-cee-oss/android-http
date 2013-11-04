@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 the diamond:dogs|group
+ * Copyright (C) 2012, 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,13 +94,30 @@ public class HttpOrderedAsyncAssister {
 	}
 
 	/**
+	 * Dispatches the safly unbind call to the {@link HttpServiceAssister} used
+	 * to
+	 * issue {@link WebRequest}s
+	 * 
+	 * @return <code>true</code> if {@link HttpService} was bound and therefore
+	 *         successfully unbound, <code>false</code> otherwise.
+	 * @see HttpServiceAssister#unbindService()
+	 */
+	public boolean safelyUnbindService() {
+		return assister.safelyUnbindService();
+	}
+
+	/**
 	 * Base {@link Handler} for ordered asynchronous {@link WebRequest}s. Uses
 	 * {@link NextWebRequestDelegate} to run the next {@link WebRequest} in
 	 * line.
+	 * 
+	 * @deprecated use {@link HttpOrderedAsyncHandler2} instead, offers a more
+	 *             clean interface
 	 */
+	@Deprecated
 	public static class HttpOrderedAsyncHandler extends Handler {
-		private HttpOrderedAsyncRequest request;
-		private HttpOrderedAsyncAssister orderedSyncAssister;
+		protected HttpOrderedAsyncRequest request;
+		protected HttpOrderedAsyncAssister orderedSyncAssister;
 
 		/**
 		 * Constructor
@@ -128,6 +145,72 @@ public class HttpOrderedAsyncAssister {
 		}
 
 		@SuppressWarnings("javadoc")
+		public void setRequest(HttpOrderedAsyncRequest request) {
+			this.request = request;
+		}
+	}
+
+	/**
+	 * Base {@link Handler} for ordered asynchronous {@link WebRequest}s. Uses
+	 * {@link NextWebRequestDelegate} to run the next {@link WebRequest} in
+	 * line.
+	 */
+	public abstract static class HttpOrderedAsyncHandler2 extends HttpOrderedAsyncHandler {
+		/**
+		 * Constructor
+		 * 
+		 * @param orderedSyncAssister
+		 *            the {@link HttpOrderedAsyncAssister} running the
+		 *            {@link WebRequest} that is handled by this {@link Handler}
+		 */
+		public HttpOrderedAsyncHandler2(HttpOrderedAsyncAssister orderedSyncAssister) {
+			super(orderedSyncAssister);
+		}
+
+		/**
+		 * You cannot override this method, please use
+		 * {@link HttpOrderedAsyncHandler2#onNextWebRequestComplete(Message)}
+		 * and
+		 * {@link HttpOrderedAsyncHandler2#onWebRequestChainCompleted(Message)}
+		 * to process the messages
+		 */
+		@Override
+		public final void handleMessage(Message msg) {
+			HttpOrderedAsyncRequest nextWebRequest = request.nextWebRequestDelegate.getNextWebRequest(msg);
+			if (nextWebRequest == null) {
+				onWebRequestChainCompleted(msg);
+			} else {
+				if (onNextWebRequestComplete(msg)) {
+					orderedSyncAssister.assister.runWebRequest(nextWebRequest.handler, nextWebRequest.webRequest,
+							nextWebRequest.serviceProcessor);
+				}
+			}
+		}
+
+		/**
+		 * This method will be called once right before the next
+		 * {@link WebRequest} in the {@link WebRequest} chain is started
+		 * 
+		 * @param msg
+		 *            the {@link Message} object created by the processor that
+		 *            handled this {@link WebRequest}
+		 * @return <code>true</code> if you want the next {@link WebRequest} to
+		 *         run, <code>false</code> otherwise. Returning
+		 *         <code>false</code> here will stop the whole
+		 *         {@link WebRequest} chain.
+		 */
+		public abstract boolean onNextWebRequestComplete(Message msg);
+
+		/**
+		 * Called when the last {@link WebRequest} of the ordered
+		 * {@link WebRequest} chain has been processed.
+		 * 
+		 * @param msg
+		 *            the {@link Message} object created by the processor that
+		 *            handled this {@link WebRequest}
+		 */
+		public abstract void onWebRequestChainCompleted(Message msg);
+
 		public void setRequest(HttpOrderedAsyncRequest request) {
 			this.request = request;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 the diamond:dogs|group
+ * Copyright (C) 2012, 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -491,6 +494,25 @@ public abstract class ServiceProcessor<OUTPUT> {
 				return null;
 			}
 			return Enum.valueOf(cls, s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return null;
+		}
+	}
+
+	protected Date getDate(String s, String format) {
+		try {
+			SimpleDateFormat formatter = new SimpleDateFormat(format);
+			return formatter.parse(s);
+		} catch (Throwable tr) {
+			LOGGER.warn("Could not parse: ", tr);
+			return null;
+		}
+	}
+
+	protected Date getDate(String s, DateFormat formatter) {
+		try {
+			return formatter.parse(s);
 		} catch (Throwable tr) {
 			LOGGER.warn("Could not parse: ", tr);
 			return null;

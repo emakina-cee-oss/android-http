@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 the diamond:dogs|group
+ * Copyright (C) 2012, 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import at.diamonddogs.data.dataobjects.CacheInformation;
  */
 public class CacheContentProvider extends ContentProvider {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(CacheContentProvider.class.getSimpleName());
 
 	private static String CACHECONTENTPROVIDER_AUTHORITY;
@@ -108,6 +107,7 @@ public class CacheContentProvider extends ContentProvider {
 			// @formatter:on
 		}
 
+		@SuppressWarnings("unused")
 		private CacheInformation[] query(SQLiteDatabase db, Object hash) {
 			DataBaseAdapterCacheInformation dbaci = new DataBaseAdapterCacheInformation();
 			Cursor cursor;

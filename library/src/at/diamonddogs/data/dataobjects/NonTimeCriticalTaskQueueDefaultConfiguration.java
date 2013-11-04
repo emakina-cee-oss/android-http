@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 the diamond:dogs|group
+ * Copyright (C) 2012, 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@ package at.diamonddogs.data.dataobjects;
 
 import at.diamonddogs.nontimecritical.NonTimeCriticalTaskQueue.NonTimeCriticalTaskQueueConfiguration;
 
+/**
+ * A default implementation for {@link NonTimeCriticalTaskQueueConfiguration}
+ */
 public class NonTimeCriticalTaskQueueDefaultConfiguration implements NonTimeCriticalTaskQueueConfiguration {
 
 	/**

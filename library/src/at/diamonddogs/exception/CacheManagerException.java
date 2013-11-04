@@ -15,6 +15,8 @@
  */
 package at.diamonddogs.exception;
 
+import at.diamonddogs.util.CacheManager;
+
 /**
  * Exception that is thrown by methods in the {@link CacheManager}
  */

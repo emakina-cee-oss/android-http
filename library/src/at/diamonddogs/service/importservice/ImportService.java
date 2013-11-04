@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013 the diamond:dogs|group
+ * Copyright (C) 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.diamonddogs.example.http.dataobject;
+package at.diamonddogs.service.importservice;
+
+import java.io.Serializable;
 
 /**
+ * This interface should be implemented by all import services
  * 
+ * @param <T>
+ *            the type of data returned by the import service
  */
-public class Weather {
-	private String text;
-	private float temperature;
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public float getTemperature() {
-		return temperature;
-	}
-
-	public void setTemperature(float temperature) {
-		this.temperature = temperature;
-	}
+public interface ImportService<T extends Serializable> {
+	/**
+	 * Sets the contract for this import service
+	 * 
+	 * @param contract
+	 *            the contract to use
+	 */
+	public void setContract(ImportServiceContract<T> contract);
 
 }

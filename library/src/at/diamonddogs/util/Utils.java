@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 the diamond:dogs|group
+ * Copyright (C) 2012, 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,23 @@ public class Utils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getSimpleName());
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Returns an array
+	 * 
+	 * @deprecated do not use this method, the implementation doesn't make a lot
+	 *             of sense and furthermore, the whole method is somewhat
+	 *             pointless.
+	 * @param <T>
+	 *            generic type of the items to place into an array
+	 * @param clazz
+	 *            the class of generic type <T>
+	 * @param values
+	 *            an arbitrary number of values
+	 * @return an array containing all values passed to this method
+	 */
+	@Deprecated
 	public static <T> T[] asArray(Class<T> clazz, T... values) {
+		@SuppressWarnings("unchecked")
 		T[] array = (T[]) Array.newInstance(clazz, values.length);
 		for (int i = 0; i < values.length; i++) {
 			array[i] = values[i];
@@ -62,10 +77,28 @@ public class Utils {
 		return array;
 	}
 
-	public static boolean isEmpty(Collection<?> list) {
-		return (list == null || list.size() == 0);
+	/**
+	 * Checks if a {@link Collection} is not <code>null</code> and not empty
+	 * 
+	 * @param collection
+	 *            the collection to check
+	 * @return <code>true</code> if the collection wasn't null and is not empty,
+	 *         <code>false</code> otherwise
+	 */
+	public static boolean isEmpty(Collection<?> collection) {
+		return (collection == null || collection.size() == 0);
 	}
 
+	/**
+	 * Checks if an is not <code>null</code> and not empty
+	 * 
+	 * @param <T>
+	 *            generic type of the array
+	 * @param array
+	 *            the array to check
+	 * @return <code>true</code> if the array wasn't null and is not empty,
+	 *         <code>false</code> otherwise
+	 */
 	public static <T> boolean isEmptyArray(T[] array) {
 		return array == null || array.length == 0;
 	}

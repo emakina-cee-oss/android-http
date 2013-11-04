@@ -29,8 +29,8 @@ public class SoapByteArrayAdapter {
 	/**
 	 * Default constructor
 	 * 
-	 * @param webReply
-	 *            the
+	 * @param data
+	 *            the data
 	 */
 	public SoapByteArrayAdapter(byte[] data) {
 		this.data = data;

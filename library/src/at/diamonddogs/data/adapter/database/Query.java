@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 the diamond:dogs|group
+ * Copyright (C) 2012, 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,12 @@ import android.util.Pair;
 /**
  * A Query implementation to be used in conjunction with {@link DatabaseAdapter}
  */
-
 public class Query implements Serializable {
+
+	/**
+	 * Serializable version ID
+	 */
+	private static final long serialVersionUID = 264618972515125929L;
 
 	/**
 	 * Optional Content Uri
@@ -64,10 +68,19 @@ public class Query implements Serializable {
 
 	public String sortOrder = null;
 
+	/**
+	 * Default constructor
+	 */
 	public Query() {
 
 	}
 
+	/**
+	 * {@link Uri} constructor
+	 * 
+	 * @param uri
+	 *            a content uri
+	 */
 	public Query(Uri uri) {
 		setUri(uri);
 	}
@@ -150,10 +163,12 @@ public class Query implements Serializable {
 				+ Arrays.toString(likeExpressions) + ", sortOrder=" + sortOrder + "]";
 	}
 
+	@SuppressWarnings("javadoc")
 	public Uri getUri() {
 		return TextUtils.isEmpty(uri) ? null : Uri.parse(uri);
 	}
 
+	@SuppressWarnings("javadoc")
 	public void setUri(Uri uri) {
 		this.uri = uri.toString();
 	}
