@@ -15,6 +15,9 @@
  */
 package at.diamonddogs.service.processor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -38,6 +41,8 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  *            usually a POJO
  */
 public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTPUT> implements SynchronousProcessor<OUTPUT> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DataProcessor.class.getSimpleName());
 
 	/**
 	 * Parses the content of data into an INPUT object
@@ -129,6 +134,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 	 */
 	@Override
 	public OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply) {
+		LOGGER.debug("status: " + ((WebReply) reply.getReply()).getHttpStatusCode());
 		cacheObjectToFile(c, reply);
 		return parse(createParsedObjectFromByteArray(((WebReply) reply.getReply()).getData()));
 	}
