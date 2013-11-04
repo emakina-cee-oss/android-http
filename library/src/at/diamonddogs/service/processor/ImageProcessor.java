@@ -107,7 +107,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		String filename = Utils.getMD5Hash(request.getUrl().toString());
 		if (filename != null && b != null) {
 			if (request.getCacheTime() != CacheInformation.CACHE_NO) {
-				File path = c.getExternalCacheDir();
+				File path = Utils.getCacheDir(c);
 				FileOutputStream fos = new FileOutputStream(new File(path, filename));
 				b.compress(CompressFormat.PNG, 0, fos);
 

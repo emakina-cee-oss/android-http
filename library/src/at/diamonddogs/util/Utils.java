@@ -15,6 +15,7 @@
  */
 package at.diamonddogs.util;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Array;
 import java.security.MessageDigest;
@@ -113,6 +114,22 @@ public class Utils {
 		} while (cursor.moveToNext());
 
 		return list;
+	}
+
+	/**
+	 * Get available cache directory
+	 * 
+	 * @param context
+	 *            a {@link Context}
+	 * @return a {@link File} pointing to a the external or internal cache
+	 *         directory
+	 */
+	public static File getCacheDir(Context context) {
+		File path = context.getExternalCacheDir();
+		if (path == null) {
+			path = context.getCacheDir();
+		}
+		return path;
 	}
 
 	/**
