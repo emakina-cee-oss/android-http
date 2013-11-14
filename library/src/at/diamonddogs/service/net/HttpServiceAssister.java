@@ -46,6 +46,7 @@ import at.diamonddogs.service.net.HttpService.WebRequestReturnContainer;
 import at.diamonddogs.service.processor.DataProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
 import at.diamonddogs.service.processor.SynchronousProcessor;
+import at.diamonddogs.util.AndroidUtils;
 
 /**
  * The {@link HttpServiceAssister} can be used to issue {@link WebRequest}s at
@@ -163,6 +164,9 @@ public class HttpServiceAssister {
 	 *         been bound or if binding is impossible.
 	 */
 	public boolean bindService() {
+		if (!AndroidUtils.getInstance().isServiceAvailable(context, HttpService.class)) {
+			throw new RuntimeException("You forgot to register the HttpService in your manifest!");
+		}
 		synchronousWebRequestPossible.set(true);
 		if (standardServiceConnection == null) {
 			standardServiceConnection = new HttpServiceAssisterConnection();
@@ -453,7 +457,7 @@ public class HttpServiceAssister {
 	 *         <code>false</code> if the timeout was reached
 	 */
 	private boolean waitForHttpService() {
-		LOGGER.info("Waiting on thread " + Thread.currentThread());
+		LOGGER.info("Waiting on thread " + Thread.currentThread().getId());
 		if (httpService != null) {
 			return true;
 		}
