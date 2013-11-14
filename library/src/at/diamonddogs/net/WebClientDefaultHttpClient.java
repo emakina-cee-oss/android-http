@@ -181,6 +181,9 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			LOGGER.debug("WebRequest Not modified: " + webRequest);
 			reply = handleResponseNotModified(statusCode, convertHeaders(response.getAllHeaders()));
 			break;
+		case HttpStatus.SC_NO_CONTENT:
+			reply = handleResponseOk(null, statusCode, convertHeaders(response.getAllHeaders()));
+			break;
 		default:
 			LOGGER.debug("WebRequest DEFAULT: " + webRequest);
 			HttpEntity entity = response.getEntity();

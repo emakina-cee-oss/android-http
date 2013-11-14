@@ -185,6 +185,8 @@ public class WebClientHttpURLConnection extends WebClient {
 			publishFileSize(connection.getContentLength());
 			reply = handleResponseOk(connection.getInputStream(), statusCode, connection.getHeaderFields());
 			break;
+		case HttpURLConnection.HTTP_NO_CONTENT:
+			reply = handleResponseOk(null, statusCode, connection.getHeaderFields());
 		case HttpURLConnection.HTTP_NOT_MODIFIED:
 			reply = handleResponseNotModified(statusCode, connection.getHeaderFields());
 			break;

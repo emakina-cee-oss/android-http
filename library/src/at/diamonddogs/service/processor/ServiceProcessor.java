@@ -224,7 +224,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			if (filename != null && data != null) {
 				if (request.getCacheTime() != CacheInformation.CACHE_NO) {
-					File path = context.getExternalCacheDir();
+					File path = Utils.getCacheDir(context);
 					FileOutputStream fos = new FileOutputStream(new File(path, filename));
 					bos = new BufferedOutputStream(fos);
 					bos.write(data);

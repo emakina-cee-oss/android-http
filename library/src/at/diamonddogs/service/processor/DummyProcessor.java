@@ -18,10 +18,7 @@ package at.diamonddogs.service.processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.content.Context;
 import android.os.Handler;
-import at.diamonddogs.data.adapter.ReplyAdapter;
-import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.util.CacheManager.CachedObject;
 
@@ -30,7 +27,7 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  * Processor.ID and register the Processor with the Service. If there is no data
  * to process use this class
  */
-public class DummyProcessor extends ServiceProcessor<Void> {
+public class DummyProcessor extends DataProcessor<Void, Void> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DummyProcessor.class.getSimpleName());
 
@@ -40,22 +37,21 @@ public class DummyProcessor extends ServiceProcessor<Void> {
 	public static final int ID = 91591;
 
 	@Override
-	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
-		LOGGER.info("Reply" + r);
-		if (r.getStatus() == Status.OK) {
-			handler.sendMessage(createReturnMessage(r, null));
-		} else {
-			handler.sendMessage(createErrorMessage(r.getThrowable(), r));
-		}
-
-	}
-
-	@Override
 	public void processCachedObject(CachedObject cachedObject, Handler handler, Request request) {
 	}
 
 	@Override
 	public int getProcessorID() {
 		return ID;
+	}
+
+	@Override
+	protected Void createParsedObjectFromByteArray(byte[] data) {
+		return null;
+	}
+
+	@Override
+	protected Void parse(Void inputObject) {
+		return null;
 	}
 }
