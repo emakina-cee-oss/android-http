@@ -55,6 +55,8 @@ public class StartActivity extends Activity {
 		adapter.add(new Example("CachingExampleActivity", "Demonstrates cached Webrequests", CachingExampleActivity.class));
 		adapter.add(new Example("NonTimeCriticalTasks", "Shows how to use the API that handles non time critical tasks",
 				NonTimeCriticalExampleActivity.class));
+		adapter.add(new Example("ImageLoadingExampleListActivity", "Shows how to work with images in lists",
+				ImageLoadingExampleListActivity.class));
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new OnItemClickListener() {
 
