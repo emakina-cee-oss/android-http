@@ -228,7 +228,11 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 		Map<String, String> header = webRequest.getHeader();
 		if (header != null) {
 			for (String field : header.keySet()) {
-				requestBase.setHeader(field, header.get(field));
+				if (webRequest.isAppendHeader()) {
+					requestBase.addHeader(field, header.get(field));
+				} else {
+					requestBase.setHeader(field, header.get(field));
+				}
 			}
 		}
 	}
