@@ -165,7 +165,11 @@ public class WebClientHttpURLConnection extends WebClient {
 		Map<String, String> header = webRequest.getHeader();
 		if (header != null) {
 			for (String field : header.keySet()) {
-				connection.setRequestProperty(field, header.get(field));
+				if (webRequest.isAppendHeader()) {
+					connection.addRequestProperty(field, header.get(field));
+				} else {
+					connection.setRequestProperty(field, header.get(field));
+				}
 			}
 		}
 	}

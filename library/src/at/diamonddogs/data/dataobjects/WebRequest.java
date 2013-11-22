@@ -123,6 +123,12 @@ public class WebRequest implements Request {
 	protected Map<String, String> header;
 
 	/**
+	 * If set to <code>true</code>, header fields will be appended instead of
+	 * overwritten
+	 */
+	protected boolean appendHeader = false;
+
+	/**
 	 * The time the result of this {@link WebRequest} should be cached, default
 	 * is {@link CacheInformation#CACHE_NO} which turns of caching altogether
 	 */
@@ -289,6 +295,16 @@ public class WebRequest implements Request {
 	@SuppressWarnings("javadoc")
 	public void setHeader(Map<String, String> header) {
 		this.header = header;
+	}
+
+	@SuppressWarnings("javadoc")
+	public boolean isAppendHeader() {
+		return appendHeader;
+	}
+
+	@SuppressWarnings("javadoc")
+	public void setAppendHeader(boolean appendHeader) {
+		this.appendHeader = appendHeader;
 	}
 
 	@SuppressWarnings("javadoc")
