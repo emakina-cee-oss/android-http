@@ -20,7 +20,7 @@ package at.diamonddogs.example.http.dataobject;
  */
 public class Weather {
 	private String text;
-	private float temperature;
+	private double temperature;
 
 	public String getText() {
 		return text;
@@ -30,11 +30,11 @@ public class Weather {
 		this.text = text;
 	}
 
-	public float getTemperature() {
+	public double getTemperature() {
 		return temperature;
 	}
 
-	public void setTemperature(float temperature) {
+	public void setTemperature(double temperature) {
 		this.temperature = temperature;
 	}
 
