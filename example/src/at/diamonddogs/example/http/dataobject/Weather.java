@@ -21,6 +21,7 @@ package at.diamonddogs.example.http.dataobject;
 public class Weather {
 	private String text;
 	private double temperature;
+	private String icon;
 
 	public String getText() {
 		return text;
@@ -36,6 +37,14 @@ public class Weather {
 
 	public void setTemperature(double temperature) {
 		this.temperature = temperature;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 
 }

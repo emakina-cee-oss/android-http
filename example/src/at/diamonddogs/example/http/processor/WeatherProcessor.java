@@ -41,6 +41,7 @@ public class WeatherProcessor extends JSONProcessor<Weather> {
 			Weather w = new Weather();
 			w.setTemperature(inputObject.getJSONObject("main").getDouble("temp"));
 			w.setText(inputObject.getJSONArray("weather").getJSONObject(0).getString("description"));
+			w.setIcon(inputObject.getJSONArray("weather").getJSONObject(0).getString("icon"));
 			return w;
 		} catch (Throwable tr) {
 			// This ProcessorException will be handled automatically by the
