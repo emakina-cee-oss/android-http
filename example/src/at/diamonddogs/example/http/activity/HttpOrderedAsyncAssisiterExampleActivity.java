@@ -21,12 +21,12 @@ import at.diamonddogs.example.http.R;
 import at.diamonddogs.example.http.dataobject.Weather;
 import at.diamonddogs.example.http.processor.WeatherProcessor;
 import at.diamonddogs.service.net.HttpOrderedAsyncAssister;
-import at.diamonddogs.service.net.HttpOrderedAsyncAssister.HttpOrderedAsyncHandler;
+import at.diamonddogs.service.net.HttpOrderedAsyncAssister.HttpOrderedAsyncHandler2;
 import at.diamonddogs.service.net.HttpOrderedAsyncAssister.HttpOrderedAsyncRequest;
 import at.diamonddogs.service.net.HttpOrderedAsyncAssister.NextWebRequestDelegate;
 import at.diamonddogs.service.net.HttpOrderedAsyncAssister.NoNextWebRequestDelegate;
 import at.diamonddogs.service.processor.HeadRequestProcessor;
-import at.diamonddogs.service.processor.ServiceProcessor;
+import at.diamonddogs.service.processor.ServiceProcessorMessageUtil;
 
 /**
  * A simple example that illustrates how asynchronous {@link WebRequest}s can be
@@ -71,14 +71,14 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 		// @formatter:off
 		HttpOrderedAsyncRequest initialRequest = new HttpOrderedAsyncRequest(
 				headRequest,
-				new HttpOrderedAsyncHandler(assister),
+				new WeatherHandler(assister),
 				new NextWebRequestDelegate() {
 					@Override
 					public HttpOrderedAsyncRequest getNextWebRequest(Message message) {
-						Map<String, List<String>> header = (Map<String, List<String>>)message.obj;
+						Map<String, List<String>> header = (Map<String, List<String>>) message.obj;
 						if (header != null) {
-							if (header.containsKey("Content-Encoding") && header.get("Content-Encoding").get(0).equals("gzip")) {
-								LOGGER.error("Content-Encoding is gzip, will run actual WebRequest now!");
+							if (header.containsKey("Content-Type") && header.get("Content-Type").get(0).equals("application/json; charset=utf-8")) {
+								LOGGER.error("Content-Type is application/json; charset=utf-8, will run actual WebRequest now!");
 								return new HttpOrderedAsyncRequest(
 										getWeatherRequest(),
 										new WeatherHandler(assister),
@@ -86,7 +86,7 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 										new WeatherProcessor()
 								);
 							} else {
-							LOGGER.error("Content-Encoding is not gzip but " + header.get("Content-Encoding") + " not running any successive WebRequests!");
+							LOGGER.error("Content-Type is notapplication/json; charset=utf-8 but " + header.get("Content-Type") + " not running any successive WebRequests!");
 								return null;
 							}
 						} else {
@@ -109,7 +109,7 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 		// default header request processor
 		webRequest.setProcessorId(HeadRequestProcessor.ID);
 
-		// required for HEAD request (yahoo specific!)
+		// required for HEAD request
 		webRequest.addHeaderField("Accept-Encoding", "gzip, deflate");
 		return webRequest;
 	}
@@ -122,8 +122,6 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 		// default header request processor
 		webRequest.setProcessorId(WeatherProcessor.ID);
 
-		// required for HEAD request (yahoo specific!)
-		webRequest.addHeaderField("Accept-Encoding", "gzip, deflate");
 		return webRequest;
 	}
 
@@ -137,7 +135,7 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 	}
 
 	/**
-	 * Formats the yahoo weather URL
+	 * Formats the openweathermap.org weather URL
 	 * 
 	 * @param country
 	 *            the country
@@ -146,12 +144,11 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 	 * @return the weather url for country & city
 	 */
 	private String getWeatherUrl(String country, String city) {
-		Uri u = Uri.parse("http://query.yahooapis.com/v1/public/yql");
+		Uri u = Uri.parse("http://api.openweathermap.org/data/2.5/weather/");
 		// @formatter:off
 		u = u.buildUpon()
-			.appendQueryParameter("q", "select * from weather.forecast where location in (select id from weather.search where query=\""+country+","+ city +"\")")
-			.appendQueryParameter("format", "xml")
-			.appendQueryParameter("env", "store://datatables.org/alltableswithkeys")
+			.appendQueryParameter("q", city + "," + country)
+			.appendQueryParameter("units", "metric")
 		.build();
 		// @formatter:on
 		return u.toString();
@@ -160,7 +157,7 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 	/**
 	 * This handler receives a callback once the web request has been processed.
 	 */
-	private class WeatherHandler extends HttpOrderedAsyncHandler {
+	private class WeatherHandler extends HttpOrderedAsyncHandler2 {
 		/**
 		 * @param arg0
 		 */
@@ -172,9 +169,21 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void handleMessage(Message msg) {
-			if (msg.what == WeatherProcessor.ID) {
-				if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
+		public boolean onNextWebRequestComplete(Message msg) {
+			if (ServiceProcessorMessageUtil.isFromProcessor(msg, HeadRequestProcessor.ID)) {
+				return ServiceProcessorMessageUtil.isSuccessful(msg);
+			} else {
+				return false;
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onWebRequestChainCompleted(Message msg) {
+			if (ServiceProcessorMessageUtil.isFromProcessor(msg, WeatherProcessor.ID)) {
+				if (ServiceProcessorMessageUtil.isSuccessful(msg)) {
 					Weather w = (Weather) msg.obj;
 					text.setText(w.getText());
 					temperature.setText(String.valueOf(w.getTemperature()));
@@ -182,7 +191,6 @@ public class HttpOrderedAsyncAssisiterExampleActivity extends Activity {
 					Toast.makeText(HttpOrderedAsyncAssisiterExampleActivity.this, "Error fetching weather", Toast.LENGTH_LONG).show();
 				}
 			}
-			super.handleMessage(msg);
 		}
 	}
 }

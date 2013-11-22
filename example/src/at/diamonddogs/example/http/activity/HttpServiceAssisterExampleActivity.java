@@ -114,7 +114,7 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 	}
 
 	/**
-	 * Formats the yahoo weather URL
+	 * Formats the openweathermap.org weather URL
 	 * 
 	 * @param country
 	 *            the country
@@ -123,12 +123,11 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 	 * @return the weather url for country & city
 	 */
 	private String getWeatherUrl(String country, String city) {
-		Uri u = Uri.parse("http://query.yahooapis.com/v1/public/yql");
+		Uri u = Uri.parse("http://api.openweathermap.org/data/2.5/weather/");
 		// @formatter:off
 		u = u.buildUpon()
-			.appendQueryParameter("q", "select * from weather.forecast where location in (select id from weather.search where query=\""+country+","+ city +"\")")
-			.appendQueryParameter("format", "xml")
-			.appendQueryParameter("env", "store://datatables.org/alltableswithkeys")
+			.appendQueryParameter("q", city + "," + country)
+			.appendQueryParameter("units", "metric")
 		.build();
 		// @formatter:on
 		return u.toString();
@@ -152,9 +151,6 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 
 			// default header request processor
 			syncWebRequest.setProcessorId(HeadRequestProcessor.ID);
-
-			// required for HEAD request (yahoo specific!)
-			syncWebRequest.addHeaderField("Accept-Encoding", "gzip, deflate");
 
 			return assister.runSynchronousWebRequest(syncWebRequest, new HeadRequestProcessor());
 		}
