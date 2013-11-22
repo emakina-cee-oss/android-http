@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import at.diamonddogs.data.dataobjects.WebRequest;
@@ -22,7 +23,9 @@ import at.diamonddogs.example.http.processor.WeatherProcessor;
 import at.diamonddogs.service.net.HttpService.WebRequestReturnContainer;
 import at.diamonddogs.service.net.HttpServiceAssister;
 import at.diamonddogs.service.processor.HeadRequestProcessor;
-import at.diamonddogs.service.processor.ServiceProcessor;
+import at.diamonddogs.service.processor.ImageProcessor;
+import at.diamonddogs.service.processor.ImageProcessor.ImageProcessHandler;
+import at.diamonddogs.service.processor.ServiceProcessorMessageUtil;
 
 /**
  * {@link HttpServiceAssisterExampleActivity} illustrates the use of the
@@ -44,6 +47,11 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 	 */
 	private TextView temperature;
 
+	/**
+	 * The weather image
+	 */
+	private ImageView image;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,6 +59,7 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 		assister = new HttpServiceAssister(this);
 		text = (TextView) findViewById(R.id.httpserviceassisterexampleactivity_text);
 		temperature = (TextView) findViewById(R.id.httpserviceassisterexampleactivity_temperature);
+		image = (ImageView) findViewById(R.id.httpserviceassisterexampleactivity_image);
 	}
 
 	/**
@@ -134,6 +143,24 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 	}
 
 	/**
+	 * Runs an Image {@link WebRequest} and displays the image on a given
+	 * {@link ImageView}
+	 * 
+	 * @param w
+	 *            a {@link Weather} object
+	 */
+	private void runImageRequest(Weather w) {
+		String imageUrl = "http://openweathermap.org/img/w/" + w.getIcon() + ".png";
+
+		// use this helper method to obtain a valid image WebRequest
+		WebRequest imageRequest = ImageProcessor.getDefaultImageRequest(imageUrl);
+
+		// ImageProcessHanlder will take care of displaying the image, no
+		// additional work required!
+		assister.runWebRequest(new ImageProcessHandler(image, imageUrl), imageRequest, new ImageProcessor());
+	}
+
+	/**
 	 * This implementation of {@link AsyncTask} is used to execute a synchronous
 	 * HEAD {@link WebRequest}. As in {@link HttpExampleActivity}, the headers
 	 * will be logged and not displayed on the UI.
@@ -185,11 +212,13 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if (msg.what == WeatherProcessor.ID) {
-				if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
+			if (ServiceProcessorMessageUtil.isFromProcessor(msg, WeatherProcessor.ID)) {
+				if (ServiceProcessorMessageUtil.isSuccessful(msg)) {
 					Weather w = (Weather) msg.obj;
 					text.setText(w.getText());
 					temperature.setText(String.valueOf(w.getTemperature()));
+
+					runImageRequest(w);
 				} else {
 					Toast.makeText(HttpServiceAssisterExampleActivity.this, "Error fetching weather", Toast.LENGTH_LONG).show();
 				}
