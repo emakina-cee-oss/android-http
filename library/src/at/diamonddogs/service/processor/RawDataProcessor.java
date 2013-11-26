@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013 the diamond:dogs|group
+ * Copyright (C) 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,38 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.diamonddogs.example.http.dataobject;
+package at.diamonddogs.service.processor;
+
 
 /**
- * 
+ * This processor dispatches the raw data to the caller.
  */
-public class Weather {
-	private String text;
-	private double temperature;
-	private String icon;
+public class RawDataProcessor extends DataProcessor<byte[], byte[]> {
+	public static final int ID = 32917626;
 
-	public String getText() {
-		return text;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected byte[] createParsedObjectFromByteArray(byte[] data) {
+		return data;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected byte[] parse(byte[] inputObject) {
+		return inputObject;
 	}
 
-	public double getTemperature() {
-		return temperature;
-	}
-
-	public void setTemperature(double temperature) {
-		this.temperature = temperature;
-	}
-
-	public String getIcon() {
-		return icon;
-	}
-
-	public void setIcon(String icon) {
-		this.icon = icon;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getProcessorID() {
+		return 32917626;
 	}
 
 }

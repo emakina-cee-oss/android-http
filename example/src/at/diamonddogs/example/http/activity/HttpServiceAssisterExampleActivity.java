@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import at.diamonddogs.data.dataobjects.WebRequest;
@@ -22,7 +23,9 @@ import at.diamonddogs.example.http.processor.WeatherProcessor;
 import at.diamonddogs.service.net.HttpService.WebRequestReturnContainer;
 import at.diamonddogs.service.net.HttpServiceAssister;
 import at.diamonddogs.service.processor.HeadRequestProcessor;
-import at.diamonddogs.service.processor.ServiceProcessor;
+import at.diamonddogs.service.processor.ImageProcessor;
+import at.diamonddogs.service.processor.ImageProcessor.ImageProcessHandler;
+import at.diamonddogs.service.processor.ServiceProcessorMessageUtil;
 
 /**
  * {@link HttpServiceAssisterExampleActivity} illustrates the use of the
@@ -44,6 +47,11 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 	 */
 	private TextView temperature;
 
+	/**
+	 * The weather image
+	 */
+	private ImageView image;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,6 +59,7 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 		assister = new HttpServiceAssister(this);
 		text = (TextView) findViewById(R.id.httpserviceassisterexampleactivity_text);
 		temperature = (TextView) findViewById(R.id.httpserviceassisterexampleactivity_temperature);
+		image = (ImageView) findViewById(R.id.httpserviceassisterexampleactivity_image);
 	}
 
 	/**
@@ -114,7 +123,7 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 	}
 
 	/**
-	 * Formats the yahoo weather URL
+	 * Formats the openweathermap.org weather URL
 	 * 
 	 * @param country
 	 *            the country
@@ -123,15 +132,32 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 	 * @return the weather url for country & city
 	 */
 	private String getWeatherUrl(String country, String city) {
-		Uri u = Uri.parse("http://query.yahooapis.com/v1/public/yql");
+		Uri u = Uri.parse("http://api.openweathermap.org/data/2.5/weather/");
 		// @formatter:off
 		u = u.buildUpon()
-			.appendQueryParameter("q", "select * from weather.forecast where location in (select id from weather.search where query=\""+country+","+ city +"\")")
-			.appendQueryParameter("format", "xml")
-			.appendQueryParameter("env", "store://datatables.org/alltableswithkeys")
+			.appendQueryParameter("q", city + "," + country)
+			.appendQueryParameter("units", "metric")
 		.build();
 		// @formatter:on
 		return u.toString();
+	}
+
+	/**
+	 * Runs an Image {@link WebRequest} and displays the image on a given
+	 * {@link ImageView}
+	 * 
+	 * @param w
+	 *            a {@link Weather} object
+	 */
+	private void runImageRequest(Weather w) {
+		String imageUrl = "http://openweathermap.org/img/w/" + w.getIcon() + ".png";
+
+		// use this helper method to obtain a valid image WebRequest
+		WebRequest imageRequest = ImageProcessor.getDefaultImageRequest(imageUrl);
+
+		// ImageProcessHanlder will take care of displaying the image, no
+		// additional work required!
+		assister.runWebRequest(new ImageProcessHandler(image, imageUrl), imageRequest, new ImageProcessor());
 	}
 
 	/**
@@ -152,9 +178,6 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 
 			// default header request processor
 			syncWebRequest.setProcessorId(HeadRequestProcessor.ID);
-
-			// required for HEAD request (yahoo specific!)
-			syncWebRequest.addHeaderField("Accept-Encoding", "gzip, deflate");
 
 			return assister.runSynchronousWebRequest(syncWebRequest, new HeadRequestProcessor());
 		}
@@ -189,11 +212,13 @@ public class HttpServiceAssisterExampleActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if (msg.what == WeatherProcessor.ID) {
-				if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
+			if (ServiceProcessorMessageUtil.isFromProcessor(msg, WeatherProcessor.ID)) {
+				if (ServiceProcessorMessageUtil.isSuccessful(msg)) {
 					Weather w = (Weather) msg.obj;
 					text.setText(w.getText());
 					temperature.setText(String.valueOf(w.getTemperature()));
+
+					runImageRequest(w);
 				} else {
 					Toast.makeText(HttpServiceAssisterExampleActivity.this, "Error fetching weather", Toast.LENGTH_LONG).show();
 				}

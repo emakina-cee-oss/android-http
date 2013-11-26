@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012, 2013 the diamond:dogs|group
+ * Copyright (C) 2013 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,36 +15,20 @@
  */
 package at.diamonddogs.example.http.dataobject;
 
+import java.util.List;
+
 /**
  * 
  */
-public class Weather {
-	private String text;
-	private double temperature;
-	private String icon;
+public class WebComic {
+	private List<String> imagePaths;
 
-	public String getText() {
-		return text;
+	public List<String> getImagePaths() {
+		return imagePaths;
 	}
 
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public double getTemperature() {
-		return temperature;
-	}
-
-	public void setTemperature(double temperature) {
-		this.temperature = temperature;
-	}
-
-	public String getIcon() {
-		return icon;
-	}
-
-	public void setIcon(String icon) {
-		this.icon = icon;
+	public void setImagePaths(List<String> imagePaths) {
+		this.imagePaths = imagePaths;
 	}
 
 }

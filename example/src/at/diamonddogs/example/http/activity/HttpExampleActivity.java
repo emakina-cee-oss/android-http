@@ -40,7 +40,7 @@ import at.diamonddogs.example.http.processor.WeatherProcessor;
 import at.diamonddogs.service.net.HttpService;
 import at.diamonddogs.service.net.HttpService.HttpServiceBinder;
 import at.diamonddogs.service.processor.HeadRequestProcessor;
-import at.diamonddogs.service.processor.ServiceProcessor;
+import at.diamonddogs.service.processor.ServiceProcessorMessageUtil;
 
 /**
  * Basic HTTP request example
@@ -127,9 +127,6 @@ public class HttpExampleActivity extends Activity {
 		// default header request processor
 		syncWebRequest.setProcessorId(HeadRequestProcessor.ID);
 
-		// required for HEAD request (yahoo specific!)
-		syncWebRequest.addHeaderField("Accept-Encoding", "gzip, deflate");
-
 		Map<String, List<String>> headers = (Map<String, List<String>>) httpService.runSynchronousWebRequest(syncWebRequest).getPayload();
 		if (headers != null) {
 			for (String key : headers.keySet()) {
@@ -161,7 +158,7 @@ public class HttpExampleActivity extends Activity {
 	}
 
 	/**
-	 * Formats the yahoo weather URL
+	 * Formats the openweathermap.org weather URL
 	 * 
 	 * @param country
 	 *            the country
@@ -170,12 +167,11 @@ public class HttpExampleActivity extends Activity {
 	 * @return the weather url for country & city
 	 */
 	private String getWeatherUrl(String country, String city) {
-		Uri u = Uri.parse("http://query.yahooapis.com/v1/public/yql");
+		Uri u = Uri.parse("http://api.openweathermap.org/data/2.5/weather/");
 		// @formatter:off
 		u = u.buildUpon()
-			.appendQueryParameter("q", "select * from weather.forecast where location in (select id from weather.search where query=\""+country+","+ city +"\")")
-			.appendQueryParameter("format", "xml")
-			.appendQueryParameter("env", "store://datatables.org/alltableswithkeys")
+			.appendQueryParameter("q", city + "," + country)
+			.appendQueryParameter("units", "metric")
 		.build();
 		// @formatter:on
 		return u.toString();
@@ -233,15 +229,16 @@ public class HttpExampleActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if (msg.what == WeatherProcessor.ID) {
-				if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
+			if (ServiceProcessorMessageUtil.isFromProcessor(msg, WeatherProcessor.ID)) {
+				if (ServiceProcessorMessageUtil.isSuccessful(msg)) {
 					Weather w = (Weather) msg.obj;
 					text.setText(w.getText());
 					temperature.setText(String.valueOf(w.getTemperature()));
 
 					// getting the http status code
-					LOGGER.info("The HTTP status code is: " + msg.getData().getInt(ServiceProcessor.BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE));
+					LOGGER.info("The HTTP status code is: " + ServiceProcessorMessageUtil.getHttpStatusCode(msg));
 				} else {
+					LOGGER.error("Error while fetching weather.", ServiceProcessorMessageUtil.getThrowable(msg));
 					Toast.makeText(HttpExampleActivity.this, "Error fetching weather", Toast.LENGTH_LONG).show();
 				}
 			}

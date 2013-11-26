@@ -15,14 +15,11 @@
  */
 package at.diamonddogs.example.http.processor;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.json.JSONObject;
 
 import at.diamonddogs.example.http.dataobject.Weather;
-import at.diamonddogs.service.processor.XMLProcessor;
+import at.diamonddogs.exception.ProcessorExeception;
+import at.diamonddogs.service.processor.JSONProcessor;
 
 /**
  * All methods in this class, except getProcessorID(), will be executed in a
@@ -30,24 +27,27 @@ import at.diamonddogs.service.processor.XMLProcessor;
  * 
  * 
  */
-public class WeatherProcessor extends XMLProcessor<Weather> {
+public class WeatherProcessor extends JSONProcessor<Weather> {
 
 	public static final int ID = 124345724;
 
 	/**
-	 * Callback method that will be called once a {@link Document} has been
-	 * created from the byte data contained in the r.eply
+	 * Callback method that will be called once a {@link JSONObject} has been
+	 * created from the byte data contained in the reply
 	 */
 	@Override
-	protected Weather parse(Document inputObject) {
-		Weather ret = new Weather();
-		Element root = inputObject.getDocumentElement();
-		NodeList condition = root.getElementsByTagNameNS("http://xml.weather.yahoo.com/ns/rss/1.0", "condition");
-		Node weatherNode = condition.item(0);
-		NamedNodeMap weatherAttributes = weatherNode.getAttributes();
-		ret.setTemperature(Float.parseFloat(weatherAttributes.getNamedItem("temp").getNodeValue()));
-		ret.setText(weatherAttributes.getNamedItem("text").getNodeValue());
-		return ret;
+	protected Weather parse(JSONObject inputObject) {
+		try {
+			Weather w = new Weather();
+			w.setTemperature(inputObject.getJSONObject("main").getDouble("temp"));
+			w.setText(inputObject.getJSONArray("weather").getJSONObject(0).getString("description"));
+			w.setIcon(inputObject.getJSONArray("weather").getJSONObject(0).getString("icon"));
+			return w;
+		} catch (Throwable tr) {
+			// This ProcessorException will be handled automatically by the
+			// DataProcessor super class
+			throw new ProcessorExeception(tr);
+		}
 	}
 
 	/**
@@ -57,5 +57,4 @@ public class WeatherProcessor extends XMLProcessor<Weather> {
 	public int getProcessorID() {
 		return ID;
 	}
-
 }
