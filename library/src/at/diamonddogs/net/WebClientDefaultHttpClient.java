@@ -44,7 +44,6 @@ import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -62,6 +61,8 @@ import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.exception.WebClientException;
+import at.diamonddogs.net.ssl.CustomSSLSocketFactory;
+import at.diamonddogs.net.ssl.SSLHelper;
 
 /**
  * This {@link WebClient} will be used on Froyo and below. Please do not use
@@ -89,9 +90,8 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 	 */
 	public WebClientDefaultHttpClient(Context context) {
 		super(context);
-		SSLSocketFactory sslSocketFactory = SSLHelper.getInstance().SSL_FACTORY_APACHE;
+		CustomSSLSocketFactory sslSocketFactory = SSLHelper.getInstance().SSL_FACTORY_APACHE;
 		if (sslSocketFactory != null) {
-			sslSocketFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 			SchemeRegistry registry = new SchemeRegistry();
 			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 			registry.register(new Scheme("https", sslSocketFactory, 443));

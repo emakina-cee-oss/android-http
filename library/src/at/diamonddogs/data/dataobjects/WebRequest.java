@@ -173,6 +173,16 @@ public class WebRequest implements Request {
 	 */
 	protected boolean checkConnectivityPing = false;
 
+	private boolean getStream = false;
+
+	public void setGetStream(boolean getStream) {
+		this.getStream = getStream;
+	}
+
+	public boolean isGetStream() {
+		return getStream;
+	}
+
 	@SuppressWarnings("javadoc")
 	public boolean isCancelled() {
 		return isCancelled;

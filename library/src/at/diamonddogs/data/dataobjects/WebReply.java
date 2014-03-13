@@ -15,6 +15,7 @@
  */
 package at.diamonddogs.data.dataobjects;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,16 @@ public class WebReply implements Reply {
 	protected byte[] data;
 	/** the header of the reply */
 	protected Map<String, List<String>> replyHeader;
+
+	protected InputStream inputStream;
+
+	public void setInputStream(InputStream inputStream) {
+		this.inputStream = inputStream;
+	}
+
+	public InputStream getInputStream() {
+		return inputStream;
+	}
 
 	@SuppressWarnings("javadoc")
 	public int getHttpStatusCode() {

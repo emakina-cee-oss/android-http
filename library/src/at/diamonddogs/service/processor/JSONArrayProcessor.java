@@ -35,11 +35,10 @@ public abstract class JSONArrayProcessor<OUTPUT> extends DataProcessor<JSONArray
 			String jsonString = new String(data, 0, data.length);
 
 			JSONArray jsonData = new JSONArray(jsonString);
-
+			jsonString = null;
 			return jsonData;
 		} catch (JSONException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
 }

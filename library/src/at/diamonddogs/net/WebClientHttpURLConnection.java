@@ -32,6 +32,7 @@ import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.exception.WebClientException;
+import at.diamonddogs.net.ssl.SSLHelper;
 
 /**
  * This {@link WebClient} will be used on Gingerbread and above. Please do not
@@ -110,7 +111,7 @@ public class WebClientHttpURLConnection extends WebClient {
 				listenerReply = createListenerReply(webRequest, null, tr, Status.FAILED);
 				LOGGER.info("Error running webrequest: " + webRequest.getUrl(), tr);
 			} finally {
-				if (connection != null) {
+				if (connection != null && !webRequest.isGetStream()) {
 					connection.disconnect();
 				}
 			}

@@ -15,6 +15,7 @@
  */
 package at.diamonddogs.net;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -180,6 +181,16 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 		if (i == null) {
 			return reply;
 		}
+
+		if (webRequest.isGetStream()) {
+			if (isGzipEncoded(reply)) {
+				reply.setInputStream(new GZIPInputStream(i));
+			} else {
+				reply.setInputStream(i);
+			}
+			return reply;
+		}
+
 		byte buffer[] = new byte[READ_BUFFER_SIZE];
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
