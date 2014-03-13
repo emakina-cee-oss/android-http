@@ -84,6 +84,21 @@ public class SSLHelper {
 	}
 
 	/**
+	 * Register a keystore with SSL (APACHE && JAVA)
+	 * 
+	 * @param c
+	 *            a {@link Context}
+	 * @param resourceId
+	 *            the resource id of the keystore
+	 * @param password
+	 *            the password of the keystore
+	 * @return true on success, false otherwise
+	 */
+	public boolean initAllSSLFactory(Context c, int resourceId, String password) {
+		return initSSLFactoryApache(c, resourceId, password) && initSSLFactoryJava(c, resourceId, password);
+	}
+
+	/**
 	 * Register a keystore with SSL (APACHE)
 	 * 
 	 * @param c
