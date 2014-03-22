@@ -106,6 +106,7 @@ public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFacto
 	 * @see org.apache.http.conn.scheme.SocketFactory#isSecure(java.net.Socket)
 	 */
 	@Override
+	@Deprecated
 	public boolean isSecure(Socket socket) throws IllegalArgumentException {
 		return true;
 	}
