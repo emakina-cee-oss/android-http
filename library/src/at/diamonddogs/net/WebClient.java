@@ -15,7 +15,6 @@
  */
 package at.diamonddogs.net;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,6 +39,8 @@ import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.TempFile;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.http.BuildConfig;
+import at.diamonddogs.util.Utils;
 
 /**
  * An abstract {@link WebClient} to be used when implementing new
@@ -218,6 +219,10 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 			} else {
 				break;
 			}
+		}
+		if (BuildConfig.DEBUG) {
+			byte[] array = baos.toByteArray();
+			LOGGER.error("md5: " + Utils.getMD5Hash(array) + " " + webRequest.getUrl());
 		}
 		reply.setData(baos.toByteArray());
 		try {

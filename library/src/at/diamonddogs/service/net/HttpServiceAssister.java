@@ -27,6 +27,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RecoverySystem.ProgressListener;
@@ -68,6 +69,10 @@ public class HttpServiceAssister {
 	 * Service binding timeout for synchronous {@link WebRequest}s.
 	 */
 	private static final int SYNC_REQUEST_BINDING_TIMEOUT = 2000;
+
+	private static final int SYNC_REQUEST_BINDING_TIMEOUT_DEBUG = 200000;
+
+	private int syncRequestBindingTimeout;
 
 	/**
 	 * A {@link Context} object that will be used for all Android specific
@@ -137,6 +142,7 @@ public class HttpServiceAssister {
 		this.pendingWebRequests = new LinkedList<WebRequestInformation>();
 		this.nonTimeCriticalTaskManager = new NonTimeCriticalTaskManager(
 				new NonTimeCriticalTaskQueueConfigurationDefaultFactory().newInstance(), this);
+		initBindingTimeout();
 	}
 
 	/**
@@ -152,6 +158,11 @@ public class HttpServiceAssister {
 		this.context = context;
 		this.pendingWebRequests = new LinkedList<WebRequestInformation>();
 		this.nonTimeCriticalTaskManager = new NonTimeCriticalTaskManager(factory.newInstance(), this);
+		initBindingTimeout();
+	}
+
+	private void initBindingTimeout() {
+		syncRequestBindingTimeout = Debug.isDebuggerConnected() ? SYNC_REQUEST_BINDING_TIMEOUT_DEBUG : SYNC_REQUEST_BINDING_TIMEOUT;
 	}
 
 	/**
