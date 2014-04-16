@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 the diamond:dogs|group
+ * Copyright (C) 2014 the diamond:dogs|group
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,6 +106,7 @@ public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFacto
 	 * @see org.apache.http.conn.scheme.SocketFactory#isSecure(java.net.Socket)
 	 */
 	@Override
+	@Deprecated
 	public boolean isSecure(Socket socket) throws IllegalArgumentException {
 		return true;
 	}
