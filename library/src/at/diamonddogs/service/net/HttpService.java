@@ -66,13 +66,13 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * The core thread pool size, refer to {@link ThreadPoolExecutor} for more
 	 * information
 	 */
-	private static final int POOL_SIZE_CORE = 10;
+	private static final int POOL_SIZE_CORE = 4;
 
 	/**
 	 * The maximum thread pool size, refer to {@link ThreadPoolExecutor} for
 	 * more information
 	 */
-	private static final int POOL_SIZE_MAX = 20;
+	private static final int POOL_SIZE_MAX = 8;
 
 	/**
 	 * The thread pool keep alive time, refer to {@link ThreadPoolExecutor} for
