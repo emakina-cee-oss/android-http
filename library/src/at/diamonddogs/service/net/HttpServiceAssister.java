@@ -474,7 +474,7 @@ public class HttpServiceAssister {
 		}
 		synchronized (monitor) {
 			try {
-				monitor.wait(SYNC_REQUEST_BINDING_TIMEOUT);
+				monitor.wait(syncRequestBindingTimeout);
 				return httpService != null;
 			} catch (Throwable tr) {
 				LOGGER.debug("Thread Interruption", tr);
