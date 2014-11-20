@@ -89,6 +89,10 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 	 */
 	protected boolean useMemCache = true;
 
+	public void setUseMemCache(boolean useMemCache) {
+		this.useMemCache = useMemCache;
+	}
+
 	@Override
 	public void processWebReply(Context c, ReplyAdapter r, Handler handler) {
 		LOGGER.info("processing imagerequest from: " + r.getRequest().getUrl());
@@ -182,11 +186,14 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 
 	private void processFileCache(byte[] data, Handler handler, WebRequest webRequest) throws IllegalArgumentException {
 		Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions);
+
 		if (b == null) {
 			handler.sendMessage(createErrorMessage(new IllegalArgumentException("Couldn't decode Bitmap from data"), webRequest));
 			return;
 		}
-		CacheManager.getInstance().addToMemoryCache(webRequest.getUrl().toString(), webRequest.getUrl().toString(), b);
+		if (useMemCache) {
+			CacheManager.getInstance().addToMemoryCache(webRequest.getUrl().toString(), webRequest.getUrl().toString(), b);
+		}
 		handler.sendMessage(createReturnMessage(webRequest, b));
 	}
 
