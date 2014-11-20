@@ -105,12 +105,12 @@ public class WebRequest implements Request {
 	/**
 	 * The read timeout in ms
 	 */
-	protected int readTimeout = 50000;
+	protected int readTimeout = 30000;
 
 	/**
 	 * The connection timeout in ms
 	 */
-	protected int connectionTimeout = 50000;
+	protected int connectionTimeout = 30000;
 
 	/**
 	 * Indicates that redirects should be followed (or not)
