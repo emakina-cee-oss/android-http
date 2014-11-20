@@ -15,7 +15,10 @@
  */
 package at.diamonddogs.net;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ProtocolException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
@@ -56,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
+import android.os.Environment;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebReply;
@@ -90,23 +94,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 	 */
 	public WebClientDefaultHttpClient(Context context) {
 		super(context);
-		CustomSSLSocketFactory sslSocketFactory = SSLHelper.getInstance().SSL_FACTORY_APACHE;
-		if (sslSocketFactory != null) {
-			SchemeRegistry registry = new SchemeRegistry();
-			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-			registry.register(new Scheme("https", sslSocketFactory, 443));
-			HttpParams params = new BasicHttpParams();
-			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-			ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
-			httpClient = new DefaultHttpClient(ccm, params);
-		} else {
-			httpClient = new DefaultHttpClient();
-		}
-		httpClient.setHttpRequestRetryHandler(this);
-		if (followProtocolRedirect) {
-			httpClient.setRedirectHandler(this);
-		}
+
 	}
 
 	@Override
@@ -141,6 +129,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			configureConnection();
 
 			LOGGER.info("Running RequestBase: " + requestBase);
+			initHttpClient();
 			response = httpClient.execute(requestBase);
 			reply = runRequest(response);
 
@@ -156,6 +145,26 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			webClientReplyListener.onWebReply(this, listenerReply);
 		}
 		return listenerReply;
+	}
+
+	private void initHttpClient() {
+		CustomSSLSocketFactory sslSocketFactory = SSLHelper.getInstance().SSL_FACTORY_APACHE;
+		if (sslSocketFactory != null) {
+			SchemeRegistry registry = new SchemeRegistry();
+			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+			registry.register(new Scheme("https", sslSocketFactory, 443));
+			HttpParams params = new BasicHttpParams();
+			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+			ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+			httpClient = new DefaultHttpClient(ccm, params);
+		} else {
+			httpClient = new DefaultHttpClient();
+		}
+		httpClient.setHttpRequestRetryHandler(this);
+		if (followProtocolRedirect) {
+			httpClient.setRedirectHandler(this);
+		}
 	}
 
 	private void handlePostParameters(HttpPost post) throws Throwable {
@@ -196,6 +205,22 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			break;
 		}
 		return reply;
+	}
+
+	private void writeErrorLog(InputStream content) {
+		try {
+			FileOutputStream fos = new FileOutputStream(new File(Environment.getExternalStorageDirectory(), "errorlog.txt"));
+			byte[] buffer = new byte[1024];
+			int len;
+			while ((len = content.read(buffer)) != -1) {
+				fos.write(buffer, 0, len);
+			}
+			fos.flush();
+			fos.close();
+		} catch (Exception e) {
+			LOGGER.error("error writing log", e);
+		}
+
 	}
 
 	private Map<String, List<String>> convertHeaders(Header[] headers) {

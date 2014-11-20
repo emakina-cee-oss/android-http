@@ -60,12 +60,6 @@ public class WebClientHttpURLConnection extends WebClient {
 	 */
 	public WebClientHttpURLConnection(Context context) {
 		super(context);
-		SSLSocketFactory sslSocketFactory = SSLHelper.getInstance().SSL_FACTORY_JAVA;
-		if (sslSocketFactory == null) {
-			LOGGER.warn("No SSL Connection possible");
-		} else {
-			HttpsURLConnection.setDefaultSSLSocketFactory(sslSocketFactory);
-		}
 	}
 
 	@Override
@@ -142,8 +136,16 @@ public class WebClientHttpURLConnection extends WebClient {
 		connection.setConnectTimeout(webRequest.getConnectionTimeout());
 		connection.setInstanceFollowRedirects(webRequest.isFollowRedirects());
 
+		setSslFactory();
 		setRequestType();
 		buildHeader();
+	}
+
+	private void setSslFactory() {
+		SSLSocketFactory sslSocketFactory = SSLHelper.getInstance().SSL_FACTORY_JAVA;
+		if (sslSocketFactory != null && (connection instanceof HttpsURLConnection)) {
+			((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
+		}
 	}
 
 	private void setRequestType() throws ProtocolException {
