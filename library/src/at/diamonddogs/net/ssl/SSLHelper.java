@@ -98,6 +98,64 @@ public class SSLHelper {
 		return initSSLFactoryApache(c, resourceId, password) && initSSLFactoryJava(c, resourceId, password);
 	}
 
+	public boolean initAllSSLFactoryWithCustomTM(Context c, TrustManager tm) {
+		return initSSLFactoryApacheWithCustomTM(c, tm) && initSSLFactoryJavaWithCustomTm(c, tm);
+	}
+
+	public boolean initSSLFactoryJavaWithCustomTm(Context c, TrustManager tm) {
+		try {
+			if (c == null || tm == null) {
+				LOGGER.info("No keystore specified, using alltrust");
+				makeAllTrustManagerForJava();
+				return true;
+			} else {
+				SSLContext sslCtx = SSLContext.getInstance("TLS");
+				sslCtx.init(null, new TrustManager[] { tm }, null);
+				SSL_FACTORY_JAVA = sslCtx.getSocketFactory();
+				sslState.trustAll = false;
+				return true;
+			}
+		} catch (Throwable tr) {
+			LOGGER.warn("Error initializing SSLFactoryJava", tr);
+			try {
+				makeAllTrustManagerForJava();
+				sslState.tr = tr;
+				return true;
+			} catch (Throwable tr1) {
+				sslState.tr1 = tr1;
+				sslState.sslOk = false;
+				LOGGER.warn("Error trusting all certs, no ssl connection possible", tr);
+			}
+			return false;
+		}
+	}
+
+	public boolean initSSLFactoryApacheWithCustomTM(Context c, TrustManager tm) {
+		try {
+			if (c == null || tm == null) {
+				LOGGER.info("No keystore specified, using alltrust");
+				makeAllTrustManagerForApache();
+				return true;
+			} else {
+				SSL_FACTORY_APACHE = new CustomSSLSocketFactory(tm);
+				sslState.trustAll = false;
+				return true;
+			}
+		} catch (Throwable tr) {
+			LOGGER.warn("Error initializing SSLFactoryApache, trusting all certs", tr);
+			try {
+				makeAllTrustManagerForApache();
+				sslState.tr = tr;
+				return true;
+			} catch (Throwable tr1) {
+				sslState.tr1 = tr1;
+				sslState.sslOk = false;
+				LOGGER.warn("Error trusting all certs, no ssl connection possible", tr);
+			}
+			return false;
+		}
+	}
+
 	/**
 	 * Register a keystore with SSL (APACHE)
 	 * 
@@ -117,6 +175,7 @@ public class SSLHelper {
 				return true;
 			} else {
 				KeyStore store = getKeyStore(c, resourceId, password);
+
 				SSL_FACTORY_APACHE = new CustomSSLSocketFactory(store);
 				sslState.trustAll = false;
 				return true;

@@ -42,6 +42,12 @@ public class CustomX509TrustManager implements X509TrustManager {
 		return tm;
 	}
 
+	public static TrustManager[] getWrappedTrustmanager(TrustManager trustManager) {
+		TrustManager[] tm = new TrustManager[1];
+		tm[0] = new CustomX509TrustManager((X509TrustManager) trustManager);
+		return tm;
+	}
+
 	@Override
 	public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 		return originalTrustManager.getAcceptedIssuers();

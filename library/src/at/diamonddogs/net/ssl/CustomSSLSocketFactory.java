@@ -24,6 +24,7 @@ import java.security.KeyStore;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.http.conn.ConnectTimeoutException;
@@ -43,6 +44,22 @@ public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFacto
 	public CustomSSLSocketFactory(KeyStore store) {
 		super();
 		sslcontext = createCustomSSLContext(store);
+	}
+
+	public CustomSSLSocketFactory(TrustManager tm) {
+		super();
+		sslcontext = createCustomSSLContext(tm);
+	}
+
+	private SSLContext createCustomSSLContext(TrustManager tm) {
+		try {
+			SSLContext context = SSLContext.getInstance("TLS");
+			context.init(null, new TrustManager[] { tm }, null);
+			return context;
+		} catch (Exception e) {
+			LOGGER.error("unable to create ssl context", e);
+			return null;
+		}
 	}
 
 	private SSLContext createCustomSSLContext(KeyStore store) {
