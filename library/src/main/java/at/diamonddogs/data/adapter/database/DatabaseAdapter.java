@@ -26,7 +26,7 @@ import android.net.Uri;
 
 /**
  * Base class for Database Adapter.
- * 
+ *
  * @param <T>
  *            The type of the entity this adapter provides access to
  */
@@ -37,7 +37,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Allows passing a Dataobject of type {@link T}
-	 * 
+	 *
 	 * @param dataObject
 	 *            a data object instance
 	 */
@@ -54,24 +54,23 @@ public abstract class DatabaseAdapter<T> {
 	/**
 	 * Serializes the dataObject (null check!) to ContentValues that can be used
 	 * in database queries
-	 * 
+	 *
 	 * @return ContentValues representing the data object
 	 */
 	public abstract ContentValues serialize();
 
 	/**
 	 * Deserialize a dataobject from a cursor, uses the current cursor position
-	 * 
+	 *
 	 * @param c
 	 *            the cursor
-	 * 
 	 * @return an object of type {@link T}
 	 */
 	public abstract T deserialize(Cursor c);
 
 	/**
 	 * Inserts the current dataObject into the database
-	 * 
+	 *
 	 * @param c
 	 *            a context
 	 * @return the rowid (or pk, if a pk has been defined) of the new entry
@@ -80,7 +79,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Updates the current dataObject in the database
-	 * 
+	 *
 	 * @param c
 	 *            a context
 	 * @return the number of updates (i.e. when updating using a join all
@@ -90,7 +89,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Deletes the current dataObject in the database
-	 * 
+	 *
 	 * @param c
 	 *            a context
 	 * @return the number of deletes (i.e. when updating using a join all
@@ -100,7 +99,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Simple query method that returns an array of {@link Object}s
-	 * 
+	 *
 	 * @param c
 	 *            a context
 	 * @param u
@@ -127,9 +126,18 @@ public abstract class DatabaseAdapter<T> {
 		return ret;
 	}
 
+	public List<T> deserializeAll(Cursor c) {
+		List<T> list = new ArrayList<>(c.getCount());
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			list.add(deserialize(c));
+
+		}
+		return list;
+	}
+
 	/**
 	 * Simple query method that returns a {@link Cursor}
-	 * 
+	 *
 	 * @param c
 	 *            a context
 	 * @param u
@@ -145,7 +153,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Simple query method that returns a {@link Cursor}
-	 * 
+	 *
 	 * @param c
 	 *            a context
 	 * @param q
@@ -158,7 +166,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Convenience query method that returns all available data
-	 * 
+	 *
 	 * @param c
 	 *            a {@link Context} object
 	 * @return a {@link Cursor}
@@ -169,7 +177,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Executes a query and returns an array of results
-	 * 
+	 *
 	 * @param c
 	 *            a {@link Context}
 	 * @param q
@@ -182,7 +190,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Convenience query method that returns all available data
-	 * 
+	 *
 	 * @param c
 	 *            a {@link Context} object
 	 * @return an array of T[]
@@ -193,7 +201,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Commits the current bulk insert
-	 * 
+	 *
 	 * @param c
 	 *            a contect object
 	 * @return the number of items that were inserted into the database
@@ -204,7 +212,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Starts a transaction based bulk insert
-	 * 
+	 *
 	 * @param itemsToInsert
 	 *            the number of items to insert
 	 */
@@ -224,7 +232,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Adds an object to the current bulk insert
-	 * 
+	 *
 	 * @param dataObject
 	 *            an object of type {@link T} to be inserted when
 	 *            {@link IDataBaseAdapter#commitBulkInsert(Context)} is called
@@ -238,7 +246,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Adds items in a {@link Cursor} to the bulk update
-	 * 
+	 *
 	 * @param c
 	 *            the {@link Cursor} containing items to be bulk inserted
 	 */
@@ -251,7 +259,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Adds a list of objects to the current bulk insert
-	 * 
+	 *
 	 * @param dataObjects
 	 *            a list of type {@link T} to be inserted when
 	 *            {@link IDataBaseAdapter#commitBulkInsert(Context)} is called
@@ -265,7 +273,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Adds an array of objects to the current bulk insert
-	 * 
+	 *
 	 * @param dataObjects
 	 *            an array of type {@link T} to be inserted when
 	 *            {@link IDataBaseAdapter#commitBulkInsert(Context)} is called
@@ -293,7 +301,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Returns the current dataObject
-	 * 
+	 *
 	 * @return a dataObject of type {@link T}
 	 */
 	public T getDataObject() {
@@ -302,7 +310,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Sets the dataObject
-	 * 
+	 *
 	 * @param dataObject
 	 *            the dataObject to be set
 	 */
@@ -312,7 +320,7 @@ public abstract class DatabaseAdapter<T> {
 
 	/**
 	 * Sets the dataObject from a cursor
-	 * 
+	 *
 	 * @param c
 	 *            the cursor
 	 */

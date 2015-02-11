@@ -15,13 +15,13 @@
  */
 package at.diamonddogs.data.adapter.database;
 
-import java.io.Serializable;
-import java.util.Arrays;
-
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
+
+import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * A Query implementation to be used in conjunction with {@link DatabaseAdapter}
@@ -32,11 +32,6 @@ public class Query implements Serializable {
 	 * Serializable version ID
 	 */
 	private static final long serialVersionUID = 264618972515125929L;
-
-	/**
-	 * Optional Content Uri
-	 */
-	private String uri;
 	/**
 	 * An array containing the field names of all where parameters
 	 */
@@ -67,6 +62,10 @@ public class Query implements Serializable {
 	 */
 
 	public String sortOrder = null;
+	/**
+	 * Optional Content Uri
+	 */
+	private String uri;
 
 	/**
 	 * Default constructor
@@ -101,7 +100,7 @@ public class Query implements Serializable {
 		if (whereOperators != null) {
 			int likeCount = 0;
 			for (String whereOperator : whereOperators) {
-				if (whereOperator != null && whereOperator.equalsIgnoreCase("like")) {
+				if (whereOperator != null && whereOperator.toLowerCase().contains("like")) {
 					likeCount++;
 				}
 			}
@@ -138,7 +137,7 @@ public class Query implements Serializable {
 		String ret = "";
 		int likeCount = 0;
 		for (int i = 0; i < whereFields.length; i++) {
-			if (whereOperators[i].equalsIgnoreCase("like")) {
+			if (whereOperators[i].toLowerCase().contains("like")) {
 				ret += whereFields[i] + " " + whereOperators[i] + " " + likeExpressions[likeCount];
 				likeCount++;
 			} else {
