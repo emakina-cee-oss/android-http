@@ -19,16 +19,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.apache.http.entity.ByteArrayEntity;
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.kxml2.io.KXmlSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.XmlSerializer;
 
 import at.diamonddogs.data.dataobjects.SoapRequest;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
+import at.diamonddogs.org.ksoap2.SoapEnvelope;
+import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
+import at.diamonddogs.org.kxml2.io.KXmlSerializer;
+import at.diamonddogs.org.xmlpull.v1.XmlSerializer;
 
 /**
  * 

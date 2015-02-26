@@ -15,7 +15,8 @@
  */
 package at.diamonddogs.data.dataobjects;
 
-import org.ksoap2.serialization.SoapSerializationEnvelope;
+
+import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
 
 /**
  * {@link SoapRequest} represents a normal SOAP {@link WebRequest}

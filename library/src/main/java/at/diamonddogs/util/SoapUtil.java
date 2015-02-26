@@ -15,14 +15,15 @@
  */
 package at.diamonddogs.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.PrintWriter;
 import java.io.Writer;
 
-import org.ksoap2.SoapEnvelope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.XmlPullParserFactory;
-import org.xmlpull.v1.XmlSerializer;
+import at.diamonddogs.org.ksoap2.SoapEnvelope;
+import at.diamonddogs.org.xmlpull.v1.XmlPullParserFactory;
+import at.diamonddogs.org.xmlpull.v1.XmlSerializer;
 
 /**
  * This class holds SOAP related util methods

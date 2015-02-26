@@ -15,18 +15,8 @@
  */
 package at.diamonddogs.net;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.ProtocolException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import android.content.Context;
+import android.os.Environment;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -58,8 +48,19 @@ import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.content.Context;
-import android.os.Environment;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ProtocolException;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebReply;
@@ -197,7 +198,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			LOGGER.debug("WebRequest DEFAULT: " + webRequest);
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
-				reply = handleResponseNotOk(entity.getContent(), statusCode, convertHeaders(response.getAllHeaders()));
+                reply = handleResponseNotOk(entity.getContent(), statusCode, convertHeaders(response.getAllHeaders()));
 			} else {
 				reply = handleResponseNotOk(null, statusCode, convertHeaders(response.getAllHeaders()));
 			}

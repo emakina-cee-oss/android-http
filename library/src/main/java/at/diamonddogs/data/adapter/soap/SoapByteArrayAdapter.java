@@ -3,18 +3,18 @@
  */
 package at.diamonddogs.data.adapter.soap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.kxml2.io.KXmlParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import at.diamonddogs.data.dataobjects.SoapReply;
+import at.diamonddogs.org.ksoap2.SoapEnvelope;
+import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
+import at.diamonddogs.org.kxml2.io.KXmlParser;
+import at.diamonddogs.org.xmlpull.v1.XmlPullParser;
+import at.diamonddogs.org.xmlpull.v1.XmlPullParserException;
 
 /**
  * @author siyb

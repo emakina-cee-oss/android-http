@@ -15,6 +15,14 @@
  */
 package at.diamonddogs.net;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+
+import org.apache.commons.codec.binary.Hex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,13 +35,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.codec.binary.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.TempFile;
@@ -232,9 +233,9 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 	}
 
 	private boolean isGzipEncoded(WebReply reply) {
-		if (!reply.getReplyHeader().containsKey("Content-Encoding")) {
-			return false;
-		}
+        if (reply.getReplyHeader() == null || !reply.getReplyHeader().containsKey("Content-Encoding")) {
+            return false;
+        }
 		List<String> encodings = reply.getReplyHeader().get("Content-Encoding");
 		for (String encoding : encodings) {
 			LOGGER.debug("Encoding: " + encoding);

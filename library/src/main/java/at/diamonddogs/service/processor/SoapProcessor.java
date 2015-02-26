@@ -16,12 +16,6 @@
 package at.diamonddogs.service.processor;
 
 import java.util.Vector;
-
-import org.ksoap2.SoapFault;
-import org.ksoap2.serialization.AttributeContainer;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +23,7 @@ import android.R.string;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.adapter.soap.SoapByteArrayAdapter;
@@ -38,6 +33,11 @@ import at.diamonddogs.data.dataobjects.SoapReply;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.exception.ProcessorExeception;
+import at.diamonddogs.org.ksoap2.SoapFault;
+import at.diamonddogs.org.ksoap2.serialization.AttributeContainer;
+import at.diamonddogs.org.ksoap2.serialization.SoapObject;
+import at.diamonddogs.org.ksoap2.serialization.SoapPrimitive;
+import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
 import at.diamonddogs.util.CacheManager.CachedObject;
 
 /**
