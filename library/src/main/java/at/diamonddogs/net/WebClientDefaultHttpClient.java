@@ -132,6 +132,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			LOGGER.info("Running RequestBase: " + requestBase);
 			initHttpClient();
 			response = httpClient.execute(requestBase);
+			LOGGER.error(requestBase.getURI().toString());
 			reply = runRequest(response);
 
 			listenerReply = createListenerReply(webRequest, reply, null, Status.OK);
@@ -198,7 +199,9 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			LOGGER.debug("WebRequest DEFAULT: " + webRequest);
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
-                reply = handleResponseNotOk(entity.getContent(), statusCode, convertHeaders(response.getAllHeaders()));
+				InputStream content = entity.getContent();
+				writeErrorLog(content);
+				reply = handleResponseNotOk(content, statusCode, convertHeaders(response.getAllHeaders()));
 			} else {
 				reply = handleResponseNotOk(null, statusCode, convertHeaders(response.getAllHeaders()));
 			}
@@ -210,7 +213,11 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 
 	private void writeErrorLog(InputStream content) {
 		try {
-			FileOutputStream fos = new FileOutputStream(new File(Environment.getExternalStorageDirectory(), "errorlog.txt"));
+			File f = new File(Environment.getExternalStorageDirectory(), "errorlog.txt");
+			if (f.exists()) {
+				f.delete();
+			}
+			FileOutputStream fos = new FileOutputStream(f);
 			byte[] buffer = new byte[1024];
 			int len;
 			while ((len = content.read(buffer)) != -1) {

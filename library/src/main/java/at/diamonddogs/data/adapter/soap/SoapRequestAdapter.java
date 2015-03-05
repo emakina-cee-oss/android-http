@@ -15,20 +15,20 @@
  */
 package at.diamonddogs.data.adapter.soap;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import org.apache.http.entity.ByteArrayEntity;
+import org.kxml2.io.KXmlSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import at.diamonddogs.data.dataobjects.SoapRequest;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.org.ksoap2.SoapEnvelope;
 import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
-import at.diamonddogs.org.kxml2.io.KXmlSerializer;
-import at.diamonddogs.org.xmlpull.v1.XmlSerializer;
 
 /**
  * 
@@ -82,7 +82,7 @@ public class SoapRequestAdapter {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		bos.write(xmlVersionTag.getBytes());
 		XmlSerializer xw = new KXmlSerializer();
-		xw.setOutput(bos, null);
+		xw.setOutput(bos, "UTF-8");
 		envelope.write(xw);
 		xw.flush();
 		bos.write('\r');

@@ -17,13 +17,13 @@ package at.diamonddogs.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
 
 import java.io.PrintWriter;
 import java.io.Writer;
 
 import at.diamonddogs.org.ksoap2.SoapEnvelope;
-import at.diamonddogs.org.xmlpull.v1.XmlPullParserFactory;
-import at.diamonddogs.org.xmlpull.v1.XmlSerializer;
 
 /**
  * This class holds SOAP related util methods
@@ -63,10 +63,12 @@ public class SoapUtil {
 	 */
 	public static final void printSoapEnvelope(SoapEnvelope e, Writer w) {
 		try {
-			XmlSerializer x = XmlPullParserFactory.newInstance().newSerializer();
-			x.setOutput(w);
-			e.write(x);
-			x.flush();
+            XmlSerializer xmlSerializer = XmlPullParserFactory.newInstance().newSerializer();
+//            KXmlSerializer kXmlSerializer = new KXmlSerializer();
+//            XmlSerializer x = XmlPullParserFactory.newInstance().newSerializer();
+            xmlSerializer.setOutput(w);
+			e.write(xmlSerializer);
+            xmlSerializer.flush();
 		} catch (Throwable tr) {
 			LOGGER.warn("Could not print envelope!", tr);
 		}

@@ -68,7 +68,7 @@ public class HttpServiceAssister {
 	/**
 	 * Service binding timeout for synchronous {@link WebRequest}s.
 	 */
-	private static final int SYNC_REQUEST_BINDING_TIMEOUT = 2000;
+	private static final int SYNC_REQUEST_BINDING_TIMEOUT = 10000;
 
 	private static final int SYNC_REQUEST_BINDING_TIMEOUT_DEBUG = 200000;
 
