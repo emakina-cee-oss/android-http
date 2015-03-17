@@ -15,13 +15,8 @@
  */
 package at.diamonddogs.net;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.content.Context;
-import android.os.Build;
 import at.diamonddogs.data.dataobjects.WebRequest;
-import at.diamonddogs.data.dataobjects.WebRequest.Type;
 
 /**
  * The {@link WebClientFactory} returns the appropriate {@link WebClient} for a
@@ -29,8 +24,6 @@ import at.diamonddogs.data.dataobjects.WebRequest.Type;
  * http://android-developers .blogspot.co.at/2011/09/androids-http-clients.html
  */
 public class WebClientFactory {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(WebClientFactory.class);
 
 	private static WebClientFactory INSTANCE = null;
 
@@ -59,30 +52,6 @@ public class WebClientFactory {
 	 * 
 	 */
 	public WebClient getNetworkClient(WebRequest webRequest, Context context) {
-		WebClient client = null;
-		// HttpUrlConnection, that should be used starting from FROYO, cuts off
-		// POST data ... we need to force the obsolete client implementation!!!
-		if (isPostWithData(webRequest)) {
-			LOGGER.info("!!!WARNING!!! FORCE USING WebClientDefaultHttpClient DUE TO BUGGY IMPLEMENTATION OF HttpUrlConnection (POST DATA WOULD OTHERWISE BE CUT OFF)!!!");
-			client = new WebClientDefaultHttpClient(context);
-		} else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
-			LOGGER.debug("Using WebClientHttpURLConnection, since SDK bigger than Froyo: " + Build.VERSION.SDK_INT);
-			client = new WebClientHttpURLConnection(context);
-		} else {
-			LOGGER.debug("Using WebClientDefaultHttpClient, since SDK smaller or equal Froyo: " + Build.VERSION.SDK_INT);
-			client = new WebClientDefaultHttpClient(context);
-		}
-		return client;
-	}
-
-	/**
-	 * Checks if the {@link WebRequest} has post data
-	 * 
-	 * @param wr
-	 *            the {@link WebRequest} to check
-	 * @return true or false, depending on the presence of post data
-	 */
-	public boolean isPostWithData(WebRequest wr) {
-		return wr.getRequestType() == Type.POST && wr.getHttpEntity() != null;
+		return new WebClientOkHttpClient(context);
 	}
 }

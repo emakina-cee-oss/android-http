@@ -1,0 +1,6 @@
+<root>
+    <item name='java.util.concurrent.TimeUnit'>
+        <annotation name='org.jetbrains.annotations.Nullable' />
+        <annotation name='java.lang.annotation.Deprecated' />
+    </item>
+</root>
