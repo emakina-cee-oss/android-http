@@ -219,12 +219,13 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
 
     private WebReply runRequest() throws IOException {
         int statusCode = response.code();
+
         WebReply reply = null;
 
         switch (statusCode) {
             case HttpStatus.SC_PARTIAL_CONTENT:
             case HttpStatus.SC_OK:
-                publishFileSize(request.headers().size());
+                publishFileSize(response.body().contentLength());
                 reply = handleResponseOk(response.body().byteStream(), statusCode, convertHeaders(response.headers()));
                 break;
             case HttpStatus.SC_NOT_MODIFIED:
