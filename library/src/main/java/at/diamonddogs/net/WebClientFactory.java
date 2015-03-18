@@ -39,18 +39,6 @@ public class WebClientFactory {
 		return INSTANCE;
 	}
 
-	/**
-	 * 
-	 * Returns the most stable network client most suitable for the current
-	 * android platform
-	 * 
-	 * @param webRequest
-	 *            the {@link WebRequest} to obtain a {@link WebClient} for
-	 * @param context
-	 *            a {@link Context}
-	 * @return a {@link WebClient}
-	 * 
-	 */
 	public WebClient getNetworkClient(WebRequest webRequest, Context context) {
 		return new WebClientOkHttpClient(context);
 	}

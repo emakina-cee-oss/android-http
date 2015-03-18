@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2012, 2013 the diamond:dogs|group
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package at.diamonddogs.net;
 
 import android.content.Context;
@@ -5,7 +20,6 @@ import android.os.Environment;
 
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkUrlFactory;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
@@ -32,7 +46,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -55,8 +68,6 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
     private static final Logger LOGGER = LoggerFactory.getLogger(WebClientOkHttpClient.class.getSimpleName());
     private int retryCount = 0;
 
-    private OkUrlFactory urlFactory;
-    private HttpURLConnection connection;
     private OkHttpClient httpClient;
     private Request request;
     private Response response;
@@ -68,7 +79,6 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
     public WebClientOkHttpClient(Context context) {
         super(context);
         httpClient = new OkHttpClient();
-        urlFactory = new OkUrlFactory(httpClient);
     }
 
     @Override
@@ -199,37 +209,29 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
         if (header != null) {
             for (String field : header.keySet()) {
                 if (webRequest.isAppendHeader()) {
-                    //request.newBuilder().addHeader(field, header.get(field));
-                    //connection.addRequestProperty(field, header.get(field));
                     requestBuilder.addHeader(field, header.get(field)).build();
                 } else {
-                    //response.request().newBuilder().header(field, header.get(field));
                     requestBuilder.header(field, header.get(field)).build();
-                    //response.request().newBuilder().addHeader(field, header.get(field));
-                    //connection.setRequestProperty(field, header.get(field));
                 }
             }
         }
     }
 
     private WebReply runRequest() throws IOException {
-        //int statusCode = response.getStatusLine().getStatusCode();
         int statusCode = response.code();
         WebReply reply = null;
 
         switch (statusCode) {
-            case HttpStatus.SC_PARTIAL_CONTENT: //206
-            case HttpStatus.SC_OK: //200LOGGER.debug("WebRequest OK: " + webRequest);
+            case HttpStatus.SC_PARTIAL_CONTENT:
+            case HttpStatus.SC_OK:
                 publishFileSize(request.headers().size());
-                //publishFileSize(getRequestBody().contentLength());
-                //publishFileSize(request.body().contentLength());
                 reply = handleResponseOk(response.body().byteStream(), statusCode, convertHeaders(response.headers()));
                 break;
-            case HttpStatus.SC_NOT_MODIFIED: //304
+            case HttpStatus.SC_NOT_MODIFIED:
                 LOGGER.debug("WebRequest Not modified: " + webRequest);
                 reply = handleResponseNotModified(statusCode, convertHeaders(response.headers()));
                 break;
-            case HttpStatus.SC_NO_CONTENT: //204
+            case HttpStatus.SC_NO_CONTENT:
                 reply = handleResponseOk(null, statusCode, convertHeaders(response.headers()));
             default:
                 LOGGER.debug("WebRequest DEFAULT: " + webRequest);
@@ -248,21 +250,9 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
 
     private Map<String, List<String>> convertHeaders(Headers headers) {
         HashMap<String, List<String>> ret = new HashMap<String, List<String>>();
-/*        //for (Headers h : headers) {
-            String key = headers.names().toString();
-            //String value = headers.values();
-            if (ret.containsKey(key)) {
-                //ret.get(key).add(value);
-            } else {
-                List<String> values = new ArrayList<String>(10);
-                //values.add(value);
-                ret.put(key, values);
-            }
-        //}*/
         for(int i=0; i< headers.size();i++){
             String key = headers.name(i).toString();
             String value = headers.value(i).toString();
-            //String value = headers.values();
             if (ret.containsKey(key)) {
                 ret.get(key).add(value);
             } else {
