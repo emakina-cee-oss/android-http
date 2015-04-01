@@ -15,9 +15,10 @@
  */
 package at.diamonddogs.service.net;
 
+import android.util.SparseArray;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
-import android.util.SparseArray;
 import at.diamonddogs.service.processor.ServiceProcessor;
 
 /**
@@ -34,7 +35,7 @@ public class ServiceProcessorIdGenerator {
 	private ServiceProcessorIdGenerator() {
 	}
 
-	protected static ServiceProcessorIdGenerator getInstance() {
+	protected synchronized static ServiceProcessorIdGenerator getInstance() {
 		if (INSTANCE == null) {
 			INSTANCE = new ServiceProcessorIdGenerator();
 		}

@@ -88,7 +88,7 @@ public class Query implements Serializable {
 		// TODO: not entirly corrent -> what if one of the two is null and the
 		// other isn't
 
-		if ((whereFields != null && whereFields != null) && (whereFields.length != whereValues.length)) {
+		if ((whereFields != null && whereValues != null) && (whereFields.length != whereValues.length)) {
 			return new Pair<String, Boolean>("whereFields / whereValues length mismatch", false);
 		}
 		if (whereOperators != null && whereOperators.length != whereFields.length) {
@@ -134,24 +134,24 @@ public class Query implements Serializable {
 			Arrays.fill(whereOperators, 0, whereOperators.length, "=");
 		}
 
-		String ret = "";
+		StringBuilder ret = new StringBuilder();
 		int likeCount = 0;
 		for (int i = 0; i < whereFields.length; i++) {
 			if (whereOperators[i].toLowerCase().contains("like")) {
-				ret += whereFields[i] + " " + whereOperators[i] + " " + likeExpressions[likeCount];
+				ret.append(whereFields[i]).append(" ").append(whereOperators[i]).append(" ").append(likeExpressions[likeCount]);
 				likeCount++;
 			} else {
-				ret += whereFields[i] + whereOperators[i] + "?";
+				ret.append(whereFields[i]).append(whereOperators[i]).append("?");
 			}
 			if ((i + 1) < whereFields.length) {
 				if (whereConditionOperators == null) {
-					ret += " AND ";
+					ret.append(" AND ");
 				} else {
-					ret += " " + whereConditionOperators[i] + " ";
+					ret.append(" ").append(whereConditionOperators[i]).append(" ");
 				}
 			}
 		}
-		return ret;
+		return ret.toString();
 	}
 
 	@Override

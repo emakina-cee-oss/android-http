@@ -15,6 +15,11 @@
  */
 package at.diamonddogs.net;
 
+import android.content.Context;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -24,10 +29,6 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import android.content.Context;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebReply;
@@ -167,11 +168,11 @@ public class WebClientHttpURLConnection extends WebClient {
 	protected void buildHeader() {
 		Map<String, String> header = webRequest.getHeader();
 		if (header != null) {
-			for (String field : header.keySet()) {
+			for (Map.Entry<String, String> entries : header.entrySet()) {
 				if (webRequest.isAppendHeader()) {
-					connection.addRequestProperty(field, header.get(field));
+					connection.addRequestProperty(entries.getKey(), entries.getValue());
 				} else {
-					connection.setRequestProperty(field, header.get(field));
+					connection.setRequestProperty(entries.getKey(), entries.getValue());
 				}
 			}
 		}

@@ -200,7 +200,7 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
 				InputStream content = entity.getContent();
-				writeErrorLog(content);
+//				writeErrorLog(content);
 				reply = handleResponseNotOk(content, statusCode, convertHeaders(response.getAllHeaders()));
 			} else {
 				reply = handleResponseNotOk(null, statusCode, convertHeaders(response.getAllHeaders()));
@@ -260,11 +260,11 @@ public class WebClientDefaultHttpClient extends WebClient implements HttpRequest
 	protected void buildHeader() {
 		Map<String, String> header = webRequest.getHeader();
 		if (header != null) {
-			for (String field : header.keySet()) {
+			for (Map.Entry<String, String> entry : header.entrySet()) {
 				if (webRequest.isAppendHeader()) {
-					requestBase.addHeader(field, header.get(field));
+					requestBase.addHeader(entry.getKey(), entry.getValue());
 				} else {
-					requestBase.setHeader(field, header.get(field));
+					requestBase.setHeader(entry.getKey(), entry.getValue());
 				}
 			}
 		}

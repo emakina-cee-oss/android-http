@@ -16,6 +16,7 @@
 package at.diamonddogs.data.adapter.parcelable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -126,7 +127,7 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 				output[i].dataObject = input[i];
 			}
 		} catch (Throwable tr) {
-			LOGGER.warn("Error while parcelling " + input, tr);
+			LOGGER.warn("Error while parcelling " + Arrays.toString(input), tr);
 		}
 
 		return output;

@@ -36,6 +36,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RecoverySystem.ProgressListener;
 import android.util.SparseArray;
+
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.Request;
@@ -111,6 +112,19 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 */
 	private ConnectivityHelper connectivityHelper;
 
+	/**
+	 * Convenience binding method
+	 *
+	 * @param context
+	 *            a {@link Context}
+	 * @param serviceConnection
+	 *            a {@link ServiceConnection}
+	 */
+	public static void bindService(Context context, ServiceConnection serviceConnection) {
+		Intent intent = new Intent(context, HttpService.class);
+		context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+	}
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -129,7 +143,6 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	@Override
 	public void onDestroy() {
-		LOGGER.debug("onDestroy");
 		if (workerQueue != null) {
 			workerQueue.shutDown();
 		}
@@ -146,7 +159,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * Convenience method that calls
 	 * {@link HttpService#runWebRequest(Handler, WebRequest, DownloadProgressListener)}
 	 * with a <code>null</code> {@link ProgressListener}
-	 * 
+	 *
 	 * @param handler
 	 *            the handler that will be informed once the {@link WebRequest}
 	 *            has been completed
@@ -160,7 +173,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	/**
 	 * Runs a {@link WebRequest} asynchronously
-	 * 
+	 *
 	 * @param handler
 	 *            the handler that will be informed once the {@link WebRequest}
 	 *            has been completed
@@ -221,7 +234,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	/**
 	 * Executes an array of {@link WebRequest} synchronously using
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
-	 * 
+	 *
 	 * @param webRequests
 	 *            the {@link WebRequest}s to run
 	 * @return an array of {@link WebRequestReturnContainer}s
@@ -233,7 +246,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	/**
 	 * Executes an array of {@link WebRequest} synchronously using
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
-	 * 
+	 *
 	 * @param webRequests
 	 *            the {@link WebRequest}s to run
 	 * @param progressListener
@@ -250,7 +263,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	/**
 	 * Executes an array of {@link WebRequest} synchronously using
 	 * {@link HttpService#runSynchronousWebRequest(WebRequest)}.
-	 * 
+	 *
 	 * @param webRequests
 	 *            the {@link WebRequest}s to run
 	 * @param progressListeners
@@ -281,7 +294,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * on the main thread may cause ANR issues. The processor handling the
 	 * {@link WebRequest} must be a {@link SynchronousProcessor}, otherwise, an
 	 * exception will be thrown.
-	 * 
+	 *
 	 * @param webRequest
 	 *            the {@link WebRequest} to run
 	 * @return The object created by the
@@ -300,7 +313,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * on the main thread may cause ANR issues. The processor handling the
 	 * {@link WebRequest} must be a {@link SynchronousProcessor}, otherwise, an
 	 * exception will be thrown.
-	 * 
+	 *
 	 * @param webRequest
 	 *            the {@link WebRequest} to run
 	 * @param progressListener
@@ -353,7 +366,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * that the caller can wait for a result. This is a convenience method,
 	 * {@link HttpService#runSynchronousWebRequestsFuture(WebRequest, DownloadProgressListener)}
 	 * will be called with a <code>null</code> {@link DownloadProgressListener}
-	 * 
+	 *
 	 * @param webRequest
 	 *            the {@link WebRequest} to run
 	 * @return a {@link Future} that allows the caller to wait for the result
@@ -369,7 +382,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * {@link HttpService#runSynchronousWebRequestsFuture(WebRequest[], DownloadProgressListener[])}
 	 * will be called with a <code>null</code> array of
 	 * {@link DownloadProgressListener}s
-	 * 
+	 *
 	 * @param webRequests
 	 *            the {@link WebRequest}s to run
 	 * @return an array of {@link Future} that allows the caller to wait for the
@@ -386,7 +399,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * {@link HttpService#runSynchronousWebRequestsFuture(WebRequest[], DownloadProgressListener[])}
 	 * will be called with an array, containing a single
 	 * {@link DownloadProgressListener}
-	 * 
+	 *
 	 * @param webRequests
 	 *            the {@link WebRequest}s to run
 	 * @param progressListener
@@ -409,18 +422,18 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * have the same size, each {@link WebRequest} uses the corresponding
 	 * {@link DownloadProgressListener} to report progress. If both arrays have
 	 * an unequal length, an exception is thrown.
-	 * 
+	 *
 	 * @see HttpService#runSynchronousWebRequestsFuture(WebRequest[],
 	 *      DownloadProgressListener[])
-	 * 
+	 *
 	 * @see HttpService#runSynchronousWebRequestsFuture(WebRequest[],
 	 *      DownloadProgressListener)
 	 * @see HttpService#runSynchronousWebRequestsFuture(WebRequest[])
-	 * 
+	 *
 	 * @see HttpService#runSynchronousWebRequestFuture(WebRequest,
 	 *      DownloadProgressListener)
 	 * @see HttpService#runSynchronousWebRequestFuture(WebRequest)
-	 * 
+	 *
 	 * @param webRequests
 	 *            the {@link WebRequest}s to run
 	 * @param progressListener
@@ -450,7 +463,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	/**
 	 * Runs an asynchronous {@link WebRequest} and returns a {@link Future} so
 	 * that the caller can wait for a result.
-	 * 
+	 *
 	 * @param webRequest
 	 *            the {@link WebRequest} to run
 	 * @param progressListener
@@ -545,7 +558,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * Make sure that the {@link ServiceProcessor} that should be registered is
 	 * not registered with {@link HttpService} already by using
 	 * {@link HttpService#isProcessorRegistered(int)}
-	 * 
+	 *
 	 * @param processor
 	 *            an instance of the {@link ServiceProcessor} to register
 	 */
@@ -564,7 +577,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	/**
 	 * Unregisters a {@link ServiceProcessor} known by the given id
-	 * 
+	 *
 	 * @param id
 	 *            the id of the {@link ServiceProcessor} to unregister
 	 */
@@ -575,7 +588,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	/**
 	 * Checks if a {@link ServiceProcessor} has been registered with
 	 * {@link HttpService}
-	 * 
+	 *
 	 * @param id
 	 *            the id of the {@link ServiceProcessor}
 	 * @return <code>true</code> if the {@link ServiceProcessor} known by id has
@@ -587,7 +600,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	/**
 	 * Returns the {@link ServiceProcessor} known by id
-	 * 
+	 *
 	 * @param id
 	 *            the id of the {@link ServiceProcessor} to obtain
 	 * @return a {@link ServiceProcessor}
@@ -646,19 +659,6 @@ public class HttpService extends Service implements WebClientReplyListener {
 	}
 
 	/**
-	 * Convenience binding method
-	 * 
-	 * @param context
-	 *            a {@link Context}
-	 * @param serviceConnection
-	 *            a {@link ServiceConnection}
-	 */
-	public static void bindService(Context context, ServiceConnection serviceConnection) {
-		Intent intent = new Intent(context, HttpService.class);
-		context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-	}
-
-	/**
 	 * Cancels a {@link Future} {@link WebRequest} by id
 	 * 
 	 * @param id
@@ -704,20 +704,6 @@ public class HttpService extends Service implements WebClientReplyListener {
 			ret = workerQueue.<ReplyAdapter> runCancelableTask(client);
 		}
 		return ret;
-	}
-
-	/**
-	 * Default {@link Binder} implementation
-	 */
-	public final class HttpServiceBinder extends Binder {
-		/**
-		 * Gets the {@link HttpService}
-		 * 
-		 * @return the {@link HttpService}
-		 */
-		public HttpService getHttpService() {
-			return HttpService.this;
-		}
 	}
 
 	private static final class WebRequestFutureContainer {
@@ -836,5 +822,19 @@ public class HttpService extends Service implements WebClientReplyListener {
 			this.replyHeader = replyHeader;
 		}
 
+	}
+
+	/**
+	 * Default {@link Binder} implementation
+	 */
+	public final class HttpServiceBinder extends Binder {
+		/**
+		 * Gets the {@link HttpService}
+		 *
+		 * @return the {@link HttpService}
+		 */
+		public HttpService getHttpService() {
+			return HttpService.this;
+		}
 	}
 }

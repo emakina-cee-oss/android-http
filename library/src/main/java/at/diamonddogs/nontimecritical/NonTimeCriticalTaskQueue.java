@@ -15,6 +15,7 @@
  */
 package at.diamonddogs.nontimecritical;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,7 +54,7 @@ public class NonTimeCriticalTaskQueue {
 	private NonTimeCriticalTaskQueue() {
 	}
 
-	protected static NonTimeCriticalTaskQueue getInstance() {
+	protected synchronized static NonTimeCriticalTaskQueue getInstance() {
 		if (INSTANCE == null) {
 			INSTANCE = new NonTimeCriticalTaskQueue();
 		}
@@ -68,9 +69,7 @@ public class NonTimeCriticalTaskQueue {
 	 *            the task to be put into the queue
 	 */
 	protected void putNonTimeCriticalTask(NonTimeCriticalTask task) {
-		synchronized (tasks) {
-			tasks.put(task);
-		}
+		tasks.put(task);
 	}
 
 	/**
@@ -80,9 +79,7 @@ public class NonTimeCriticalTaskQueue {
 	 * @return the next {@link NonTimeCriticalTask}
 	 */
 	protected NonTimeCriticalTask pollNonTimeCriticalTask() {
-		synchronized (tasks) {
-			return tasks.poll();
-		}
+		return tasks.poll();
 	}
 
 	/**
@@ -93,9 +90,7 @@ public class NonTimeCriticalTaskQueue {
 	 *            the task to be removed
 	 */
 	protected void removeNonTimeCriticalTask(NonTimeCriticalTask task) {
-		synchronized (tasks) {
-			tasks.remove(task);
-		}
+		tasks.remove(task);
 	}
 
 	/**
@@ -122,9 +117,7 @@ public class NonTimeCriticalTaskQueue {
 	 * {@link PriorityBlockingQueue}
 	 */
 	protected void removeAllNonTimeCriticalTasks() {
-		synchronized (tasks) {
-			tasks.clear();
-		}
+		tasks.clear();
 	}
 
 	/**
@@ -134,7 +127,7 @@ public class NonTimeCriticalTaskQueue {
 	 * @throws IllegalStateException
 	 *             if no configuration has been provided yet
 	 */
-	private void initializePriorityQueueIfRequired() {
+	private synchronized void initializePriorityQueueIfRequired() {
 		if (tasks == null) {
 			if (configuration == null) {
 				throw new IllegalStateException(
@@ -172,9 +165,7 @@ public class NonTimeCriticalTaskQueue {
 	 *         <code>false</code> otherwise
 	 */
 	protected boolean shouldQueueBeProcessed() {
-		synchronized (tasks) {
-			return tasks.size() >= configuration.getProcessAtSize();
-		}
+		return tasks.size() >= configuration.getProcessAtSize();
 	}
 
 	/**
@@ -203,29 +194,8 @@ public class NonTimeCriticalTaskQueue {
 	}
 
 	/**
-	 * {@link NonTimeCriticalTaskQueueConfiguration} provides an interface to
-	 * the configuration of {@link NonTimeCriticalTaskQueue}
-	 */
-	public interface NonTimeCriticalTaskQueueConfiguration {
-		/**
-		 * Returns the initial size of the queue
-		 * 
-		 * @return the initial size of the queue
-		 */
-		public int getInitialQueueSize();
-
-		/**
-		 * Returns the minimum size of the queue that triggers processing
-		 * 
-		 * @return min. processing size
-		 */
-		public int getProcessAtSize();
-
-	}
-
-	/**
 	 * Method to inform listeners of started tasks
-	 * 
+	 *
 	 * @param task
 	 *            the {@link NonTimeCriticalTask} that has been started
 	 */
@@ -237,7 +207,7 @@ public class NonTimeCriticalTaskQueue {
 
 	/**
 	 * Adds a listener that will be notified once a task is being processed
-	 * 
+	 *
 	 * @param nonTimeCriticalTaskProcessingListener
 	 *            the listener
 	 */
@@ -247,12 +217,33 @@ public class NonTimeCriticalTaskQueue {
 
 	/**
 	 * Removes a listener
-	 * 
+	 *
 	 * @param nonTimeCriticalTaskProcessingListener
 	 *            the listener
 	 */
 	protected void removeNonTimeCriticalTaskProcessingListener(NonTimeCriticalTaskProcessingListener nonTimeCriticalTaskProcessingListener) {
 		listeners.remove(nonTimeCriticalTaskProcessingListener);
+	}
+
+	/**
+	 * {@link NonTimeCriticalTaskQueueConfiguration} provides an interface to
+	 * the configuration of {@link NonTimeCriticalTaskQueue}
+	 */
+	public interface NonTimeCriticalTaskQueueConfiguration {
+		/**
+		 * Returns the initial size of the queue
+		 *
+		 * @return the initial size of the queue
+		 */
+		public int getInitialQueueSize();
+
+		/**
+		 * Returns the minimum size of the queue that triggers processing
+		 *
+		 * @return min. processing size
+		 */
+		public int getProcessAtSize();
+
 	}
 
 	/**
@@ -288,7 +279,7 @@ public class NonTimeCriticalTaskQueue {
 	 * This {@link Comparator} takes care of sorting {@link NonTimeCriticalTask}
 	 * s according to their {@link PRIORITY}
 	 */
-	private static final class NonTimeCriticalTaskComperator implements Comparator<NonTimeCriticalTask> {
+	private static final class NonTimeCriticalTaskComperator implements Comparator<NonTimeCriticalTask>, Serializable {
 
 		/**
 		 * {@inheritDoc}

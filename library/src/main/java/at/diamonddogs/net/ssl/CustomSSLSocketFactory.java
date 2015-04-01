@@ -15,6 +15,14 @@
  */
 package at.diamonddogs.net.ssl;
 
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.scheme.LayeredSocketFactory;
+import org.apache.http.conn.scheme.SocketFactory;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -26,14 +34,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.scheme.LayeredSocketFactory;
-import org.apache.http.conn.scheme.SocketFactory;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFactory {
 
@@ -153,7 +153,7 @@ public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFacto
 
 	@Override
 	public boolean equals(Object obj) {
-		return ((obj != null) && obj.getClass().equals(CustomSSLSocketFactory.class));
+		return ((obj != null) && obj.getClass().equals(this.getClass()));
 	}
 
 	@Override

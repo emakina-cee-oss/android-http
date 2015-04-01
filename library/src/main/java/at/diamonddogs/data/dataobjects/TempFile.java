@@ -46,9 +46,9 @@ public class TempFile {
 	 * Default constructor
 	 */
 	public TempFile() {
-		url = new String();
-		checksum = new String();
-		path = new String();
+		url = "";
+		checksum = "";
+		path = "";
 		date = 0L;
 		size = 0;
 		useChecksum = true;

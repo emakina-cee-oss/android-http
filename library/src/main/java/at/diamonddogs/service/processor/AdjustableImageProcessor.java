@@ -15,16 +15,16 @@
  */
 package at.diamonddogs.service.processor;
 
-import java.util.Random;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Random;
 
 /**
  * A processor that handles image post processing
@@ -39,6 +39,7 @@ public class AdjustableImageProcessor extends ImageProcessor {
 
 	private Bitmap.Config config;
 
+    private static final Random random = new Random();
 	/**
 	 * Default constructor
 	 * 
@@ -71,7 +72,7 @@ public class AdjustableImageProcessor extends ImageProcessor {
 	@Override
 	public int getProcessorID() {
 		if (ID == -1) {
-			ID = new Random().nextInt();
+			ID = random.nextInt();
 		}
 		return ID;
 	}
