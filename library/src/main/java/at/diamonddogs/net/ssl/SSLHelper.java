@@ -35,9 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
-import at.diamonddogs.net.WebClient;
+import at.diamonddogs.net.WebClient;/*
 import at.diamonddogs.net.WebClientDefaultHttpClient;
-import at.diamonddogs.net.WebClientHttpURLConnection;
+import at.diamonddogs.net.WebClientHttpURLConnection;*/
 
 /**
  * Enables SSL sockets on all included {@link WebClient}

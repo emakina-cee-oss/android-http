@@ -19,6 +19,8 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
+import com.squareup.okhttp.Request;
+
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +77,7 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 	 */
 	protected boolean followProtocolRedirect;
 
-	protected abstract void buildHeader();
+	protected abstract void buildHeader(Request.Builder requestBuilder);
 
 	/**
 	 * Constructs a {@link WebClient}
