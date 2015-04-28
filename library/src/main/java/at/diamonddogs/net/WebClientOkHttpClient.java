@@ -182,6 +182,7 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
 
 	private RequestBody getRequestBody() throws IOException {
 		HttpEntity he = webRequest.getHttpEntity();
+
 		InputStream content;
 		int bytesRead;
 		byte buffer[] = new byte[1024];
@@ -194,7 +195,8 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
 			while ((bytesRead = content.read(buffer)) != -1) {
 				baos.write(buffer, 0, bytesRead);
 			}
-			return RequestBody.create(MediaType.parse("text/xml"), baos.toByteArray());
+			String contentType = he.getContentType() == null ? "text/xml" : he.getContentType().getValue();
+			return RequestBody.create(MediaType.parse(contentType), baos.toByteArray());
 		}
 	}
 
