@@ -43,7 +43,7 @@ public class RawDataProcessor extends DataProcessor<byte[], byte[]> {
 	 */
 	@Override
 	public int getProcessorID() {
-		return 32917626;
+		return ID;
 	}
 
 }
