@@ -16,6 +16,8 @@
 package at.diamonddogs.data.dataobjects;
 
 
+import com.squareup.okhttp.RequestBody;
+
 import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
 
 /**
@@ -34,12 +36,14 @@ public class SoapRequest extends WebRequest {
 	/** the envelope related to this request */
 	private SoapSerializationEnvelope envelope;
 
+	private RequestBody requestBody;
 	/**
 	 * Default constructor
 	 */
 	public SoapRequest() {
 
 	}
+
 
 	/**
 	 * Creates a {@link SoapRequest} from a {@link WebRequest}
@@ -57,7 +61,8 @@ public class SoapRequest extends WebRequest {
 		this.numberOfRetries = request.numberOfRetries;
 		this.retryInterval = request.retryInterval;
 		this.tmpFile = request.tmpFile;
-		this.httpEntity = request.httpEntity;
+		//this.httpEntity = request.httpEntity;
+		this.requestBody = request.requestBody;
 	}
 
 	@SuppressWarnings("javadoc")

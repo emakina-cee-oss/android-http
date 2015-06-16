@@ -21,13 +21,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.http.HttpEntity;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.util.Pair;
+
+import com.squareup.okhttp.RequestBody;
+
 import at.diamonddogs.service.net.HttpService;
 
 /**
@@ -48,6 +51,7 @@ public class WebRequest implements Request {
 	public WebRequest() {
 		origin = new Throwable();
 		timeCritical = true;
+		header = new HashMap<>();
 	}
 
 	/**
@@ -95,7 +99,7 @@ public class WebRequest implements Request {
 	/**
 	 * An arbitrary entity (e.g. for post)
 	 */
-	protected HttpEntity httpEntity;
+	protected RequestBody requestBody;
 
 	/**
 	 * The targe url of the request
@@ -381,13 +385,13 @@ public class WebRequest implements Request {
 	}
 
 	@SuppressWarnings("javadoc")
-	public HttpEntity getHttpEntity() {
-		return httpEntity;
+	public RequestBody getRequestBody() {
+		return requestBody;
 	}
 
 	@SuppressWarnings("javadoc")
-	public void setHttpEntity(HttpEntity httpEntity) {
-		this.httpEntity = httpEntity;
+	public void setRequestBody(RequestBody requestBody) {
+		this.requestBody = requestBody;
 	}
 
 	@SuppressWarnings("javadoc")

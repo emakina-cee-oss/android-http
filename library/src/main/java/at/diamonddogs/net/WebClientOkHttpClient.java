@@ -26,18 +26,6 @@ import com.squareup.okhttp.Response;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.ResponseBody;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.client.HttpRequestRetryHandler;
-import org.apache.http.client.RedirectHandler;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
-
-import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +34,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +49,7 @@ import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.exception.WebClientException;
 import at.diamonddogs.net.ssl.SSLHelper;
 
-public class WebClientOkHttpClient extends WebClient implements HttpRequestRetryHandler, RedirectHandler {
+public class WebClientOkHttpClient extends WebClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebClientOkHttpClient.class.getSimpleName());
     private int retryCount = 0;
@@ -185,22 +171,12 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
     }
 
     private RequestBody getRequestBody() throws IOException {
-        HttpEntity he = webRequest.getHttpEntity();
-        InputStream content;
-        int bytesRead;
-        byte buffer[] = new byte[1024];
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        if(he == null){
-            return null;
+        RequestBody rb = webRequest.getRequestBody();
+        if(rb == null){
+            MediaType parse = MediaType.parse(webRequest.getHeader().get("Content-Type"));
+            rb = RequestBody.create(parse,"");
         }
-        else{
-            content = he.getContent();
-            while ((bytesRead = content.read(buffer)) != -1) {
-                baos.write(buffer, 0, bytesRead);
-            }
-            return RequestBody.create(MediaType.parse("text/xml"), baos.toByteArray());
-        }
+        return rb;
     }
 
     @Override
@@ -221,18 +197,17 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
         int statusCode = response.code();
 
         WebReply reply = null;
-
         switch (statusCode) {
-            case HttpStatus.SC_PARTIAL_CONTENT:
-            case HttpStatus.SC_OK:
+            case HttpURLConnection.HTTP_PARTIAL:
+            case HttpURLConnection.HTTP_OK:
                 publishFileSize(response.body().contentLength());
                 reply = handleResponseOk(response.body().byteStream(), statusCode, convertHeaders(response.headers()));
                 break;
-            case HttpStatus.SC_NOT_MODIFIED:
+            case HttpURLConnection.HTTP_NOT_MODIFIED:
                 LOGGER.debug("WebRequest Not modified: " + webRequest);
                 reply = handleResponseNotModified(statusCode, convertHeaders(response.headers()));
                 break;
-            case HttpStatus.SC_NO_CONTENT:
+            case HttpURLConnection.HTTP_NO_CONTENT:
                 reply = handleResponseOk(null, statusCode, convertHeaders(response.headers()));
             default:
                 LOGGER.debug("WebRequest DEFAULT: " + webRequest);
@@ -285,47 +260,4 @@ public class WebClientOkHttpClient extends WebClient implements HttpRequestRetry
 
     }
 
-    @Override
-    public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
-        LOGGER.error("executionCount:" + executionCount + " NumberOfRetries: " + webRequest.getNumberOfRetries() + " exception: "
-                + exception.toString());
-        if (executionCount >= webRequest.getNumberOfRetries()) {
-            return false;
-        }
-        // @formatter:off
-        if ((exception instanceof NoHttpResponseException) || (exception instanceof ConnectTimeoutException)
-                || (exception instanceof ConnectionPoolTimeoutException) || (exception instanceof SocketTimeoutException)) {
-            return true;
-        }
-        // @formatter:on
-        return false;
-    }
-
-    @Override
-    public boolean isRedirectRequested(HttpResponse response, HttpContext context) {
-        if (!webRequest.isFollowRedirects()) {
-            return false;
-        }
-        int status = response.getStatusLine().getStatusCode();
-        LOGGER.debug("isRedirectRequested: " + status);
-        if (status == HttpStatus.SC_MOVED_PERMANENTLY || status == HttpStatus.SC_MOVED_TEMPORARILY) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public URI getLocationURI(HttpResponse response, HttpContext context) throws org.apache.http.ProtocolException {
-        Header[] headers = response.getHeaders("location");
-        if (headers[0] != null) {
-            try {
-                LOGGER.error("getLocationURI: " + headers[0].getValue());
-                return new URI(headers[0].getValue());
-            } catch (URISyntaxException e) {
-                LOGGER.error("error parsing url", e);
-                return null;
-            }
-        }
-        return null;
-    }
 }

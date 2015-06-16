@@ -17,8 +17,6 @@ package at.diamonddogs.data.adapter.parcelable;
 
 import java.net.URL;
 
-import org.apache.http.HttpEntity;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Pair;
@@ -33,9 +31,6 @@ import at.diamonddogs.data.dataobjects.WebRequest.Type;
  * TODO: check if all data is parcelled!
  */
 public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
-
-	protected HttpEntity httpEntity;
-
 	/**
 	 * Required by Parcelable mechanism
 	 * 

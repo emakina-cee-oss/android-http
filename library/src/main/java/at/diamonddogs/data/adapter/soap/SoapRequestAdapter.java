@@ -15,7 +15,9 @@
  */
 package at.diamonddogs.data.adapter.soap;
 
-import org.apache.http.entity.ByteArrayEntity;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.RequestBody;
+
 import org.kxml2.io.KXmlSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +71,8 @@ public class SoapRequestAdapter {
 		request.addHeaderField("Content-Type", "text/xml");
 		request.addHeaderField("Connection", "close");
 		request.addHeaderField("Content-Length", String.valueOf(requestData.length));
-		request.setHttpEntity(new ByteArrayEntity(requestData));
+		//request.setHttpEntity(new ByteArrayEntity(requestData));
+		request.setRequestBody(RequestBody.create(MediaType.parse("text/xml"), requestData));
 		request.setEnvelope(envelope);
 	}
 
