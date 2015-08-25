@@ -198,14 +198,19 @@ public class HttpServiceAssister {
 	 *         successfully unbound, <code>false</code> otherwise.
 	 */
 	public boolean unbindService() {
-		synchronousWebRequestPossible.set(false);
-		if (activeServiceConnection != null) {
-			unbindServiceAfterWebRequestExecution.set(false);
-			context.unbindService(activeServiceConnection);
-			activeServiceConnection = null;
-			httpService = null;
-			return true;
-		} else {
+		try {
+			synchronousWebRequestPossible.set(false);
+			if (activeServiceConnection != null) {
+				unbindServiceAfterWebRequestExecution.set(false);
+				context.unbindService(activeServiceConnection);
+				activeServiceConnection = null;
+				httpService = null;
+				return true;
+			} else {
+				return false;
+			}
+		}catch (IllegalArgumentException e) {
+			LOGGER.error("unable to unbind service",e);
 			return false;
 		}
 	}

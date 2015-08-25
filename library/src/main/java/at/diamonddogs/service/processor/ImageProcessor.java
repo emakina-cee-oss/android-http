@@ -15,14 +15,6 @@
  */
 package at.diamonddogs.service.processor;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.net.URL;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -33,6 +25,16 @@ import android.os.Message;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.CacheInformation;
@@ -61,7 +63,11 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 	public static final String BUNDLE_EXTRA_BITMAP = "BUNDLE_EXTRA_BITMAP";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessor.class);
-
+	/**
+	 * Determines if the request should be stored in memory, might cause OOM
+	 * errors if the image is very large
+	 */
+	protected boolean useMemCache = true;
 	private BitmapFactory.Options bitmapOptions;
 
 	/**
@@ -74,7 +80,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 
 	/**
 	 * Constructor for providing {@link BitmapFactory.Options}
-	 * 
+	 *
 	 * @param bitmapOptions
 	 *            custom {@link BitmapFactory.Options}
 	 */
@@ -84,10 +90,38 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 	}
 
 	/**
-	 * Determines if the request should be stored in memory, might cause OOM
-	 * errors if the image is very large
+	 * Returns the absolute path of an image file as stored on the SDCard
+	 *
+	 * @param url
+	 *            the url of the image file (web url)
+	 * @param context
+	 *            a {@link Context}
+	 * @return the absolute path of the image file on the file system or null if
+	 *         it does not exist
 	 */
-	protected boolean useMemCache = true;
+	public static String getImageFileUrl(String url, Context context) {
+		String filename = Utils.getMD5Hash(url);
+		File dir = context.getExternalCacheDir();
+		File file = new File(dir, filename);
+		if (file.exists()) {
+			return file.getAbsolutePath();
+		}
+		return null;
+	}
+
+	/**
+	 * Constructs a default image {@link WebRequest}
+	 *
+	 * @param url
+	 * @return
+	 */
+	public static WebRequest getDefaultImageRequest(String url) {
+		WebRequest wr = new WebRequest();
+		wr.setUrl(url);
+		wr.setProcessorId(ID);
+		wr.setCacheTime(CacheInformation.CACHE_1MO);
+		return wr;
+	}
 
 	public void setUseMemCache(boolean useMemCache) {
 		this.useMemCache = useMemCache;
@@ -123,13 +157,15 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 				File path = Utils.getCacheDir(c);
 				FileOutputStream fos = new FileOutputStream(new File(path, filename));
 				b.compress(CompressFormat.PNG, 0, fos);
-
 				CacheInformation ci = createImage(request, path.toString(), filename);
-
 				CacheManager cm = CacheManager.getInstance();
 				cm.addToCache(c, ci);
 				if (useMemCache) {
 					cm.addToMemoryCache(request.getUrl().toString(), ID, b);
+				}
+				try {
+					fos.close();
+				} catch (IOException e) {
 				}
 			}
 		}
@@ -148,7 +184,7 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 
 	/**
 	 * Obtains a {@link Bitmap} from cache.
-	 * 
+	 *
 	 * @param c
 	 *            a {@link Context}
 	 * @param object
@@ -216,26 +252,6 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		return c;
 	}
 
-	/**
-	 * Returns the absolute path of an image file as stored on the SDCard
-	 * 
-	 * @param url
-	 *            the url of the image file (web url)
-	 * @param context
-	 *            a {@link Context}
-	 * @return the absolute path of the image file on the file system or null if
-	 *         it does not exist
-	 */
-	public static String getImageFileUrl(String url, Context context) {
-		String filename = Utils.getMD5Hash(url);
-		File dir = context.getExternalCacheDir();
-		File file = new File(dir, filename);
-		if (file.exists()) {
-			return file.getAbsolutePath();
-		}
-		return null;
-	}
-
 	@Override
 	public int getProcessorID() {
 		return ID;
@@ -267,20 +283,6 @@ public class ImageProcessor extends DataProcessor<Bitmap, Bitmap> {
 		Message m = super.createReturnMessage(webRequest, payload);
 		m.getData().putParcelable(BUNDLE_EXTRA_BITMAP, payload);
 		return m;
-	}
-
-	/**
-	 * Constructs a default image {@link WebRequest}
-	 * 
-	 * @param url
-	 * @return
-	 */
-	public static WebRequest getDefaultImageRequest(String url) {
-		WebRequest wr = new WebRequest();
-		wr.setUrl(url);
-		wr.setProcessorId(ID);
-		wr.setCacheTime(CacheInformation.CACHE_1MO);
-		return wr;
 	}
 
 	/**
