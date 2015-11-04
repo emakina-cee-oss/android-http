@@ -2,13 +2,13 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion '21.1.1'
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
     }
-    defaultPublishConfig "debug"
+    //defaultPublishConfig "debug"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -24,9 +24,8 @@ android {
 }
 
 dependencies {
-    compile ('com.squareup.okhttp:okhttp:2.4.0')
-    debugCompile files('libs/slf4j-android-1.6.1-RC1.jar')
-    compile files('libs/httpmime-4.2.2.jar')
+    compile('com.squareup.okhttp:okhttp:2.4.0')
     compile files('libs/dd-ksoap2-android-assembly-2.6.1-jar-with-dependencies.jar')
-    compile files('libs/slf4j-api-1.7.6.jar')
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    debugCompile 'org.slf4j:slf4j-android:1.7.12'
 }
