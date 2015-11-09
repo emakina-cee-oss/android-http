@@ -27,6 +27,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.accounts.NetworkErrorException;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -323,6 +324,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 					ret.payload = synchronousProcessor.obtainDataObjectFromCachedObject(this, webRequest, cachedObject);
 				} else {
 					ret.successful = false;
+					ret.throwable = new NetworkErrorException("device is not connected to network");
 				}
 			} else {
 				if (cachedObject != null) {
@@ -736,7 +738,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 * {@link WebRequestReturnContainer} must be returned by any public method,
 	 * capable of running {@link WebRequest}s.
 	 */
-	public static final class WebRequestReturnContainer {
+	public static class WebRequestReturnContainer {
 		/**
 		 * A flag indiciating the success of an operation
 		 */
@@ -772,7 +774,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		 */
 		private Map<String, List<String>> replyHeader;
 
-		private WebRequestReturnContainer() {
+		public WebRequestReturnContainer() {
 
 		}
 
