@@ -81,7 +81,7 @@ public class ConnectivityHelper {
 				return true;
 			}
 			NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-			return networkInfo == null ? false : networkInfo.isConnected();
+			return networkInfo != null && networkInfo.isConnected();
 		} else {
 			LOGGER.info("WebRequest does not require connectivity check, returning true");
 			return true;

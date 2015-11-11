@@ -123,7 +123,7 @@ public class CacheContentProvider extends ContentProvider {
 				cursor.close();
 				return new CacheInformation[0];
 			}
-			ArrayList<CacheInformation> ret = new ArrayList<CacheInformation>(cursor.getCount());
+			ArrayList<CacheInformation> ret = new ArrayList<>(cursor.getCount());
 			while (cursor.moveToNext()) {
 				ret.add(dbaci.deserialize(cursor));
 			}

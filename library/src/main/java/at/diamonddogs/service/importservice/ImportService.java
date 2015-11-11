@@ -30,6 +30,6 @@ public interface ImportService<T extends Serializable> {
 	 * @param contract
 	 *            the contract to use
 	 */
-	public void setContract(ImportServiceContract<T> contract);
+	void setContract(ImportServiceContract<T> contract);
 
 }

@@ -33,7 +33,7 @@ public interface NonTimeCriticalTask {
 	 */
 	// @formatter:off
 	@SuppressWarnings("javadoc")
-	public enum PRIORITY {
+	enum PRIORITY {
 		HIGHEST,
 		HIGHER,
 		HIGH,
@@ -48,7 +48,7 @@ public interface NonTimeCriticalTask {
 	 * 
 	 * @return the {@link PRIORITY}
 	 */
-	public PRIORITY getPriority();
+	PRIORITY getPriority();
 
 	/**
 	 * Sets the {@link PRIORITY} of the current task
@@ -57,7 +57,7 @@ public interface NonTimeCriticalTask {
 	 *            the {@link PRIORITY} to set
 	 * @return
 	 */
-	public void setPriority(PRIORITY priority);
+	void setPriority(PRIORITY priority);
 
 	/**
 	 * Gets called when the current {@link NonTimeCriticalTask} should be
@@ -70,6 +70,6 @@ public interface NonTimeCriticalTask {
 	 *            an {@link HttpServiceAssister} to be used to execute
 	 *            {@link WebRequest}s resulting from this task.
 	 */
-	public void process(Context context, HttpServiceAssister assister);
+	void process(Context context, HttpServiceAssister assister);
 
 }

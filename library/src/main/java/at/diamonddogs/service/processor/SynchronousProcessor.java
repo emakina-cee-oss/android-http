@@ -43,7 +43,7 @@ public interface SynchronousProcessor<OUTPUT> {
 	 *         {@link DataProcessor#processData(byte[])} ->
 	 *         {@link ProcessingData#output}
 	 */
-	public abstract OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply);
+	OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply);
 
 	/**
 	 * This method is called by {@link HttpService} in order to allow post
@@ -57,5 +57,5 @@ public interface SynchronousProcessor<OUTPUT> {
 	 *            the {@link CachedObject} retrieved from the cache
 	 * @return an OUTPUT object
 	 */
-	public abstract OUTPUT obtainDataObjectFromCachedObject(Context c, WebRequest webRequest, CachedObject object);
+	OUTPUT obtainDataObjectFromCachedObject(Context c, WebRequest webRequest, CachedObject object);
 }

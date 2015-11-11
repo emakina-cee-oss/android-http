@@ -258,7 +258,7 @@ public abstract class ImportServiceContract<T extends Serializable> {
 		 * @return <code>true</code> if the broadcast was handled by any
 		 *         {@link BroadcastReceiver}s, <code>false</code> otherwise
 		 */
-		public boolean sendBroadcast(Intent i);
+		boolean sendBroadcast(Intent i);
 
 		/**
 		 * Register a {@link BroadcastReceiver}
@@ -269,6 +269,6 @@ public abstract class ImportServiceContract<T extends Serializable> {
 		 *            the {@link IntentFilter} that describes the events that
 		 *            the {@link BroadcastReceiver} will receive
 		 */
-		public void registerReceiver(BroadcastReceiver receiver, IntentFilter filter);
+		void registerReceiver(BroadcastReceiver receiver, IntentFilter filter);
 	}
 }

@@ -117,7 +117,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		super.onCreate();
 		workerQueue = new WorkerQueue(POOL_SIZE_CORE, POOL_SIZE_MAX, POOL_KEEPALIVE);
 		webRequestHandlerMap = Collections.synchronizedMap(new HashMap<Handler, List<WebRequest>>());
-		registeredProcessors = new SparseArray<ServiceProcessor<?>>();
+		registeredProcessors = new SparseArray<>();
 		webRequests = Collections.synchronizedMap(new HashMap<String, WebRequestFutureContainer>());
 		connectivityHelper = new ConnectivityHelper(this);
 	}
@@ -502,7 +502,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		synchronized (webRequestHandlerMap) {
 			List<WebRequest> requestList = webRequestHandlerMap.get(handler);
 			if (requestList == null) {
-				requestList = new LinkedList<WebRequest>();
+				requestList = new LinkedList<>();
 
 				webRequestHandlerMap.put(handler, requestList);
 			}
@@ -690,7 +690,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 				if (!async) {
 					client.setListener(null);
 				}
-				ret = workerQueue.<ReplyAdapter> runCancelableTask(client);
+				ret = workerQueue.runCancelableTask(client);
 			} else {
 				LOGGER.debug("File found in file cache: " + webRequest.getUrl());
 				if (!webRequest.isCancelled()) {
@@ -703,7 +703,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 			if (!async) {
 				client.setListener(null);
 			}
-			ret = workerQueue.<ReplyAdapter> runCancelableTask(client);
+			ret = workerQueue.runCancelableTask(client);
 		}
 		return ret;
 	}

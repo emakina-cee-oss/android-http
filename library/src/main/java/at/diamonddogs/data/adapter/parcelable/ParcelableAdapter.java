@@ -184,7 +184,7 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 		b.putInt("length", length);
 		for (int i = 0; i < values.size(); i++) {
 			List<String> l = iterator.next();
-			ArrayList<String> list = new ArrayList<String>(l);
+			ArrayList<String> list = new ArrayList<>(l);
 			b.putStringArrayList("" + i, list);
 		}
 		dest.writeBundle(b);
@@ -192,7 +192,7 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 
 	protected Map<String, List<String>> readHeaderMap(Parcel dest, Map<String, List<String>> list) {
 
-		Map<String, List<String>> map = new HashMap<String, List<String>>();
+		Map<String, List<String>> map = new HashMap<>();
 		Bundle b = dest.readBundle();
 		String[] keys = b.getStringArray("keys");
 		int length = b.getInt("length");
@@ -230,7 +230,7 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 		Bundle b = in.readBundle();
 		String[] keys = b.getStringArray("keys");
 		String[] values = b.getStringArray("values");
-		HashMap<String, String> map = new HashMap<String, String>();
+		HashMap<String, String> map = new HashMap<>();
 
 		if (keys != null && values != null) {
 			if (keys.length != values.length) {

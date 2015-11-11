@@ -324,7 +324,7 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 		 * @param reply
 		 *            the {@link ReplyAdapter} created by the {@link WebClient}
 		 */
-		public void onWebReply(WebClient webClient, ReplyAdapter reply);
+		void onWebReply(WebClient webClient, ReplyAdapter reply);
 	}
 
 	/**
@@ -338,7 +338,7 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 		 * @param size
 		 *            the size in byte
 		 */
-		public void downloadSize(long size);
+		void downloadSize(long size);
 
 		/**
 		 * Informs listeners about the bytes read
@@ -346,7 +346,7 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 		 * @param progress
 		 *            bytes read
 		 */
-		public void downloadProgress(long progress);
+		void downloadProgress(long progress);
 	}
 
 	/**

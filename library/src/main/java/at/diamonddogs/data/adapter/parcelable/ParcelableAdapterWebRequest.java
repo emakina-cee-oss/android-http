@@ -52,7 +52,7 @@ public class ParcelableAdapterWebRequest extends ParcelableAdapter<WebRequest> {
 		boolean first = (in.readInt() == 1);
 		if (first) {
 			ParcelableAdapterTempFile tmp = in.readParcelable(ClassLoader.getSystemClassLoader());
-			dataObject.setTmpFile(new Pair<Boolean, TempFile>(first, tmp.getDataObject()));
+			dataObject.setTmpFile(new Pair<>(first, tmp.getDataObject()));
 		}
 
 		dataObject.setHeader(readStringMap(in));

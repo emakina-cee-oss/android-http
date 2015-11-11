@@ -236,7 +236,7 @@ public class HttpOrderedAsyncAssister {
 		 *         Returning <code>null</code> indicates that the current
 		 *         {@link WebRequest} is the last request in line.
 		 */
-		public HttpOrderedAsyncRequest getNextWebRequest(Message message);
+		HttpOrderedAsyncRequest getNextWebRequest(Message message);
 	}
 
 	/**

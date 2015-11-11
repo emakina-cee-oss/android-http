@@ -26,7 +26,7 @@ public interface Request {
 	 * 
 	 * @return a URL instance
 	 */
-	public URL getUrl();
+	URL getUrl();
 
 	/**
 	 * Gets the cache time of this request. Indicates how long the data of this
@@ -34,5 +34,5 @@ public interface Request {
 	 * 
 	 * @return the cache time
 	 */
-	public long getCacheTime();
+	long getCacheTime();
 }

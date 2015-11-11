@@ -76,7 +76,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 		INPUT input = createParsedObjectFromByteArray(((WebReply) replyAdapter.getReply()).getData());
 		OUTPUT output = parse(input);
 		Message message = createReturnMessage(replyAdapter, output);
-		return new ProcessingData<OUTPUT>(message, output);
+		return new ProcessingData<>(message, output);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 		INPUT input = createParsedObjectFromByteArray(data);
 		OUTPUT output = parse(input);
 		Message message = createReturnMessage(wr, output);
-		return new ProcessingData<OUTPUT>(message, output);
+		return new ProcessingData<>(message, output);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 		try {
 			if (r.getStatus() == Status.OK) {
 				handler.sendMessage(processData(r).returnMessage);
-				if (((WebRequest) r.getRequest()).getCacheTime() != CacheInformation.CACHE_NO) {
+				if (r.getRequest().getCacheTime() != CacheInformation.CACHE_NO) {
 					cacheObjectToFile(c, (WebRequest) r.getRequest(), ((WebReply) r.getReply()).getData(),
 							((WebRequest) r.getRequest()).isUseOfflineCache());
 				}

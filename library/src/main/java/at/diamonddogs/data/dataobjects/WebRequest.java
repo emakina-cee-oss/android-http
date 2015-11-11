@@ -156,7 +156,7 @@ public class WebRequest implements Request {
 	/**
 	 * The tempfile
 	 */
-	protected Pair<Boolean, TempFile> tmpFile = new Pair<Boolean, TempFile>(false, null);
+	protected Pair<Boolean, TempFile> tmpFile = new Pair<>(false, null);
 
 	/**
 	 * A flag to indicate if this {@link WebRequest} has been cancelled
@@ -211,7 +211,7 @@ public class WebRequest implements Request {
 	 */
 	public void addHeaderField(String field, String value) {
 		if (header == null) {
-			header = new HashMap<String, String>();
+			header = new HashMap<>();
 		}
 		header.put(field, value);
 	}

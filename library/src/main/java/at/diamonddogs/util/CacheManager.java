@@ -72,7 +72,7 @@ public class CacheManager {
 	private LruCache<String, CacheItem> cache;
 
 	private CacheManager() {
-		cache = new LruCache<String, CacheManager.CacheItem>(CACHE_SIZE_MAX_ENTRIES);
+		cache = new LruCache<>(CACHE_SIZE_MAX_ENTRIES);
 	}
 
 	/**

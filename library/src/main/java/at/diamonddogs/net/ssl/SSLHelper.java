@@ -35,9 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
-import at.diamonddogs.net.WebClient;/*
-import at.diamonddogs.net.WebClientDefaultHttpClient;
-import at.diamonddogs.net.WebClientHttpURLConnection;*/
+import at.diamonddogs.net.WebClient;
 
 /**
  * Enables SSL sockets on all included {@link WebClient}
@@ -308,7 +306,7 @@ public class SSLHelper {
 		}
 
 		@Override
-		public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
+		public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
 			return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
 		}
 

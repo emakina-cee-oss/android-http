@@ -29,7 +29,7 @@ public class ServiceProcessorIdGenerator {
 
 	private AtomicInteger processorId = new AtomicInteger(0);
 
-	private SparseArray<Class<ServiceProcessor<?>>> generatedIds = new SparseArray<Class<ServiceProcessor<?>>>();
+	private SparseArray<Class<ServiceProcessor<?>>> generatedIds = new SparseArray<>();
 
 	private ServiceProcessorIdGenerator() {
 	}

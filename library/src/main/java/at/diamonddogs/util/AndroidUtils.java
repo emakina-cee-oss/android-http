@@ -59,10 +59,7 @@ public class AndroidUtils {
 		final PackageManager packageManager = context.getPackageManager();
 		final Intent intent = new Intent(context, cls);
 		List<ResolveInfo> resolveInfo = packageManager.queryIntentServices(intent, PackageManager.MATCH_DEFAULT_ONLY);
-		if (resolveInfo.size() > 0) {
-			return true;
-		}
-		return false;
+		return resolveInfo.size() > 0;
 	}
 
 }

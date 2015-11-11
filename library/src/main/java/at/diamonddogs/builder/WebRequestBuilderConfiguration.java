@@ -29,56 +29,56 @@ public interface WebRequestBuilderConfiguration {
 	 * 
 	 * @return the short read timeout
 	 */
-	public int getReadTimeoutShort();
+	int getReadTimeoutShort();
 
 	/**
 	 * Gets the integer value associated with {@link ReadTimeout#MEDIUM}
 	 * 
 	 * @return the medium read timeout
 	 */
-	public int getReadTimeoutMedium();
+	int getReadTimeoutMedium();
 
 	/**
 	 * Gets the integer value associated with {@link ReadTimeout#LONG}
 	 * 
 	 * @return the long read timeout
 	 */
-	public int getReadTimeoutLong();
+	int getReadTimeoutLong();
 
 	/**
 	 * Gets the integer value associated with {@link ReadTimeout#VERYLONG}
 	 * 
 	 * @return the very long read timeout
 	 */
-	public int getReadTimeoutVeryLong();
+	int getReadTimeoutVeryLong();
 
 	/**
 	 * Gets the integer value associated with {@link ConnectionTimeout#SHORT}
 	 * 
 	 * @return the short connection timeout
 	 */
-	public int getConnectionTimeoutShort();
+	int getConnectionTimeoutShort();
 
 	/**
 	 * Gets the integer value associated with {@link ConnectionTimeout#MEDIUM}
 	 * 
 	 * @return the medium connection timeout
 	 */
-	public int getConnectionTimeoutMedium();
+	int getConnectionTimeoutMedium();
 
 	/**
 	 * Gets the integer value associated with {@link ConnectionTimeout#LONG}
 	 * 
 	 * @return the long connection timeout
 	 */
-	public int getConnectionTimeoutLong();
+	int getConnectionTimeoutLong();
 
 	/**
 	 * Gets the integer value associated with {@link ConnectionTimeout#VERYLONG}
 	 * 
 	 * @return the very long connection timeout
 	 */
-	public int getConnectionTimeoutVeryLong();
+	int getConnectionTimeoutVeryLong();
 
 	/**
 	 * Determines if the resulting {@link WebRequest} follows redirects
@@ -86,7 +86,7 @@ public interface WebRequestBuilderConfiguration {
 	 * @return <code>true</code> if the {@link WebRequest} allows redirects,
 	 *         <code>false</code> otherwise
 	 */
-	public boolean isFollowRedirectEnabled();
+	boolean isFollowRedirectEnabled();
 
 	/**
 	 * Determines if the resulting {@link WebRequest} uses offline caching
@@ -94,7 +94,7 @@ public interface WebRequestBuilderConfiguration {
 	 * @return <code>true</code> if the {@link WebRequest} uses offline caching,
 	 *         <code>false</code> otherwise
 	 */
-	public boolean isOfflineCachingEnabled();
+	boolean isOfflineCachingEnabled();
 
 	/**
 	 * Determines if the resulting {@link WebRequest} uses connectivity checks
@@ -102,7 +102,7 @@ public interface WebRequestBuilderConfiguration {
 	 * @return <code>true</code> if the {@link WebRequest} uses connectivity
 	 *         checks, <code>false</code> otherwise
 	 */
-	public boolean isConnectivityCheckEnabled();
+	boolean isConnectivityCheckEnabled();
 
 	/**
 	 * Determines if the resulting {@link WebRequest} uses connectivity ping
@@ -111,26 +111,26 @@ public interface WebRequestBuilderConfiguration {
 	 * @return <code>true</code> if the {@link WebRequest} uses connectivity
 	 *         ping checks, <code>false</code> otherwise
 	 */
-	public boolean isConnectivityPingEnabled();
+	boolean isConnectivityPingEnabled();
 
 	/**
 	 * Returns the number of retry attempts
 	 * 
 	 * @return the number of retry attempts
 	 */
-	public int getRetryCount();
+	int getRetryCount();
 
 	/**
 	 * Returns the retry attempt interval (time between retry attempts)
 	 * 
 	 * @return the retry attempt interval
 	 */
-	public int getRetryInterval();
+	int getRetryInterval();
 
 	/**
 	 * Returns the default cache time
 	 * 
 	 * @return the default cache time
 	 */
-	public long getDefaultCacheTime();
+	long getDefaultCacheTime();
 }

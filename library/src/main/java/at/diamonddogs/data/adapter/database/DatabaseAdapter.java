@@ -217,7 +217,7 @@ public abstract class DatabaseAdapter<T> {
 	 *            the number of items to insert
 	 */
 	public void startBulkInsert(int itemsToInsert) {
-		bulkList = new ArrayList<T>(itemsToInsert);
+		bulkList = new ArrayList<>(itemsToInsert);
 	}
 
 	/**
@@ -227,7 +227,7 @@ public abstract class DatabaseAdapter<T> {
 		if (bulkList != null) {
 			throw new IllegalStateException("Last bulkInsert has not been commited yet.");
 		}
-		bulkList = new ArrayList<T>();
+		bulkList = new ArrayList<>();
 	}
 
 	/**

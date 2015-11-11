@@ -45,7 +45,7 @@ public class WorkerQueue {
 	 *            the keep alive time in ms
 	 */
 	public WorkerQueue(int corePoolSize, int maxPoolSize, long keepAliveTimeMs) {
-		outstandingRequests = new LinkedBlockingQueue<Runnable>();
+		outstandingRequests = new LinkedBlockingQueue<>();
 		threadPoolExecuter = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTimeMs, TimeUnit.MILLISECONDS, outstandingRequests);
 	}
 

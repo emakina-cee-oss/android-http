@@ -83,7 +83,7 @@ public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFacto
 	 */
 	@Override
 	public Socket connectSocket(Socket sock, String host, int port, InetAddress localAddress, int localPort, HttpParams params)
-			throws IOException, UnknownHostException, ConnectTimeoutException {
+			throws IOException {
 		int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
 		int soTimeout = HttpConnectionParams.getSoTimeout(params);
 		InetSocketAddress remoteAddress = new InetSocketAddress(host, port);
@@ -133,7 +133,7 @@ public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFacto
 	 *      java.lang.String, int, boolean)
 	 */
 	@Override
-	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
+	public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
 		if (sslcontext != null) {
 			return sslcontext.getSocketFactory().createSocket(socket, host, port, autoClose);
 		} else {

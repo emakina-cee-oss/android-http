@@ -137,7 +137,7 @@ public class DataBaseAdapterCacheInformation extends DatabaseAdapter<CacheInform
 			cursor.close();
 			return new CacheInformation[0];
 		}
-		ArrayList<CacheInformation> ret = new ArrayList<CacheInformation>(cursor.getCount());
+		ArrayList<CacheInformation> ret = new ArrayList<>(cursor.getCount());
 		while (cursor.moveToNext()) {
 			ret.add(deserialize(cursor));
 		}

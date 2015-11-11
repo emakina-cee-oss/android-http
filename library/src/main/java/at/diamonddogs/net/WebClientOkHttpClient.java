@@ -133,11 +133,8 @@ public class WebClientOkHttpClient extends WebClient {
         if (!followProtocolRedirect || !webRequest.isFollowRedirects()) {
             return false;
         }
-        if (wr.getHttpStatusCode() == HTTPStatus.HTTP_MOVED_TEMP
-                || wr.getHttpStatusCode() == HTTPStatus.HTTP_MOVED_PERM) {
-            return true;
-        }
-        return false;
+        return wr.getHttpStatusCode() == HTTPStatus.HTTP_MOVED_TEMP
+                || wr.getHttpStatusCode() == HTTPStatus.HTTP_MOVED_PERM;
     }
 
     private void configureConnection(Request.Builder requestBuilder) throws IOException {
@@ -225,7 +222,7 @@ public class WebClientOkHttpClient extends WebClient {
     }
 
     private Map<String, List<String>> convertHeaders(Headers headers) {
-        HashMap<String, List<String>> ret = new HashMap<String, List<String>>();
+        HashMap<String, List<String>> ret = new HashMap<>();
         for(int i=0; i< headers.size();i++){
             String key = headers.name(i).toString();
             String value = headers.value(i).toString();

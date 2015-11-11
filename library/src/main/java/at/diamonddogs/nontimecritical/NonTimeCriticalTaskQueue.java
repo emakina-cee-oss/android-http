@@ -140,7 +140,7 @@ public class NonTimeCriticalTaskQueue {
 				throw new IllegalStateException(
 						"NonTimeCriticalTaskQueue has not been configured yet! Configuration must happen before calling any other method. Call setConfiguration(...) to do so!");
 			}
-			tasks = new PriorityBlockingQueue<NonTimeCriticalTask>(configuration.getInitialQueueSize(), new NonTimeCriticalTaskComperator());
+			tasks = new PriorityBlockingQueue<>(configuration.getInitialQueueSize(), new NonTimeCriticalTaskComperator());
 		}
 	}
 
@@ -155,7 +155,7 @@ public class NonTimeCriticalTaskQueue {
 	protected List<NonTimeCriticalTask> createProcessableTaskList() {
 		synchronized (tasks) {
 
-			ArrayList<NonTimeCriticalTask> processableTasks = new ArrayList<NonTimeCriticalTask>(tasks.size());
+			ArrayList<NonTimeCriticalTask> processableTasks = new ArrayList<>(tasks.size());
 			NonTimeCriticalTask task;
 			while ((task = tasks.poll()) != null) {
 				processableTasks.add(task);
@@ -212,14 +212,14 @@ public class NonTimeCriticalTaskQueue {
 		 * 
 		 * @return the initial size of the queue
 		 */
-		public int getInitialQueueSize();
+		int getInitialQueueSize();
 
 		/**
 		 * Returns the minimum size of the queue that triggers processing
 		 * 
 		 * @return min. processing size
 		 */
-		public int getProcessAtSize();
+		int getProcessAtSize();
 
 	}
 
@@ -267,7 +267,7 @@ public class NonTimeCriticalTaskQueue {
 		 * @param task
 		 *            the task that was started
 		 */
-		public void onProcessingStarted(NonTimeCriticalTask task);
+		void onProcessingStarted(NonTimeCriticalTask task);
 	}
 
 	/**
@@ -281,7 +281,7 @@ public class NonTimeCriticalTaskQueue {
 		 * 
 		 * @return the configuration
 		 */
-		public NonTimeCriticalTaskQueueConfiguration newInstance();
+		NonTimeCriticalTaskQueueConfiguration newInstance();
 	}
 
 	/**

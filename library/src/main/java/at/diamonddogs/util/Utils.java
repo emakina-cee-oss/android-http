@@ -116,7 +116,7 @@ public class Utils {
 	 *         {@link Cursor}
 	 */
 	public static <T> List<T> convertCursorToList(Cursor cursor, DatabaseAdapter<T> databaseAdapter) {
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 		if (!checkCursor(cursor)) {
 			return null;
 		}
@@ -137,7 +137,7 @@ public class Utils {
 	 * @return a {@link String} {@link List}
 	 */
 	public static List<String> convertColumnToList(Cursor cursor, String name) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		if (!checkCursor(cursor)) {
 			return null;
 		}

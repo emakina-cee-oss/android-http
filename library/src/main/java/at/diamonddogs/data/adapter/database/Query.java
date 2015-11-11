@@ -89,13 +89,13 @@ public class Query implements Serializable {
 		// other isn't
 
 		if ((whereFields != null && whereFields != null) && (whereFields.length != whereValues.length)) {
-			return new Pair<String, Boolean>("whereFields / whereValues length mismatch", false);
+			return new Pair<>("whereFields / whereValues length mismatch", false);
 		}
 		if (whereOperators != null && whereOperators.length != whereFields.length) {
-			return new Pair<String, Boolean>("whereField / whereOperators length mismatch", false);
+			return new Pair<>("whereField / whereOperators length mismatch", false);
 		}
 		if (whereConditionOperators != null && whereConditionOperators.length != (whereFields.length - 1)) {
-			return new Pair<String, Boolean>("whereConditionOperators / whereFields mismatch", false);
+			return new Pair<>("whereConditionOperators / whereFields mismatch", false);
 		}
 		if (whereOperators != null) {
 			int likeCount = 0;
@@ -105,13 +105,13 @@ public class Query implements Serializable {
 				}
 			}
 			if (likeCount == 0 && likeExpressions == null) {
-				return new Pair<String, Boolean>("", true);
+				return new Pair<>("", true);
 			}
 			if ((likeCount != 0 && likeExpressions == null) || (likeExpressions.length != likeCount)) {
-				return new Pair<String, Boolean>("likeCount / likeExpressions mismatch", false);
+				return new Pair<>("likeCount / likeExpressions mismatch", false);
 			}
 		}
-		return new Pair<String, Boolean>("", true);
+		return new Pair<>("", true);
 	}
 
 	/**
