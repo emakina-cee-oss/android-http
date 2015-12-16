@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import android.accounts.NetworkErrorException;
 import android.app.Service;
@@ -54,6 +52,7 @@ import at.diamonddogs.service.processor.SynchronousProcessor;
 import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.CacheManager.CachedObject;
 import at.diamonddogs.util.ConnectivityHelper;
+import at.diamonddogs.util.Log;
 import at.diamonddogs.util.WorkerQueue;
 
 /**
@@ -61,7 +60,7 @@ import at.diamonddogs.util.WorkerQueue;
  */
 public class HttpService extends Service implements WebClientReplyListener {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HttpService.class);
+	private static final String TAG = HttpService.class.getSimpleName();
 
 	/**
 	 * The core thread pool size, refer to {@link ThreadPoolExecutor} for more
@@ -124,13 +123,12 @@ public class HttpService extends Service implements WebClientReplyListener {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		LOGGER.debug("onBind, Intent: " + intent == null ? "null" : intent.toString());
+		Log.d(TAG, "onBind, Intent: " + intent == null ? "null" : intent.toString());
 		return binder == null ? binder = new HttpServiceBinder() : binder;
 	}
 
 	@Override
 	public void onDestroy() {
-		LOGGER.debug("onDestroy");
 		if (workerQueue != null) {
 			workerQueue.shutDown();
 		}
@@ -185,12 +183,12 @@ public class HttpService extends Service implements WebClientReplyListener {
 			throw new IllegalArgumentException("handler may not be null");
 		}
 		if (webRequest.getUrl() == null) {
-			LOGGER.warn("WebRequest URL was null, cannot run request");
+			Log.w(TAG, "WebRequest URL was null, cannot run request");
 			ret.successful = false;
 			return ret;
 		}
 		if (workerQueue.isShutDown()) {
-			LOGGER.info("service already shutdown, couldn't run: " + webRequest);
+			Log.i(TAG, "service already shutdown, couldn't run: " + webRequest);
 			ret.successful = false;
 			return ret;
 		}
@@ -341,11 +339,11 @@ public class HttpService extends Service implements WebClientReplyListener {
 		} catch (InterruptedException ie) {
 			ret.successful = false;
 			ret.throwable = ie;
-			LOGGER.debug("WebRequest interrupted " + webRequest);
+			Log.d(TAG, "WebRequest interrupted " + webRequest);
 		} catch (Throwable tr) {
 			ret.successful = false;
 			ret.throwable = tr;
-			LOGGER.warn("Error getting result for " + webRequest, tr);
+			Log.w(TAG, "Error getting result for " + webRequest, tr);
 		}
 		return ret;
 	}
@@ -462,7 +460,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 	private Future<ReplyAdapter> runSynchronousWebRequestFuture(final WebRequest webRequest, final DownloadProgressListener progressListener) {
 
 		if (workerQueue.isShutDown()) {
-			LOGGER.info("service already shutdown, couldn't run: " + webRequest);
+			Log.i(TAG, "service already shutdown, couldn't run: " + webRequest);
 			return null;
 		}
 
@@ -490,7 +488,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 					return future;
 				}
 			} catch (Throwable tr) {
-				LOGGER.error("Error getting result!", tr);
+				Log.e(TAG, "Error getting result!", tr);
 			}
 		} else {
 			throw new ServiceException("Invalid ServiceProcessor for sync WebRequest, only instances of SynchronousProcessor are allowed");
@@ -609,10 +607,10 @@ public class HttpService extends Service implements WebClientReplyListener {
 		WebReply repl = (WebReply) reply.getReply();
 		Throwable t = reply.getThrowable();
 		if (reply.getStatus() == Status.OK) {
-			LOGGER.debug("onWebReply: " + reply.getStatus() + "httpStatus: " + repl.getHttpStatusCode() + " from: "
+			Log.d(TAG, "onWebReply: " + reply.getStatus() + "httpStatus: " + repl.getHttpStatusCode() + " from: "
 					+ reply.getRequest().getUrl());
 		} else {
-			LOGGER.debug("onWebReply: " + reply.getStatus() + " from: " + reply.getRequest().getUrl(), t);
+			Log.d(TAG, "onWebReply: " + reply.getStatus() + " from: " + reply.getRequest().getUrl(), t);
 		}
 
 	}
@@ -621,7 +619,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		if (!workerQueue.isShutDown()) {
 			getProcessor(webRequest).processCachedObject(cachedObject, getHandler(webRequest), webRequest);
 		} else {
-			LOGGER.debug("service already shutdown, ignoring response from cache");
+			Log.d(TAG, "service already shutdown, ignoring response from cache");
 		}
 	}
 
@@ -630,10 +628,10 @@ public class HttpService extends Service implements WebClientReplyListener {
 			if (!workerQueue.isShutDown()) {
 				getProcessor(replyAdaper.getRequest()).processWebReply(this.getApplicationContext(), replyAdaper, handler);
 			} else {
-				LOGGER.debug("service already shutdown, ignoring web response");
+				Log.d(TAG, "service already shutdown, ignoring web response");
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error while processing web reply", e);
+			Log.e(TAG, "Error while processing web reply", e);
 		}
 	}
 
@@ -643,7 +641,7 @@ public class HttpService extends Service implements WebClientReplyListener {
 		if (processor == null) {
 			throw new ProcessorExeception("No processor with id " + processorId);
 		}
-		LOGGER.debug("found processor with id: " + processorId);
+		Log.d(TAG, "found processor with id: " + processorId);
 		return processor;
 	}
 
@@ -667,12 +665,12 @@ public class HttpService extends Service implements WebClientReplyListener {
 	 *            the id of the {@link WebRequest} to cancel
 	 */
 	public void cancelRequest(String id) {
-		LOGGER.debug("cancelRequest " + id);
+		Log.d(TAG, "cancelRequest " + id);
 		if (webRequests.containsKey(id)) {
-			LOGGER.debug("found cancelRequest " + id);
+			Log.d(TAG, "found cancelRequest " + id);
 			WebRequestFutureContainer container = webRequests.get(id);
 			boolean hasBeenCanceled = container.future.cancel(true);
-			LOGGER.info("WebRequest with id " + id + " has been canceled " + hasBeenCanceled);
+			Log.i(TAG, "WebRequest with id " + id + " has been canceled " + hasBeenCanceled);
 			container.webRequest.setCancelled(true);
 			webRequests.remove(id);
 		}
@@ -685,20 +683,20 @@ public class HttpService extends Service implements WebClientReplyListener {
 		try {
 			CachedObject cachedObject = cm.getFromCache(HttpService.this, webRequest);
 			if (cachedObject == null) {
-				LOGGER.debug("No cached objects available for: " + webRequest.getUrl());
+				Log.d(TAG, "No cached objects available for: " + webRequest.getUrl());
 				client = getNewWebClient(webRequest, downloadProgressListener);
 				if (!async) {
 					client.setListener(null);
 				}
 				ret = workerQueue.runCancelableTask(client);
 			} else {
-				LOGGER.debug("File found in file cache: " + webRequest.getUrl());
+				Log.d(TAG, "File found in file cache: " + webRequest.getUrl());
 				if (!webRequest.isCancelled()) {
 					dispatchCachedObjectToProcessor(cachedObject, webRequest);
 				}
 			}
 		} catch (Throwable tr) {
-			LOGGER.debug("No cached objects available for: " + webRequest.getUrl());
+			Log.d(TAG, "No cached objects available for: " + webRequest.getUrl());
 			client = getNewWebClient(webRequest, downloadProgressListener);
 			if (!async) {
 				client.setListener(null);

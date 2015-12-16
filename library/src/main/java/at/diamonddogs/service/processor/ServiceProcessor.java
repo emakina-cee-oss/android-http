@@ -23,9 +23,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,6 +37,7 @@ import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.util.CacheManager;
 import at.diamonddogs.util.CacheManager.CachedObject;
+import at.diamonddogs.util.Log;
 import at.diamonddogs.util.Utils;
 
 // @formatter:off
@@ -68,7 +66,7 @@ import at.diamonddogs.util.Utils;
 // @formatter:on
 public abstract class ServiceProcessor<OUTPUT> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceProcessor.class.getSimpleName());
+	private static final String TAG = ServiceProcessor.class.getSimpleName();
 
 	/**
 	 * Constant that indicates failure
@@ -399,7 +397,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			return Boolean.parseBoolean(s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return false;
 		}
 	}
@@ -411,7 +409,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			return Byte.parseByte(s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return 0;
 		}
 	}
@@ -423,7 +421,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			return Short.parseShort(s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return 0;
 		}
 	}
@@ -435,7 +433,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			return s.charAt(0);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return '\0';
 		}
 	}
@@ -447,7 +445,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			return Integer.parseInt(s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return 0;
 		}
 	}
@@ -459,7 +457,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			return Long.parseLong(s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return 0;
 		}
 	}
@@ -471,7 +469,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			return Float.parseFloat(s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return 0.0f;
 		}
 	}
@@ -483,7 +481,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			return Double.parseDouble(s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return 0.0d;
 		}
 	}
@@ -495,7 +493,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 			}
 			return Enum.valueOf(cls, s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return null;
 		}
 	}
@@ -505,7 +503,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 			SimpleDateFormat formatter = new SimpleDateFormat(format);
 			return formatter.parse(s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return null;
 		}
 	}
@@ -514,7 +512,7 @@ public abstract class ServiceProcessor<OUTPUT> {
 		try {
 			return formatter.parse(s);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not parse: ", tr);
+			Log.w(TAG, "Could not parse: ", tr);
 			return null;
 		}
 	}

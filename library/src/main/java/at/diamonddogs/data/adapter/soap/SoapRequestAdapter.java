@@ -19,8 +19,7 @@ import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 
 import org.kxml2.io.KXmlSerializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.ByteArrayOutputStream;
@@ -31,13 +30,14 @@ import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.org.ksoap2.SoapEnvelope;
 import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
+import at.diamonddogs.util.Log;
 
 /**
  * 
  */
 public class SoapRequestAdapter {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SoapRequestAdapter.class);
+	private static final String TAG = SoapRequestAdapter.class.getSimpleName();
 	private static final String USERAGENT = "android-http";
 
 	private String xmlVersionTag = "";
@@ -63,7 +63,7 @@ public class SoapRequestAdapter {
 		try {
 			requestData = createRequestData(envelope);
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not create requestdata from envelope", tr);
+			Log.w(TAG, "Could not create requestdata from envelope", tr);
 		}
 		request.setRequestType(Type.POST);
 		request.addHeaderField("User-Agent", USERAGENT);

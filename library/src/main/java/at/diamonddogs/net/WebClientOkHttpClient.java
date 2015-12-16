@@ -26,10 +26,6 @@ import com.squareup.okhttp.Response;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.ResponseBody;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,10 +44,11 @@ import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.exception.WebClientException;
 import at.diamonddogs.net.ssl.SSLHelper;
+import at.diamonddogs.util.Log;
 
 public class WebClientOkHttpClient extends WebClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebClientOkHttpClient.class.getSimpleName());
+    private static final String TAG = WebClientOkHttpClient.class.getSimpleName();
     private int retryCount = 0;
 
     private OkHttpClient httpClient;
@@ -88,12 +85,9 @@ public class WebClientOkHttpClient extends WebClient {
                 response = httpClient.newCall(request).execute();
                 reply = runRequest();
 
-                LOGGER.info("Running RequestBase: " + request);
-                LOGGER.error(request.urlString());
-
                 if(needsFollowRedirect(reply)){
                     String url = getRedirectUrl(reply);
-                    LOGGER.debug("following redirect manually to new url: " + url);
+                    Log.d(TAG, "following redirect manually to new url: " + url);
                     configureConnection(requestBuilder);
 
                     request = requestBuilder.url(new URL(url)).build();
@@ -111,11 +105,11 @@ public class WebClientOkHttpClient extends WebClient {
                     try {
                         Thread.sleep(webRequest.getRetryInterval());
                     }catch (InterruptedException e){
-                        LOGGER.error("Error in WebRequest: " + webRequest,e);
+                        Log.e(TAG, "Error in WebRequest: " + webRequest, e);
                     }
                 }
                 listenerReply = createListenerReply(webRequest, null, tr, ReplyAdapter.Status.FAILED);
-                LOGGER.info("Error running webrequest: " + webRequest.getUrl(), tr);
+                Log.w(TAG, "Error running webrequest: " + webRequest.getUrl(), tr);
             }
         } while ( retryCount >= 0);
 
@@ -201,13 +195,13 @@ public class WebClientOkHttpClient extends WebClient {
                 reply = handleResponseOk(response.body().byteStream(), statusCode, convertHeaders(response.headers()));
                 break;
             case HttpURLConnection.HTTP_NOT_MODIFIED:
-                LOGGER.debug("WebRequest Not modified: " + webRequest);
+                Log.d(TAG, "WebRequest Not modified: " + webRequest);
                 reply = handleResponseNotModified(statusCode, convertHeaders(response.headers()));
                 break;
             case HttpURLConnection.HTTP_NO_CONTENT:
                 reply = handleResponseOk(null, statusCode, convertHeaders(response.headers()));
             default:
-                LOGGER.debug("WebRequest DEFAULT: " + webRequest);
+                Log.d(TAG, "WebRequest DEFAULT: " + webRequest);
                 ResponseBody rBody = response.body();
                 if (rBody != null) {
                     InputStream content = rBody.byteStream();
@@ -252,9 +246,8 @@ public class WebClientOkHttpClient extends WebClient {
             fos.flush();
             fos.close();
         } catch (Exception e) {
-            LOGGER.error("error writing log", e);
+            Log.e(TAG, "error writing log", e);
         }
-
     }
 
 }

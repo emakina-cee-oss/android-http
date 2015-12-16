@@ -15,9 +15,6 @@
  */
 package at.diamonddogs.service.processor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -28,6 +25,7 @@ import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.util.CacheManager.CachedObject;
+import at.diamonddogs.util.Log;
 
 /**
  * Base class for data processing
@@ -42,7 +40,7 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  */
 public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTPUT> implements SynchronousProcessor<OUTPUT> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DataProcessor.class.getSimpleName());
+	private static final String TAG = DataProcessor.class.getSimpleName();
 
 	/**
 	 * Parses the content of data into an INPUT object
@@ -134,7 +132,7 @@ public abstract class DataProcessor<INPUT, OUTPUT> extends ServiceProcessor<OUTP
 	 */
 	@Override
 	public OUTPUT obtainDataObjectFromWebReply(Context c, ReplyAdapter reply) {
-		LOGGER.debug("status: " + ((WebReply) reply.getReply()).getHttpStatusCode());
+		Log.d(TAG, "status: " + ((WebReply) reply.getReply()).getHttpStatusCode());
 		cacheObjectToFile(c, reply);
 		return parse(createParsedObjectFromByteArray(((WebReply) reply.getReply()).getData()));
 	}

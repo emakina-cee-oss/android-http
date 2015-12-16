@@ -20,8 +20,6 @@ import java.io.InputStreamReader;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
@@ -31,6 +29,7 @@ import android.os.Handler;
 import at.diamonddogs.data.adapter.ReplyAdapter;
 import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.util.Log;
 
 /**
  * Xml processor for replies that cannot be handled using a DOM (mostly due to
@@ -40,7 +39,7 @@ import at.diamonddogs.data.dataobjects.WebRequest;
  *            the type of object created by this processor
  */
 public abstract class SynchronousXmlProcessorNoDom<T> extends DataProcessor<InputSource, T> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(SynchronousXmlProcessorNoDom.class);
+	private static final String TAG = SynchronousXmlProcessorNoDom.class.getSimpleName();
 
 	/**
 	 * The reader to be used
@@ -65,11 +64,11 @@ public abstract class SynchronousXmlProcessorNoDom<T> extends DataProcessor<Inpu
 	@Override
 	protected T parse(InputSource inputObject) {
 		try {
-			LOGGER.info("Starting NoDom parsing");
+			Log.i(TAG, "Starting NoDom parsing");
 			reader.parse(inputObject);
-			LOGGER.info("NoDom parsing complete");
+			Log.i(TAG, "NoDom parsing complete");
 		} catch (Throwable tr) {
-			LOGGER.error("Failed to parse!", tr);
+			Log.e(TAG, "Failed to parse!", tr);
 			return null;
 		}
 		return xmlHandler.getData();
@@ -105,7 +104,7 @@ public abstract class SynchronousXmlProcessorNoDom<T> extends DataProcessor<Inpu
 			reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 			reader.setContentHandler(handler);
 		} catch (Throwable tr) {
-			LOGGER.warn("Error initializing parser.", tr);
+			Log.w(TAG, "Error initializing parser.", tr);
 		}
 	}
 

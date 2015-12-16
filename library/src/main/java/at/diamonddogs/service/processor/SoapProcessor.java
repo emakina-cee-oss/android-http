@@ -16,8 +16,6 @@
 package at.diamonddogs.service.processor;
 
 import java.util.Vector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import android.R.string;
 import android.content.Context;
@@ -39,6 +37,7 @@ import at.diamonddogs.org.ksoap2.serialization.SoapObject;
 import at.diamonddogs.org.ksoap2.serialization.SoapPrimitive;
 import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
 import at.diamonddogs.util.CacheManager.CachedObject;
+import at.diamonddogs.util.Log;
 
 /**
  * Abstract base class for SOAP requests
@@ -48,7 +47,7 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  */
 public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements SynchronousProcessor<T> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SoapProcessor.class.getSimpleName());
+	private static final String TAG = SoapProcessor.class.getSimpleName();
 
 	/**
 	 * {@inheritDoc}
@@ -58,7 +57,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		try {
 			return obtainDataObjectFromResult(c, getResult((byte[]) object.getCachedObject()), null);
 		} catch (Throwable tr) {
-			LOGGER.error("Could not obtain data object ", tr);
+			Log.e(TAG, "Could not obtain data object ", tr);
 			return null;
 		}
 	}
@@ -87,12 +86,12 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 			try {
 				result = getResult(r);
 			} catch (Throwable tr) {
-				LOGGER.warn("Problem while getting soap result.", tr);
+				Log.w(TAG, "Problem while getting soap result.", tr);
 				handler.sendMessage(createErrorMessage(tr, r));
 
 				return;
 			}
-			LOGGER.debug("processing SoapReply");
+			Log.d(TAG, "processing SoapReply");
 			dispatchResultToHandler(c, handler, r, result);
 		} else {
 			handler.sendMessage(createErrorMessage(r));
@@ -118,16 +117,16 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 	private void dispatchResultToHandler(Context c, Handler handler, ReplyAdapter r, Object result) {
 		try {
 			if (result == null) {
-				LOGGER.debug("processSoapNull");
+				Log.d(TAG, "processSoapNull");
 				handler.sendMessage(processSoapNull(r));
 			} else if (result instanceof SoapFault) {
-				LOGGER.debug("processSoapFault");
+				Log.d(TAG, "processSoapFault");
 				handler.sendMessage(processSoapFault(r, (SoapFault) result));
 			} else if (result instanceof SoapObject) {
-				LOGGER.debug("processSoapObject");
+				Log.d(TAG, "processSoapObject");
 				handler.sendMessage(createReturnMessage(r, processSoapReply(c, r, (SoapObject) result)));
 			} else if (result instanceof SoapPrimitive) {
-				LOGGER.debug("processSoapPrimitive");
+				Log.d(TAG, "processSoapPrimitive");
 				handler.sendMessage(createReturnMessage(r, processSoapReply(c, r, (SoapPrimitive) result)));
 			} else if (result instanceof Vector<?>) {
 				handler.sendMessage(createReturnMessage(r, processSoapReply(c, r, (Vector<?>) result)));
@@ -135,7 +134,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 				handler.sendMessage(createErrorMessage(r));
 			}
 		} catch (Exception e2) {
-			LOGGER.debug("processSoap - failed", e2);
+			Log.d(TAG, "processSoap - failed", e2);
 			handler.sendMessage(createErrorMessage(e2, r));
 		}
 	}
@@ -160,7 +159,7 @@ public abstract class SoapProcessor<T> extends ServiceProcessor<T> implements Sy
 		try {
 			result = getResult(replyAdapter);
 		} catch (Throwable tr) {
-			LOGGER.error("Error while obtaining result.", tr);
+			Log.e(TAG, "Error while obtaining result.", tr);
 			throw new ProcessorExeception(tr);
 		}
 		return obtainDataObjectFromResult(c, result, replyAdapter);

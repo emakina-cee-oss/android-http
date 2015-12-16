@@ -17,14 +17,12 @@ package at.diamonddogs.service.importservice;
 
 import java.io.Serializable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import at.diamonddogs.service.net.HttpOrderedAsyncAssister;
 import at.diamonddogs.service.net.HttpOrderedAsyncAssister.HttpOrderedAsyncRequest;
+import at.diamonddogs.util.Log;
 
 /**
  * This import service supports the execution of {@link HttpOrderedAsyncRequest}
@@ -38,7 +36,7 @@ public abstract class OrderedImportService<T extends Serializable> extends Servi
 	/**
 	 * Logger ;)
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(OrderedImportService.class.getSimpleName());
+	private static final String TAG = OrderedImportService.class.getSimpleName();
 
 	/**
 	 * The contract controlling the service's behaviour
@@ -76,7 +74,7 @@ public abstract class OrderedImportService<T extends Serializable> extends Servi
 			throw new NullPointerException("You forgot to set the contract");
 		}
 		if (!assister.bindService()) {
-			LOGGER.warn("Could not bind HttpService");
+			Log.w(TAG, "Could not bind HttpService");
 			stopSelf();
 			return START_NOT_STICKY;
 		}

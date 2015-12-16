@@ -22,8 +22,6 @@ import android.content.pm.PackageManager;
 import com.squareup.okhttp.Request;
 
 import org.apache.commons.codec.binary.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -42,6 +40,7 @@ import at.diamonddogs.data.adapter.ReplyAdapter.Status;
 import at.diamonddogs.data.dataobjects.TempFile;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.util.Log;
 
 /**
  * An abstract {@link WebClient} to be used when implementing new
@@ -49,7 +48,7 @@ import at.diamonddogs.data.dataobjects.WebRequest;
  */
 public abstract class WebClient implements Callable<ReplyAdapter> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WebClient.class);
+	private static final String TAG = WebClient.class.getSimpleName();
 
 	/**
 	 * The read buffer size
@@ -128,7 +127,7 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 			DigestInputStream dis = new DigestInputStream(i, md);
 
 			File file = new File(tmp.getPath());
-			LOGGER.debug(file.getAbsolutePath() + "can write: " + file.canWrite());
+			Log.d(TAG, file.getAbsolutePath() + "can write: " + file.canWrite());
 			if (file.exists() && !tmp.isAppend()) {
 				file.delete();
 			}
@@ -140,7 +139,7 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 					fos.write(buffer, 0, bytesRead);
 					publishDownloadProgress(bytesRead);
 				} else {
-					LOGGER.info("Cancelled Download");
+					Log.i(TAG, "Cancelled Download");
 					break;
 				}
 			}
@@ -148,14 +147,14 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 			fos.close();
 
 			if (webRequest.isCancelled()) {
-				LOGGER.info("delete file due to canclled download: " + file.getName());
+				Log.i(TAG, "delete file due to canclled download: " + file.getName());
 				file.delete();
 			} else {
 
 				if (tmp.isUseChecksum()) {
 					String md5 = new String(Hex.encodeHex(md.digest()));
 
-					LOGGER.debug("md5 check, original: " + tmp.getChecksum() + " file: " + md5);
+					Log.d(TAG, "md5 check, original: " + tmp.getChecksum() + " file: " + md5);
 
 					if (!md5.equalsIgnoreCase(tmp.getChecksum())) {
 						throw new IOException("Error while downloading File.\nOriginal Checksum: " + tmp.getChecksum() + "\nChecksum: "
@@ -169,7 +168,7 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 				fos.flush();
 				fos.close();
 			}
-			LOGGER.error("Failed download", e);
+			Log.e(TAG, "Failed download", e);
 			// Please do not do that - that hides the original error!
 			throw new IOException(e.getMessage());
 
@@ -199,11 +198,11 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
 
 		InputStream toRead;
 		if (isGzipEncoded(reply)) {
-			LOGGER.info("Reply is gzip encoded! " + reply);
+			Log.i(TAG, "Reply is gzip encoded! " + reply);
 			try {
 				toRead = new GZIPInputStream(i);
 			} catch (Throwable tr) {
-				LOGGER.warn(
+				Log.w(TAG,
 						"Problem with GZIP reply, using normal input stream! This issue can be caused by an empty body (i.e. HEAD request)",
 						tr);
 				toRead = i;
@@ -240,7 +239,7 @@ public abstract class WebClient implements Callable<ReplyAdapter> {
         }
 		List<String> encodings = reply.getReplyHeader().get("Content-Encoding");
 		for (String encoding : encodings) {
-			LOGGER.debug("Encoding: " + encoding);
+			Log.d(TAG, "Encoding: " + encoding);
 			if (encoding.contains("gzip")) {
 				return true;
 			}

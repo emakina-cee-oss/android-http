@@ -23,14 +23,13 @@ import java.util.Date;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import at.diamonddogs.exception.ProcessorExeception;
+import at.diamonddogs.util.Log;
 
 /**
  * Abstract processor for DOM based XML parsing
@@ -42,7 +41,7 @@ import at.diamonddogs.exception.ProcessorExeception;
  */
 public abstract class XMLProcessor<OUTPUT> extends DataProcessor<Document, OUTPUT> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(XMLProcessor.class);
+	private static final String TAG = XMLProcessor.class.getSimpleName();
 
 	private final DocumentBuilderFactory factory;
 	protected DocumentBuilder builder;
@@ -73,13 +72,13 @@ public abstract class XMLProcessor<OUTPUT> extends DataProcessor<Document, OUTPU
 			builder = factory.newDocumentBuilder();
 		} catch (Throwable tr) {
 			builder = null;
-			LOGGER.error("Could not create default DocumentBuilderFactory.", tr);
+			Log.e(TAG, "Could not create default DocumentBuilderFactory.", tr);
 		}
 	}
 
 	@Override
 	protected Document createParsedObjectFromByteArray(byte[] data) {
-		LOGGER.debug("Creating DOM from " + data.length + " bytes of data");
+		Log.d(TAG, "Creating DOM from " + data.length + " bytes of data");
 		InputSource inSource = new InputSource(new InputStreamReader(new ByteArrayInputStream(data)));
 		Document dom = null;
 		if (builder == null) {
@@ -88,7 +87,7 @@ public abstract class XMLProcessor<OUTPUT> extends DataProcessor<Document, OUTPU
 		try {
 			dom = builder.parse(inSource);
 		} catch (Throwable tr) {
-			LOGGER.error("Could not create DOM.", tr);
+			Log.e(TAG, "Could not create DOM.", tr);
 		}
 		return dom;
 	}

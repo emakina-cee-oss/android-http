@@ -17,21 +17,20 @@ package at.diamonddogs.service.processor;
 
 import java.util.Random;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import at.diamonddogs.util.Log;
+
 /**
  * A processor that handles image post processing
  */
 public class AdjustableImageProcessor extends ImageProcessor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AdjustableImageProcessor.class.getSimpleName());
+	private static final String TAG = AdjustableImageProcessor.class.getSimpleName();
 
 	private int ID = -1;
 
@@ -98,7 +97,7 @@ public class AdjustableImageProcessor extends ImageProcessor {
 			return BitmapFactory.decodeByteArray(data, 0, data.length, options);
 		} catch (OutOfMemoryError e) {
 			System.gc();
-			LOGGER.error("OutOfMemoryError", e);
+			Log.e(TAG, "OutOfMemoryError", e);
 			return null;
 		}
 
@@ -117,7 +116,7 @@ public class AdjustableImageProcessor extends ImageProcessor {
 				inSampleSize = Math.round((float) width / (float) reqWidth);
 			}
 		}
-		LOGGER.error("calculated sample size: " + inSampleSize);
+		Log.e(TAG, "calculated sample size: " + inSampleSize);
 
 		return inSampleSize;
 	}

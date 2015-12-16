@@ -15,8 +15,6 @@
  */
 package at.diamonddogs.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
@@ -30,7 +28,7 @@ import at.diamonddogs.org.ksoap2.SoapEnvelope;
  */
 public class SoapUtil {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SoapUtil.class);
+	private static final String TAG = SoapUtil.class.getSimpleName();
 
 	/**
 	 * Prints the given {@link SoapEnvelope} to stderr
@@ -70,7 +68,7 @@ public class SoapUtil {
 			e.write(xmlSerializer);
             xmlSerializer.flush();
 		} catch (Throwable tr) {
-			LOGGER.warn("Could not print envelope!", tr);
+			Log.w(TAG, "Could not print envelope!", tr);
 		}
 	}
 }

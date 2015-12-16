@@ -23,12 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import at.diamonddogs.util.Log;
 
 /**
  * Base class for any parcelable adapter. Allows seperation of data objects and
@@ -39,7 +38,7 @@ import android.os.Parcelable;
  */
 public abstract class ParcelableAdapter<T> implements Parcelable {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ParcelableAdapter.class);
+	private static final String TAG = ParcelableAdapter.class.getSimpleName();
 
 	protected T dataObject;
 
@@ -113,7 +112,7 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 			throw new IllegalArgumentException("Input may not be null");
 		}
 		if (output == null) {
-			LOGGER.warn("output was null, not parcelling -> returning null");
+			Log.w(TAG, "output was null, not parcelling -> returning null");
 			return output;
 		}
 		if (output.length != input.length) {
@@ -126,7 +125,7 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 				output[i].dataObject = input[i];
 			}
 		} catch (Throwable tr) {
-			LOGGER.warn("Error while parcelling " + input, tr);
+			Log.w(TAG, "Error while parcelling " + input, tr);
 		}
 
 		return output;
@@ -156,7 +155,7 @@ public abstract class ParcelableAdapter<T> implements Parcelable {
 			throw new IllegalArgumentException("Input may not be null");
 		}
 		if (output == null) {
-			LOGGER.warn("output was null, not parcelling -> returning null");
+			Log.w(TAG, "output was null, not parcelling -> returning null");
 			return output;
 		}
 		if (output.length != input.length) {

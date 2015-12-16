@@ -15,9 +15,6 @@
  */
 package at.diamonddogs.service.processor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import android.os.Handler;
 import at.diamonddogs.data.dataobjects.Request;
 import at.diamonddogs.util.CacheManager.CachedObject;
@@ -29,7 +26,6 @@ import at.diamonddogs.util.CacheManager.CachedObject;
  */
 public class DummyProcessor extends DataProcessor<Void, Void> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DummyProcessor.class.getSimpleName());
 
 	/**
 	 * The processors ID

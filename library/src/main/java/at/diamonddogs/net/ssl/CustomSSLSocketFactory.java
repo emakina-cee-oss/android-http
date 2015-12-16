@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.KeyStore;
 
 import javax.net.ssl.SSLContext;
@@ -27,18 +26,16 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.scheme.LayeredSocketFactory;
 import org.apache.http.conn.scheme.SocketFactory;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import at.diamonddogs.util.Log;
+
 
 public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFactory {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(CustomSSLSocketFactory.class.getSimpleName());
-
+	private static final String TAG = CustomSSLSocketFactory.class.getSimpleName();
 	private SSLContext sslcontext = null;
 
 	public CustomSSLSocketFactory(KeyStore store) {
@@ -57,7 +54,7 @@ public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFacto
 			context.init(null, new TrustManager[] { tm }, null);
 			return context;
 		} catch (Exception e) {
-			LOGGER.error("unable to create ssl context", e);
+			Log.e(TAG, "unable to create ssl context", e);
 			return null;
 		}
 	}
@@ -71,7 +68,7 @@ public class CustomSSLSocketFactory implements SocketFactory, LayeredSocketFacto
 			context.init(null, CustomX509TrustManager.getWrappedTrustmanager(tmf.getTrustManagers()), null);
 			return context;
 		} catch (Exception e) {
-			LOGGER.error("unable to create ssl context", e);
+			Log.e(TAG, "unable to create ssl context", e);
 			return null;
 		}
 	}

@@ -17,8 +17,7 @@ package at.diamonddogs.util;
 
 import java.net.InetAddress;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -32,7 +31,7 @@ import at.diamonddogs.data.dataobjects.WebRequest;
  */
 public class ConnectivityHelper {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConnectivityHelper.class.getSimpleName());
+	private static final String TAG = ConnectivityHelper.class.getSimpleName();
 
 	/**
 	 * An instance of {@link ConnectivityManager} used to check for connectivity
@@ -76,14 +75,14 @@ public class ConnectivityHelper {
 		if (wr.isCheckConnectivity()) {
 			if (!hasAccessNetworkStatePermission()) {
 				// @formatter:off
-				LOGGER.warn("WebRequest (" + wr.getUrl() + ", " + wr.getId() + ") requested a connectivity check, but the caller lacks the required permission (ACCESS_NETWORK_STATE). Returning true");
+				Log.w(TAG, "WebRequest (" + wr.getUrl() + ", " + wr.getId() + ") requested a connectivity check, but the caller lacks the required permission (ACCESS_NETWORK_STATE). Returning true");
 				// @formatter:on
 				return true;
 			}
 			NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 			return networkInfo != null && networkInfo.isConnected();
 		} else {
-			LOGGER.info("WebRequest does not require connectivity check, returning true");
+			Log.i(TAG, "WebRequest does not require connectivity check, returning true");
 			return true;
 		}
 	}
@@ -92,7 +91,7 @@ public class ConnectivityHelper {
 		if (wr.isCheckConnectivityPing()) {
 			if (!hasChangeNetworkStatePermission()) {
 				// @formatter:off
-				LOGGER.warn("WebRequest (" + wr.getUrl() + ", " + wr.getId() + ") requested a connectivity PING check, but the caller lacks the required permission (CHANGE_NETWORK_STATE). Returning true");
+				Log.w(TAG, "WebRequest (" + wr.getUrl() + ", " + wr.getId() + ") requested a connectivity PING check, but the caller lacks the required permission (CHANGE_NETWORK_STATE). Returning true");
 				// @formatter:on
 				return true;
 			}
@@ -102,11 +101,11 @@ public class ConnectivityHelper {
 				addr = InetAddress.getByName(wr.getUrl().getHost());
 				return addr.isReachable(5000);
 			} catch (Throwable tr) {
-				LOGGER.warn("Hostname could not be resolved and therefore not be pinged. Returning false", tr);
+				Log.w(TAG, "Hostname could not be resolved and therefore not be pinged. Returning false", tr);
 				return false;
 			}
 		} else {
-			LOGGER.info("WebRequest does not require connectivity check, returning true");
+			Log.i(TAG, "WebRequest does not require connectivity check, returning true");
 			return true;
 		}
 	}

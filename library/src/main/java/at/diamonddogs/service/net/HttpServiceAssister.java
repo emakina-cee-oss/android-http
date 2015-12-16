@@ -19,8 +19,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -49,6 +47,7 @@ import at.diamonddogs.service.processor.DataProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
 import at.diamonddogs.service.processor.SynchronousProcessor;
 import at.diamonddogs.util.AndroidUtils;
+import at.diamonddogs.util.Log;
 
 /**
  * The {@link HttpServiceAssister} can be used to issue {@link WebRequest}s at
@@ -64,7 +63,7 @@ import at.diamonddogs.util.AndroidUtils;
  */
 public class HttpServiceAssister {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpServiceAssister.class.getSimpleName());
+    private static final String TAG = HttpServiceAssister.class.getSimpleName();
 
     /**
      * Service binding timeout for synchronous {@link WebRequest}s.
@@ -286,7 +285,7 @@ public class HttpServiceAssister {
     public void runWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor<?> serviceProcessor,
                               DownloadProgressListener progressListener) {
         if (httpService == null) {
-            LOGGER.info("httpService is null, appending WebRequest to queue for later processing: " + webRequest);
+            Log.i(TAG, "httpService is null, appending WebRequest to queue for later processing: " + webRequest);
             addWebRequestToQueue(handler, webRequest, progressListener, serviceProcessor);
         } else {
             runTimeCriticalAsynchronousWebRequest(handler, webRequest, serviceProcessor, progressListener);
@@ -330,7 +329,7 @@ public class HttpServiceAssister {
      */
     private void runTimeCriticalAsynchronousWebRequest(Handler handler, WebRequest webRequest, ServiceProcessor<?> serviceProcessor,
                                                        DownloadProgressListener progressListener) {
-        LOGGER.info("httpService is ready, running WebRequest directly");
+        Log.i(TAG, "httpService is ready, running WebRequest directly");
         if (!httpService.isProcessorRegistered(serviceProcessor.getProcessorID())) {
             httpService.registerProcessor(serviceProcessor);
         }
@@ -442,7 +441,7 @@ public class HttpServiceAssister {
      * <code>false</code> if the timeout was reached
      */
     private boolean waitForHttpService() {
-        LOGGER.info("Waiting on thread " + Thread.currentThread().getId());
+        Log.i(TAG, "Waiting on thread " + Thread.currentThread().getId());
         if (httpService != null) {
             return true;
         }
@@ -451,7 +450,7 @@ public class HttpServiceAssister {
                 monitor.wait(syncRequestBindingTimeout);
                 return httpService != null;
             } catch (Throwable tr) {
-                LOGGER.debug("Thread Interruption", tr);
+                Log.d(TAG, "Thread Interruption", tr);
                 return httpService != null;
             }
         }
@@ -532,7 +531,7 @@ public class HttpServiceAssister {
                     if (!httpService.isProcessorRegistered(webRequestInformation.serviceProcessor.getProcessorID())) {
                         httpService.registerProcessor(webRequestInformation.serviceProcessor);
                     }
-                    LOGGER.debug("Running " + webRequestInformation.webRequest + " after service binding!");
+                    Log.i(TAG, "Running " + webRequestInformation.webRequest + " after service binding!");
                     httpService.runWebRequest(webRequestInformation.handler, webRequestInformation.webRequest,
                             webRequestInformation.progressListener);
                 }

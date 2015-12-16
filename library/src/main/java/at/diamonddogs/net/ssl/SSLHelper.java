@@ -18,7 +18,6 @@ package at.diamonddogs.net.ssl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -31,11 +30,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import android.content.Context;
 import at.diamonddogs.net.WebClient;
+import at.diamonddogs.util.Log;
 
 /**
  * Enables SSL sockets on all included {@link WebClient}
@@ -44,7 +42,7 @@ import at.diamonddogs.net.WebClient;
  */
 public class SSLHelper {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SSLHelper.class.getSimpleName());
+	private static final String TAG = SSLHelper.class.getSimpleName();
 	private static SSLHelper INSTANCE;
 	private SSLState sslState;
 
@@ -103,7 +101,7 @@ public class SSLHelper {
 	public boolean initSSLFactoryJavaWithCustomTm(Context c, TrustManager tm) {
 		try {
 			if (c == null || tm == null) {
-				LOGGER.info("No keystore specified, using alltrust");
+				Log.i(TAG, "No keystore specified, using alltrust");
 				makeAllTrustManagerForJava();
 				return true;
 			} else {
@@ -114,7 +112,7 @@ public class SSLHelper {
 				return true;
 			}
 		} catch (Throwable tr) {
-			LOGGER.warn("Error initializing SSLFactoryJava", tr);
+			Log.w(TAG, "Error initializing SSLFactoryJava", tr);
 			try {
 				makeAllTrustManagerForJava();
 				sslState.tr = tr;
@@ -122,7 +120,7 @@ public class SSLHelper {
 			} catch (Throwable tr1) {
 				sslState.tr1 = tr1;
 				sslState.sslOk = false;
-				LOGGER.warn("Error trusting all certs, no ssl connection possible", tr);
+				Log.w(TAG, "Error trusting all certs, no ssl connection possible", tr);
 			}
 			return false;
 		}
@@ -131,7 +129,7 @@ public class SSLHelper {
 	public boolean initSSLFactoryApacheWithCustomTM(Context c, TrustManager tm) {
 		try {
 			if (c == null || tm == null) {
-				LOGGER.info("No keystore specified, using alltrust");
+				Log.i(TAG, "No keystore specified, using alltrust");
 				makeAllTrustManagerForApache();
 				return true;
 			} else {
@@ -140,7 +138,7 @@ public class SSLHelper {
 				return true;
 			}
 		} catch (Throwable tr) {
-			LOGGER.warn("Error initializing SSLFactoryApache, trusting all certs", tr);
+			Log.w(TAG, "Error initializing SSLFactoryApache, trusting all certs", tr);
 			try {
 				makeAllTrustManagerForApache();
 				sslState.tr = tr;
@@ -148,7 +146,7 @@ public class SSLHelper {
 			} catch (Throwable tr1) {
 				sslState.tr1 = tr1;
 				sslState.sslOk = false;
-				LOGGER.warn("Error trusting all certs, no ssl connection possible", tr);
+				Log.w(TAG, "Error trusting all certs, no ssl connection possible", tr);
 			}
 			return false;
 		}
@@ -168,7 +166,7 @@ public class SSLHelper {
 	public boolean initSSLFactoryApache(Context c, int resourceId, String password) {
 		try {
 			if (c == null || resourceId == -1 || password == null) {
-				LOGGER.info("No keystore specified, using alltrust");
+				Log.i(TAG, "No keystore specified, using alltrust");
 				makeAllTrustManagerForApache();
 				return true;
 			} else {
@@ -179,7 +177,7 @@ public class SSLHelper {
 				return true;
 			}
 		} catch (Throwable tr) {
-			LOGGER.warn("Error initializing SSLFactoryApache, trusting all certs", tr);
+			Log.w(TAG, "Error initializing SSLFactoryApache, trusting all certs", tr);
 			try {
 				makeAllTrustManagerForApache();
 				sslState.tr = tr;
@@ -187,7 +185,7 @@ public class SSLHelper {
 			} catch (Throwable tr1) {
 				sslState.tr1 = tr1;
 				sslState.sslOk = false;
-				LOGGER.warn("Error trusting all certs, no ssl connection possible", tr);
+				Log.w(TAG, "Error trusting all certs, no ssl connection possible", tr);
 			}
 			return false;
 		}
@@ -215,7 +213,7 @@ public class SSLHelper {
 	public boolean initSSLFactoryJava(Context c, int resourceId, String password) {
 		try {
 			if (c == null || resourceId == -1 || password == null) {
-				LOGGER.info("No keystore specified, using alltrust");
+				Log.i(TAG, "No keystore specified, using alltrust");
 				makeAllTrustManagerForJava();
 				return true;
 			} else {
@@ -229,7 +227,7 @@ public class SSLHelper {
 				return true;
 			}
 		} catch (Throwable tr) {
-			LOGGER.warn("Error initializing SSLFactoryJava", tr);
+			Log.w(TAG, "Error initializing SSLFactoryJava", tr);
 			try {
 				makeAllTrustManagerForJava();
 				sslState.tr = tr;
@@ -237,7 +235,7 @@ public class SSLHelper {
 			} catch (Throwable tr1) {
 				sslState.tr1 = tr1;
 				sslState.sslOk = false;
-				LOGGER.warn("Error trusting all certs, no ssl connection possible", tr);
+				Log.w(TAG, "Error trusting all certs, no ssl connection possible", tr);
 			}
 			return false;
 		}

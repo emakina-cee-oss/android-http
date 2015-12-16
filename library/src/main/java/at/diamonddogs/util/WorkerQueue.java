@@ -21,15 +21,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * A simple worker queue
  */
 public class WorkerQueue {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WorkerQueue.class.getSimpleName());
+	private static final String TAG = WorkerQueue.class.getSimpleName();
 	private LinkedBlockingQueue<Runnable> outstandingRequests;
 
 	private ThreadPoolExecutor threadPoolExecuter;
@@ -83,7 +80,7 @@ public class WorkerQueue {
 	 * Shuts down the executor
 	 */
 	public void shutDown() {
-		LOGGER.debug("shuting down NOW");
+		Log.d(TAG, "shuting down NOW");
 		threadPoolExecuter.shutdownNow();
 	}
 }

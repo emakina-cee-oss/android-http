@@ -20,7 +20,7 @@ import java.net.URL;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Pair;
-import at.diamonddogs.data.dataobjects.TempFile;
+
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;

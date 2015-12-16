@@ -15,8 +15,6 @@
  */
 package at.diamonddogs.contentprovider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -26,12 +24,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
+import at.diamonddogs.util.Log;
+
 /**
  * A default {@link ContentProvider} that holds common functionality
  */
 public abstract class AbstractDefaultContentProvider extends ContentProvider {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDefaultContentProvider.class.getSimpleName());
+	private static final String TAG = AbstractDefaultContentProvider.class.getSimpleName();
 
 	protected abstract SQLiteOpenHelper getDatabaseHelper();
 
@@ -72,14 +72,14 @@ public abstract class AbstractDefaultContentProvider extends ContentProvider {
 			for (ContentValues cv : values) {
 				long i = db.insertWithOnConflict(getDefaultTableName(), null, cv, SQLiteDatabase.CONFLICT_REPLACE);
 				if (i == -1) {
-					LOGGER.error("inserting " + cv + " failed");
+					Log.e(TAG, "inserting " + cv + " failed");
 				}
 				rows++;
 			}
-			LOGGER.info("inserted - rows: " + rows);
+			Log.i(TAG, "inserted - rows: " + rows);
 			db.setTransactionSuccessful();
 		} catch (Throwable tr) {
-			LOGGER.error("Error while bulk inserting", tr);
+			Log.e(TAG, "Error while bulk inserting", tr);
 		} finally {
 			db.endTransaction();
 		}

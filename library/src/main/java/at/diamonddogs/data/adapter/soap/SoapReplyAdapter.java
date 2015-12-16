@@ -16,8 +16,7 @@
 package at.diamonddogs.data.adapter.soap;
 
 import org.kxml2.io.KXmlParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -28,6 +27,7 @@ import at.diamonddogs.data.dataobjects.SoapReply;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.org.ksoap2.SoapEnvelope;
 import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
+import at.diamonddogs.util.Log;
 
 
 /**
@@ -35,7 +35,7 @@ import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
  */
 public class SoapReplyAdapter {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SoapReplyAdapter.class);
+	private static final String TAG = SoapReplyAdapter.class.getSimpleName();
 
 	private SoapReply reply;
 
@@ -56,7 +56,7 @@ public class SoapReplyAdapter {
 			parseResponse(envelope, reply.getData());
 			reply.setEnvelope(envelope);
 		} catch (Throwable tr) {
-			LOGGER.warn("Error parsing response", tr);
+			Log.w(TAG, "Error parsing response", tr);
 		}
 	}
 

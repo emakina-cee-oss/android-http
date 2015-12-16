@@ -17,8 +17,6 @@ package at.diamonddogs.contentprovider;
 
 import java.util.ArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -31,6 +29,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import at.diamonddogs.data.adapter.database.DataBaseAdapterCacheInformation;
 import at.diamonddogs.data.dataobjects.CacheInformation;
+import at.diamonddogs.util.Log;
 
 /**
  * The {@link CacheContentProvider} provides a standardized interface to cache
@@ -38,7 +37,7 @@ import at.diamonddogs.data.dataobjects.CacheInformation;
  */
 public class CacheContentProvider extends ContentProvider {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CacheContentProvider.class.getSimpleName());
+	private static final String TAG = CacheContentProvider.class.getSimpleName();
 
 	private static String CACHECONTENTPROVIDER_AUTHORITY;
 
@@ -69,7 +68,7 @@ public class CacheContentProvider extends ContentProvider {
 			// @formatter:off
 			if(oldVersion < 6){
 				try {
-					LOGGER.info("starting upgrade");
+					Log.i(TAG, "starting upgrade");
 					db.execSQL("ALTER TABLE " + DataBaseAdapterCacheInformation.TABLE + " RENAME TO old");
 					createTable(db);
 					db.execSQL("INSERT INTO " + DataBaseAdapterCacheInformation.TABLE + "(" + 
@@ -83,9 +82,9 @@ public class CacheContentProvider extends ContentProvider {
 							DataBaseAdapterCacheInformation.FILEPATH + " FROM old");
 					db.execSQL("UPDATE CACHE SET " + DataBaseAdapterCacheInformation.USEOFFLINECACHE + " = '0'");
 					db.execSQL("DROP TABLE old");
-					LOGGER.info("upgrade complete");
+					Log.i(TAG, "upgrade complete");
 				} catch (Exception e) {
-					LOGGER.error("upgrade failed",e);
+					Log.e(TAG, "upgrade failed", e);
 				}
 			}
 			// @formatter:on
@@ -101,9 +100,9 @@ public class CacheContentProvider extends ContentProvider {
 				DataBaseAdapterCacheInformation.FILENAME + " TEXT UNIQUE, " +
 				DataBaseAdapterCacheInformation.FILEPATH + " TEXT, " +
 				DataBaseAdapterCacheInformation.USEOFFLINECACHE + " INTEGER);";
-			LOGGER.info("Creating cache: " + s);
+			Log.i(TAG, "Creating cache: " + s);
 			db.execSQL(s);
-			LOGGER.info("cache created");
+			Log.i(TAG, "cache created");
 			// @formatter:on
 		}
 

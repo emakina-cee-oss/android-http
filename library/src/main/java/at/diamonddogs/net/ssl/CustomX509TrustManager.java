@@ -23,12 +23,11 @@ import java.util.Arrays;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import at.diamonddogs.util.Log;
 
 public class CustomX509TrustManager implements X509TrustManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomX509TrustManager.class.getSimpleName());
+    private static final String TAG = CustomX509TrustManager.class.getSimpleName();
 
     private X509TrustManager originalTrustManager;
 
@@ -58,7 +57,7 @@ public class CustomX509TrustManager implements X509TrustManager {
         try {
             originalTrustManager.checkClientTrusted(certs, authType);
         } catch (CertificateException e) {
-            LOGGER.error("CertificateException", e);
+            Log.e(TAG, "CertificateException", e);
         }
     }
 
@@ -67,9 +66,9 @@ public class CustomX509TrustManager implements X509TrustManager {
         try {
             originalTrustManager.checkServerTrusted(certs, authType);
         } catch (CertificateExpiredException e) {
-            LOGGER.error("CertificateExpiredException", e);
+            Log.e(TAG, "CertificateExpiredException", e);
         } catch (CertificateException e) {
-            LOGGER.error("CertificateException", e);
+            Log.e(TAG, "CertificateException", e);
             if (!manuallyValidate(certs)) {
                 throw e;
             }

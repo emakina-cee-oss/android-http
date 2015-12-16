@@ -17,34 +17,30 @@ package at.diamonddogs.service.processor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import at.diamonddogs.util.Log;
 
 /**
  * Abstract {@link ServiceProcessor} that should be used to process
  * {@link JSONObject}s
- * 
- * @param <OUTPUT>
- *            the type of the data object that will be constructed from the
- *            {@link JSONObject} input object
+ *
+ * @param <OUTPUT> the type of the data object that will be constructed from the
+ *                 {@link JSONObject} input object
  */
 public abstract class JSONProcessor<OUTPUT> extends DataProcessor<JSONObject, OUTPUT> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JSONProcessor.class.getSimpleName());
+    private static final String TAG = JSONProcessor.class.getSimpleName();
 
-	@Override
-	protected JSONObject createParsedObjectFromByteArray(byte[] data) {
+    @Override
+    protected JSONObject createParsedObjectFromByteArray(byte[] data) {
 
-		try {
-			String jsonString = new String(data, 0, data.length);
+        try {
+            String jsonString = new String(data, 0, data.length);
+            return new JSONObject(jsonString);
+        } catch (JSONException e) {
+            Log.e(TAG, "Could not create JSON Object", e);
+        }
+        return null;
 
-			JSONObject jsonData = new JSONObject(jsonString);
-
-			return jsonData;
-		} catch (JSONException e) {
-			LOGGER.error("Could not create JSON Object", e);
-		}
-		return null;
-
-	}
+    }
 }

@@ -8,24 +8,15 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
     }
-    //defaultPublishConfig "debug"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-        }
-    }
 }
 
 dependencies {
-    compile('com.squareup.okhttp:okhttp:2.4.0')
+    compile('com.squareup.okhttp:okhttp:2.6.0')
     compile files('libs/dd-ksoap2-android-assembly-2.6.1-jar-with-dependencies.jar')
-    compile 'org.slf4j:slf4j-api:1.7.12'
-    debugCompile 'org.slf4j:slf4j-android:1.7.12'
 }

@@ -15,12 +15,12 @@
  */
 package at.diamonddogs.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+
+import at.diamonddogs.util.Log;
 import at.diamonddogs.util.Utils;
 
 /**
@@ -28,7 +28,7 @@ import at.diamonddogs.util.Utils;
  */
 public class CacheService extends Service {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CacheService.class.getSimpleName());
+	private static final String TAG = CacheService.class.getSimpleName();
 
 	/**
 	 * Argument key
@@ -42,7 +42,7 @@ public class CacheService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		LOGGER.info("recived start command");
+		Log.i(TAG, "recived start command");
 		if (intent != null) {
 			handleIntent(intent);
 		}
@@ -56,12 +56,12 @@ public class CacheService extends Service {
 
 	private void handleIntent(Intent intent) {
 		int extra = intent.getIntExtra(INTENT_EXTRA_START_ARGUMENT, -1);
-		LOGGER.info("handling intent for extra: " + extra);
+		Log.i(TAG, "handling intent for extra: " + extra);
 		switch (extra) {
 		case INTENT_EXTRA_KILL_PROCESS:
-			LOGGER.debug("trying to kill process");
+			Log.d(TAG, "trying to kill process");
 			killProcess();
-			LOGGER.debug("killing process unsuccessfull");
+			Log.d(TAG, "killing process unsuccessfull");
 			break;
 		default:
 			break;
