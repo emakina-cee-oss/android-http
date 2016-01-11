@@ -18,12 +18,12 @@ package at.diamonddogs.net;
 import android.content.Context;
 import android.os.Environment;
 
+import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.ResponseBody;
 
 import java.io.File;
@@ -54,6 +54,7 @@ public class WebClientOkHttpClient extends WebClient {
     private OkHttpClient httpClient;
     private Request request;
     private Response response;
+
     /**
      * Constructs a {@link at.diamonddogs.net.WebClient}
      *
@@ -67,7 +68,7 @@ public class WebClientOkHttpClient extends WebClient {
     @Override
     public ReplyAdapter call() {
         ReplyAdapter listenerReply;
-        if(webRequest == null){
+        if (webRequest == null) {
             throw new WebClientException("WebRequest must not be null!");
         }
         retryCount = webRequest.getNumberOfRetries();
@@ -85,7 +86,7 @@ public class WebClientOkHttpClient extends WebClient {
                 response = httpClient.newCall(request).execute();
                 reply = runRequest();
 
-                if(needsFollowRedirect(reply)){
+                if (needsFollowRedirect(reply)) {
                     String url = getRedirectUrl(reply);
                     Log.d(TAG, "following redirect manually to new url: " + url);
                     configureConnection(requestBuilder);
@@ -100,20 +101,20 @@ public class WebClientOkHttpClient extends WebClient {
                 if (!(status == -1)) {
                     retryCount = -1;
                 }
-            } catch (Throwable tr){
-                if(retryCount != 0){
+            } catch (Throwable tr) {
+                if (retryCount != 0) {
                     try {
                         Thread.sleep(webRequest.getRetryInterval());
-                    }catch (InterruptedException e){
+                    } catch (InterruptedException e) {
                         Log.e(TAG, "Error in WebRequest: " + webRequest, e);
                     }
                 }
                 listenerReply = createListenerReply(webRequest, null, tr, ReplyAdapter.Status.FAILED);
                 Log.w(TAG, "Error running webrequest: " + webRequest.getUrl(), tr);
             }
-        } while ( retryCount >= 0);
+        } while (retryCount >= 0);
 
-        if(webClientReplyListener != null){
+        if (webClientReplyListener != null) {
             webClientReplyListener.onWebReply(this, listenerReply);
         }
         return listenerReply;
@@ -163,9 +164,9 @@ public class WebClientOkHttpClient extends WebClient {
 
     private RequestBody getRequestBody() throws IOException {
         RequestBody rb = webRequest.getRequestBody();
-        if(rb == null){
+        if (rb == null) {
             MediaType parse = MediaType.parse(webRequest.getHeader().get("Content-Type"));
-            rb = RequestBody.create(parse,"");
+            rb = RequestBody.create(parse, "");
         }
         return rb;
     }
@@ -217,7 +218,7 @@ public class WebClientOkHttpClient extends WebClient {
 
     private Map<String, List<String>> convertHeaders(Headers headers) {
         HashMap<String, List<String>> ret = new HashMap<>();
-        for(int i=0; i< headers.size();i++){
+        for (int i = 0; i < headers.size(); i++) {
             String key = headers.name(i).toString();
             String value = headers.value(i).toString();
             if (ret.containsKey(key)) {

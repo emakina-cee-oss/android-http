@@ -24,84 +24,93 @@ import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
  * {@link SoapRequest} represents a normal SOAP {@link WebRequest}
  */
 public class SoapRequest extends WebRequest {
-	/** the SOAP action */
-	private String soapAction;
+    /**
+     * the SOAP action
+     */
+    private String soapAction;
 
-	/** the SOAP method */
-	private String methodName;
+    /**
+     * the SOAP method
+     */
+    private String methodName;
 
-	/** the SOAP namespace */
-	private String namespace;
+    /**
+     * the SOAP namespace
+     */
+    private String namespace;
 
-	/** the envelope related to this request */
-	private SoapSerializationEnvelope envelope;
+    /**
+     * the envelope related to this request
+     */
+    private SoapSerializationEnvelope envelope;
 
-	private RequestBody requestBody;
-	/**
-	 * Default constructor
-	 */
-	public SoapRequest() {
+    private RequestBody requestBody;
 
-	}
+    /**
+     * Default constructor
+     */
+    public SoapRequest() {
+
+    }
 
 
-	/**
-	 * Creates a {@link SoapRequest} from a {@link WebRequest}
-	 * 
-	 * @param request
-	 */
-	public SoapRequest(WebRequest request) {
-		this.processorId = request.processorId;
-		this.url = request.url;
-		this.readTimeout = request.readTimeout;
-		this.connectionTimeout = request.connectionTimeout;
-		this.followRedirects = request.followRedirects;
-		this.header = request.header;
-		this.cacheTime = request.cacheTime;
-		this.numberOfRetries = request.numberOfRetries;
-		this.retryInterval = request.retryInterval;
-		this.tmpFile = request.tmpFile;
-		//this.httpEntity = request.httpEntity;
-		this.requestBody = request.requestBody;
-	}
+    /**
+     * Creates a {@link SoapRequest} from a {@link WebRequest}
+     *
+     * @param request
+     */
+    public SoapRequest(WebRequest request) {
+        this.processorId = request.processorId;
+        this.url = request.url;
+        this.readTimeout = request.readTimeout;
+        this.connectionTimeout = request.connectionTimeout;
+        this.followRedirects = request.followRedirects;
+        this.header = request.header;
+        this.cacheTime = request.cacheTime;
+        this.numberOfRetries = request.numberOfRetries;
+        this.retryInterval = request.retryInterval;
+        this.tmpFile = request.tmpFile;
+        //this.httpEntity = request.httpEntity;
+        this.requestBody = request.requestBody;
+    }
 
-	@SuppressWarnings("javadoc")
-	public String getSoapAction() {
-		return soapAction;
-	}
+    @SuppressWarnings("javadoc")
+    public String getSoapAction() {
+        return soapAction;
+    }
 
-	@SuppressWarnings("javadoc")
-	public void setSoapAction(String soapAction) {
-		this.soapAction = soapAction;
-	}
+    @SuppressWarnings("javadoc")
+    public void setSoapAction(String soapAction) {
+        this.soapAction = soapAction;
+    }
 
-	@SuppressWarnings("javadoc")
-	public String getMethodName() {
-		return methodName;
-	}
+    @SuppressWarnings("javadoc")
+    public String getMethodName() {
+        return methodName;
+    }
 
-	@SuppressWarnings("javadoc")
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
-	}
+    @SuppressWarnings("javadoc")
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
 
-	@SuppressWarnings("javadoc")
-	public String getNamespace() {
-		return namespace;
-	}
+    @SuppressWarnings("javadoc")
+    public String getNamespace() {
+        return namespace;
+    }
 
-	@SuppressWarnings("javadoc")
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
+    @SuppressWarnings("javadoc")
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
 
-	@SuppressWarnings("javadoc")
-	public SoapSerializationEnvelope getEnvelope() {
-		return envelope;
-	}
+    @SuppressWarnings("javadoc")
+    public SoapSerializationEnvelope getEnvelope() {
+        return envelope;
+    }
 
-	@SuppressWarnings("javadoc")
-	public void setEnvelope(SoapSerializationEnvelope envelope) {
-		this.envelope = envelope;
-	}
+    @SuppressWarnings("javadoc")
+    public void setEnvelope(SoapSerializationEnvelope envelope) {
+        this.envelope = envelope;
+    }
 }
