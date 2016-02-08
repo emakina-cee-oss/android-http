@@ -20,8 +20,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
 
-import com.squareup.okhttp.Request;
-
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.ByteArrayOutputStream;
@@ -42,6 +40,7 @@ import at.diamonddogs.data.dataobjects.TempFile;
 import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.util.Log;
+import okhttp3.Request;
 
 /**
  * An abstract {@link WebClient} to be used when implementing new

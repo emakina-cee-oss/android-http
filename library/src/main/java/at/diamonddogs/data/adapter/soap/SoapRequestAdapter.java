@@ -16,9 +16,6 @@
 package at.diamonddogs.data.adapter.soap;
 
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
-
 import org.kxml2.io.KXmlSerializer;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -32,6 +29,8 @@ import at.diamonddogs.data.dataobjects.WebRequest.Type;
 import at.diamonddogs.org.ksoap2.SoapEnvelope;
 import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
 import at.diamonddogs.util.Log;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 /**
  *

@@ -18,20 +18,13 @@ package at.diamonddogs.net;
 import android.content.Context;
 import android.os.Environment;
 
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +38,13 @@ import at.diamonddogs.data.dataobjects.WebReply;
 import at.diamonddogs.exception.WebClientException;
 import at.diamonddogs.net.ssl.SSLHelper;
 import at.diamonddogs.util.Log;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class WebClientOkHttpClient extends WebClient {
 
@@ -133,9 +133,12 @@ public class WebClientOkHttpClient extends WebClient {
     }
 
     private void configureConnection(Request.Builder requestBuilder) throws IOException {
-        httpClient.setConnectTimeout(webRequest.getConnectionTimeout(), TimeUnit.MILLISECONDS);
-        httpClient.setReadTimeout(webRequest.getReadTimeout(), TimeUnit.MILLISECONDS);
-        httpClient.setFollowRedirects(webRequest.isFollowRedirects());
+
+        httpClient = httpClient.newBuilder()
+                .connectTimeout(webRequest.getConnectionTimeout(), TimeUnit.MILLISECONDS)
+                .readTimeout(webRequest.getConnectionTimeout(), TimeUnit.MILLISECONDS)
+                .followRedirects(webRequest.isFollowRedirects()).build();
+
 
         setSslFactory();
         setRequestType(requestBuilder);
@@ -144,7 +147,9 @@ public class WebClientOkHttpClient extends WebClient {
 
     private void setSslFactory() {
         SSLSocketFactory sslSocketFactory = SSLHelper.getInstance().SSL_FACTORY_JAVA;
-        httpClient.setSslSocketFactory(sslSocketFactory);
+        if (sslSocketFactory != null) {
+            httpClient = httpClient.newBuilder().sslSocketFactory(sslSocketFactory).build();
+        }
     }
 
     private void setRequestType(Request.Builder requestBuilder) throws IOException {

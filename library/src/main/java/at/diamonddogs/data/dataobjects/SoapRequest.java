@@ -16,9 +16,9 @@
 package at.diamonddogs.data.dataobjects;
 
 
-import com.squareup.okhttp.RequestBody;
 
 import at.diamonddogs.org.ksoap2.serialization.SoapSerializationEnvelope;
+import okhttp3.RequestBody;
 
 /**
  * {@link SoapRequest} represents a normal SOAP {@link WebRequest}

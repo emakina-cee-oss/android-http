@@ -26,10 +26,9 @@ import android.net.Uri;
 import android.util.Pair;
 
 
-import com.squareup.okhttp.RequestBody;
-
 import at.diamonddogs.service.net.HttpService;
 import at.diamonddogs.util.Log;
+import okhttp3.RequestBody;
 
 /**
  * Web request representation
